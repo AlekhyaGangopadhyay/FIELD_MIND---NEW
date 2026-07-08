@@ -40,6 +40,28 @@ Where $z_i \in \mathbb{R}^{4096}$ is the unit-length embedding vector. Fusing mo
 
 $$\text{Similarity}(z_{\text{gas}}, z_{\text{ultrasonic}}) = z_{\text{gas}}^T z_{\text{ultrasonic}}$$
 
+## 🤝 Integration with Pre-Trained Classifiers (ATR Tier 1)
+
+While the pre-trained `scikit-learn` classifiers and regressors (such as the Random Forest and Gradient Boosting models) make localized, single-domain predictions (e.g. Methane Alarm, Vibration Hazard), the SciSense Protocol neural encoders project these domains into a unified embedding space.
+
+In the Anomaly-Triggered Reasoning (ATR) workflow, these modules work together:
+
+| Aspect | Pre-Trained Models (Tier 1) | SciSense Protocol Encoders (Layer 1) |
+| :--- | :--- | :--- |
+| **Objective** | Continuous monitoring and hazard triggers (e.g. `vibration_hazard = 1`). | Joint representation mapping (generates unit-length vectors $z \in \mathbb{R}^{4096}$). |
+| **Output** | String/numeric class decision or threshold value. | 4096-dimensional projection vector for LLM analysis. |
+
+```mermaid
+graph TD
+    A[Streaming Sensor Feeds] --> B[Tier 1: Pre-Trained Classifiers]
+    A --> C[Layer 1: SciSense Temporal Alignment]
+    B -->|Predicts Hazard / Anomaly| D{Trigger Tier 2?}
+    D -->|Yes| E[Retrieve Aligned Epoch Features]
+    C --> E
+    E --> F[SciSense Encoders project to 4096-D]
+    F --> G[Offline LLM Reasoning Loop]
+```
+
 ---
 
 ## 🚀 How to Run the Demo
