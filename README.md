@@ -4,6 +4,32 @@ FIELD-MIND is an offline multimodal intelligence platform developed for undergro
 
 ---
 
+## Sensor Modules Overview
+
+### 1. Gas Sensors (`gas_sensors/`)
+Processes real-time multi-gas inputs (MQ-2, MQ-3, MQ-4, MQ-7, MQ-135, MQ-136, MG811 arrays) to identify hazards:
+- **Synthetic Data Generation**: Models Gaussian plumes, ventilation cycles, machinery startup emissions, and sensor drift.
+- **Methane Detection**: Employs a hybrid **SVM + MLP Voting Classifier** to predict methane levels robustly.
+- **Specific Gas Classifiers**: Targets LPG/CNG, combustion gases (CO/Benzene), and smoke/fire hazards.
+- **Multi-Gas Detector**: Tracks 5 gases simultaneously (Methane, CO, LPG, Smoke, NOx) using a MultiOutput Random Forest model.
+
+### 2. Temperature & Humidity (`temperature_humidity/`)
+Monitors occupational safety and environmental anomaly conditions:
+- **Anomaly Detection**: Trains unsupervised **Isolation Forests** on rolling mean, variance, and humidex indices to capture microclimate anomalies.
+- **Occupancy Classification**: A **Random Forest Classifier** trained on CO2, light, temperature, and humidity levels to predict office/tunnel occupancy.
+
+### 3. Vibration (`vibration/`)
+Predicts blast-induced seismic vibration levels (Peak Particle Velocity - PPV) near mine sites:
+- **SEG-Y Binary Reader**: Custom parsing of big-endian IBM float headers from SEG-Y seismogram trace outputs.
+- **Feature Extraction**: Calculates maximum charge, number of blast holes, trace directions (`trid`), and receptor coordinates.
+- **Prediction Model**: Trains a **Gradient Boosting Regressor** for continuous PPV prediction and a **Random Forest Classifier** for threshold-based hazard alert triggers.
+
+### 4. Ultrasonic Sensors (`ultrasonic_sensors/`)
+Classifies robot navigation decisions based on 2, 4, or 24-sensor configurations:
+- **Decision Classification**: Trains multiple ML algorithms (Logistic Regression, Decision Trees, Random Forests, Gradient Boosting, MLP) to predict robot commands (`Move-Forward`, `Slight-Right-Turn`, `Sharp-Right-Turn`, `Slight-Left-Turn`).
+
+---
+
 ## Directory Structure
 
 The repository has been organized into modular sensor packages:
@@ -44,32 +70,6 @@ FIELD_MIND (Project)/
     ├── train_models.py           # Training pipeline for multiple classifiers
     └── model_metrics_table.md    # Classification performance report
 ```
-
----
-
-## Sensor Modules Overview
-
-### 1. Gas Sensors (`gas_sensors/`)
-Processes real-time multi-gas inputs (MQ-2, MQ-3, MQ-4, MQ-7, MQ-135, MQ-136, MG811 arrays) to identify hazards:
-- **Synthetic Data Generation**: Models Gaussian plumes, ventilation cycles, machinery startup emissions, and sensor drift.
-- **Methane Detection**: Employs a hybrid **SVM + MLP Voting Classifier** to predict methane levels robustly.
-- **Specific Gas Classifiers**: Targets LPG/CNG, combustion gases (CO/Benzene), and smoke/fire hazards.
-- **Multi-Gas Detector**: Tracks 5 gases simultaneously (Methane, CO, LPG, Smoke, NOx) using a MultiOutput Random Forest model.
-
-### 2. Temperature & Humidity (`temperature_humidity/`)
-Monitors occupational safety and environmental anomaly conditions:
-- **Anomaly Detection**: Trains unsupervised **Isolation Forests** on rolling mean, variance, and humidex indices to capture microclimate anomalies.
-- **Occupancy Classification**: A **Random Forest Classifier** trained on CO2, light, temperature, and humidity levels to predict office/tunnel occupancy.
-
-### 3. Vibration (`vibration/`)
-Predicts blast-induced seismic vibration levels (Peak Particle Velocity - PPV) near mine sites:
-- **SEG-Y Binary Reader**: Custom parsing of big-endian IBM float headers from SEG-Y seismogram trace outputs.
-- **Feature Extraction**: Calculates maximum charge, number of blast holes, trace directions (`trid`), and receptor coordinates.
-- **Prediction Model**: Trains a **Gradient Boosting Regressor** for continuous PPV prediction and a **Random Forest Classifier** for threshold-based hazard alert triggers.
-
-### 4. Ultrasonic Sensors (`ultrasonic_sensors/`)
-Classifies robot navigation decisions based on 2, 4, or 24-sensor configurations:
-- **Decision Classification**: Trains multiple ML algorithms (Logistic Regression, Decision Trees, Random Forests, Gradient Boosting, MLP) to predict robot commands (`Move-Forward`, `Slight-Right-Turn`, `Sharp-Right-Turn`, `Slight-Left-Turn`).
 
 ---
 
