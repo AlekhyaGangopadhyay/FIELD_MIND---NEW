@@ -32,12 +32,17 @@ FIELD_MIND (Project)/
 │   │   ├── evaluate.py           # Anomaly detector & RF classifier evaluator
 │   │   └── run_pipeline.py       # End-to-end execution orchestrator
 │   └── model_metrics_table.md    # Performance report for environmental models
-└── vibration/                    # Seismic blast vibration analysis
-    ├── data/                     # SEG-Y raw trace records and BLASTS.txt coordinates
-    ├── models/                   # Best classifier & regressor joblib files
-    ├── train_models.py           # Classifier & regressor pipelines (vibration hazards & PPV)
-    ├── vibration_data_prep.py    # Custom binary SEG-Y reader & feature extractor
-    └── model_metrics_table.md    # Blast vibration prediction evaluation report
+├── vibration/                    # Seismic blast vibration analysis
+│   ├── data/                     # SEG-Y raw trace records and BLASTS.txt coordinates
+│   ├── models/                   # Best classifier & regressor joblib files
+│   ├── train_models.py           # Classifier & regressor pipelines (vibration hazards & PPV)
+│   ├── vibration_data_prep.py    # Custom binary SEG-Y reader & feature extractor
+│   └── model_metrics_table.md    # Blast vibration prediction evaluation report
+└── ultrasonic_sensors/           # Robot navigation decision classification
+    ├── data/                     # CSV datasets (2, 4, 24 sensor readings)
+    ├── models/                   # Serialized classifier models
+    ├── train_models.py           # Training pipeline for multiple classifiers
+    └── model_metrics_table.md    # Classification performance report
 ```
 
 ---
@@ -61,6 +66,10 @@ Predicts blast-induced seismic vibration levels (Peak Particle Velocity - PPV) n
 - **SEG-Y Binary Reader**: Custom parsing of big-endian IBM float headers from SEG-Y seismogram trace outputs.
 - **Feature Extraction**: Calculates maximum charge, number of blast holes, trace directions (`trid`), and receptor coordinates.
 - **Prediction Model**: Trains a **Gradient Boosting Regressor** for continuous PPV prediction and a **Random Forest Classifier** for threshold-based hazard alert triggers.
+
+### 4. Ultrasonic Sensors (`ultrasonic_sensors/`)
+Classifies robot navigation decisions based on 2, 4, or 24-sensor configurations:
+- **Decision Classification**: Trains multiple ML algorithms (Logistic Regression, Decision Trees, Random Forests, Gradient Boosting, MLP) to predict robot commands (`Move-Forward`, `Slight-Right-Turn`, `Sharp-Right-Turn`, `Slight-Left-Turn`).
 
 ---
 
@@ -96,6 +105,12 @@ python vibration/vibration_data_prep.py
 
 # Train vibration prediction models
 python vibration/train_models.py
+```
+
+### Running Ultrasonic Sensor Analysis
+```bash
+# Train ultrasonic sensor classification models
+python ultrasonic_sensors/train_models.py
 ```
 
 ---
