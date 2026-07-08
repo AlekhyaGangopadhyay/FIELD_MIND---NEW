@@ -78,7 +78,12 @@ def main():
         best_model = None
         best_acc = -1.0
         best_model_name = ""
-        
+        # Determine features taken description
+        if num_features == 24:
+            features_desc = "US1 to US24"
+        else:
+            features_desc = ", ".join(X.columns.tolist())
+            
         for name, clf in classifiers:
             print(f"Training {name}...")
             clf.fit(X_train, y_train)
@@ -93,12 +98,14 @@ def main():
                 best_model_name = name
                 
             results.append({
-                'dataset': f"{num_features}-sensor configuration",
                 'model_name': name,
                 'algo_used': clf.__class__.__name__ if not hasattr(clf, 'steps') else clf.steps[-1][1].__class__.__name__,
+                'dataset_used': filename,
                 'train_acc': f"{train_acc * 100:.2f}%",
+                'features_taken': features_desc,
                 'test_acc': f"{test_acc * 100:.2f}%",
-                'is_best': False # Will set after finding the best for each dataset
+                'is_best': False,
+                'dataset_key': num_features  # For updating is_best flag correctly
             })
             
         # Save the best model for this dataset
@@ -117,26 +124,20 @@ def main():
         
         # Update results list to mark the best model
         for r in results:
-            if r['dataset'] == f"{num_features}-sensor configuration" and r['model_name'] == best_model_name:
+            if r.get('dataset_key') == num_features and r['model_name'] == best_model_name:
                 r['is_best'] = True
                 
     # Generate model_metrics_table.md
     print("\nWriting metrics table to markdown file...")
     md_content = []
     md_content.append("# Robot Navigation Ultrasonic Sensor Classification Metrics\n")
-    md_content.append("This document summarizes the performance of various machine learning models trained on the SCITOS-G5 robot navigation dataset using 2, 4, and 24 ultrasonic sensor configurations.\n")
-    md_content.append("The target variable is the robot navigation decision Class: `Move-Forward`, `Slight-Right-Turn`, `Sharp-Right-Turn`, or `Slight-Left-Turn`.\n")
+    md_content.append("This document summarizes the performance of various machine learning models trained on the SCITOS-G5 robot navigation dataset.\n")
+    md_content.append("| Model Name | Algo Used | Dataset Used | Training Accuracy | Features Taken | Testing Accuracy | Remarks |")
+    md_content.append("| :--- | :--- | :--- | :--- | :--- | :--- | :--- |")
     
-    current_dataset = None
     for r in results:
-        if r['dataset'] != current_dataset:
-            current_dataset = r['dataset']
-            md_content.append(f"\n## {current_dataset}")
-            md_content.append("| Model Name | Algorithm Used | Train Accuracy | Test Accuracy | Status |")
-            md_content.append("| :--- | :--- | :--- | :--- | :--- |")
-            
-        status = "⭐⭐ **Best (Saved)**" if r['is_best'] else "Not Saved"
-        md_content.append(f"| {r['model_name']} | {r['algo_used']} | {r['train_acc']} | {r['test_acc']} | {status} |")
+        remarks = "⭐⭐ **Best (Saved)**" if r['is_best'] else "Not Saved"
+        md_content.append(f"| {r['model_name']} | {r['algo_used']} | {r['dataset_used']} | {r['train_acc']} | {r['features_taken']} | {r['test_acc']} | {remarks} |")
         
     with open(metrics_table_path, "w", encoding="utf-8") as f:
         f.write("\n".join(md_content))

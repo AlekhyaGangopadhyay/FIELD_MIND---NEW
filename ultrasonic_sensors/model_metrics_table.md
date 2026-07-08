@@ -1,33 +1,21 @@
 # Robot Navigation Ultrasonic Sensor Classification Metrics
 
-This document summarizes the performance of various machine learning models trained on the SCITOS-G5 robot navigation dataset using 2, 4, and 24 ultrasonic sensor configurations.
+This document summarizes the performance of various machine learning models trained on the SCITOS-G5 robot navigation dataset.
 
-The target variable is the robot navigation decision Class: `Move-Forward`, `Slight-Right-Turn`, `Sharp-Right-Turn`, or `Slight-Left-Turn`.
-
-
-## 2-sensor configuration
-| Model Name | Algorithm Used | Train Accuracy | Test Accuracy | Status |
-| :--- | :--- | :--- | :--- | :--- |
-| Logistic Regression (Baseline) | LogisticRegression | 94.13% | 94.32% | Not Saved |
-| Decision Tree Classifier | DecisionTreeClassifier | 100.00% | 100.00% | ⭐⭐ **Best (Saved)** |
-| Random Forest Classifier | RandomForestClassifier | 100.00% | 100.00% | Not Saved |
-| Gradient Boosting Classifier | GradientBoostingClassifier | 100.00% | 100.00% | Not Saved |
-| Multi-Layer Perceptron (MLP) Classifier | MLPClassifier | 99.56% | 99.54% | Not Saved |
-
-## 4-sensor configuration
-| Model Name | Algorithm Used | Train Accuracy | Test Accuracy | Status |
-| :--- | :--- | :--- | :--- | :--- |
-| Logistic Regression (Baseline) | LogisticRegression | 94.20% | 94.60% | Not Saved |
-| Decision Tree Classifier | DecisionTreeClassifier | 100.00% | 100.00% | ⭐⭐ **Best (Saved)** |
-| Random Forest Classifier | RandomForestClassifier | 100.00% | 99.82% | Not Saved |
-| Gradient Boosting Classifier | GradientBoostingClassifier | 100.00% | 100.00% | Not Saved |
-| Multi-Layer Perceptron (MLP) Classifier | MLPClassifier | 99.50% | 99.54% | Not Saved |
-
-## 24-sensor configuration
-| Model Name | Algorithm Used | Train Accuracy | Test Accuracy | Status |
-| :--- | :--- | :--- | :--- | :--- |
-| Logistic Regression (Baseline) | LogisticRegression | 71.29% | 69.23% | Not Saved |
-| Decision Tree Classifier | DecisionTreeClassifier | 100.00% | 99.27% | Not Saved |
-| Random Forest Classifier | RandomForestClassifier | 100.00% | 99.36% | Not Saved |
-| Gradient Boosting Classifier | GradientBoostingClassifier | 100.00% | 99.54% | ⭐⭐ **Best (Saved)** |
-| Multi-Layer Perceptron (MLP) Classifier | MLPClassifier | 99.50% | 92.22% | Not Saved |
+| Model Name | Algo Used | Dataset Used | Training Accuracy | Features Taken | Testing Accuracy | Remarks |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Logistic Regression (Baseline) | LogisticRegression | sensor_readings_2.csv | 94.13% | SD_front, SD_left | 94.32% | Not Saved |
+| Decision Tree Classifier | DecisionTreeClassifier | sensor_readings_2.csv | 100.00% | SD_front, SD_left | 100.00% | ⭐⭐ **Best (Saved)** |
+| Random Forest Classifier | RandomForestClassifier | sensor_readings_2.csv | 100.00% | SD_front, SD_left | 100.00% | Not Saved |
+| Gradient Boosting Classifier | GradientBoostingClassifier | sensor_readings_2.csv | 100.00% | SD_front, SD_left | 100.00% | Not Saved |
+| Multi-Layer Perceptron (MLP) Classifier | MLPClassifier | sensor_readings_2.csv | 99.56% | SD_front, SD_left | 99.54% | Not Saved |
+| Logistic Regression (Baseline) | LogisticRegression | sensor_readings_4.csv | 94.20% | SD_front, SD_left, SD_right, SD_back | 94.60% | Not Saved |
+| Decision Tree Classifier | DecisionTreeClassifier | sensor_readings_4.csv | 100.00% | SD_front, SD_left, SD_right, SD_back | 100.00% | ⭐⭐ **Best (Saved)** |
+| Random Forest Classifier | RandomForestClassifier | sensor_readings_4.csv | 100.00% | SD_front, SD_left, SD_right, SD_back | 99.82% | Not Saved |
+| Gradient Boosting Classifier | GradientBoostingClassifier | sensor_readings_4.csv | 100.00% | SD_front, SD_left, SD_right, SD_back | 100.00% | Not Saved |
+| Multi-Layer Perceptron (MLP) Classifier | MLPClassifier | sensor_readings_4.csv | 99.50% | SD_front, SD_left, SD_right, SD_back | 99.54% | Not Saved |
+| Logistic Regression (Baseline) | LogisticRegression | sensor_readings_24.csv | 71.29% | US1 to US24 | 69.23% | Not Saved |
+| Decision Tree Classifier | DecisionTreeClassifier | sensor_readings_24.csv | 100.00% | US1 to US24 | 99.27% | Not Saved |
+| Random Forest Classifier | RandomForestClassifier | sensor_readings_24.csv | 100.00% | US1 to US24 | 99.36% | Not Saved |
+| Gradient Boosting Classifier | GradientBoostingClassifier | sensor_readings_24.csv | 100.00% | US1 to US24 | 99.54% | ⭐⭐ **Best (Saved)** |
+| Multi-Layer Perceptron (MLP) Classifier | MLPClassifier | sensor_readings_24.csv | 99.50% | US1 to US24 | 92.22% | Not Saved |
