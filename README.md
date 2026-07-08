@@ -33,6 +33,11 @@ Aligns heterogeneous underground sensor streams into a shared 4,096-dimensional 
 - **Multi-Modal PyTorch Encoders**: Custom network projections featuring LayerNorm and L2 normalization for Gas, Env, Vibration, and Ultrasonic features.
 - **Temporal Alignment**: Resamples and groups asynchronous sensor updates into aligned 1-second epochs.
 
+### 6. Anomaly-Triggered Reasoning (ATR) Activation (`atr_activation/`)
+Coordinates continuous background monitoring and active deep reasoning triggers:
+- **Unified Model Wrappers**: Loads all pre-trained `scikit-learn` classifiers across Gas, Env, Vibration, and Navigation domains.
+- **State Transition Coordinator**: Switches device state dynamically between low-power continuous monitoring (`IDLE`) and active projection + reasoning (`ACTIVE_REASONING`) to conserve RAM.
+
 ---
 
 ## Directory Structure
@@ -74,11 +79,16 @@ FIELD_MIND (Project)/
 │   ├── models/                   # Serialized classifier models
 │   ├── train_models.py           # Training pipeline for multiple classifiers
 │   └── model_metrics_table.md    # Classification performance report
-└── scisense_protocol/            # Unified multi-modal alignment layer
-    ├── encoders.py               # PyTorch mapping encoders (Gas, Env, Vibration, Ultrasonic)
-    ├── alignment.py              # Temporal stream synchronization logic
-    ├── demo_alignment.py         # End-to-end alignment simulation runner
-    └── README.md                 # Mathematical projection & setup documentation
+├── scisense_protocol/            # Unified multi-modal alignment layer
+│   ├── encoders.py               # PyTorch mapping encoders (Gas, Env, Vibration, Ultrasonic)
+│   ├── alignment.py              # Temporal stream synchronization logic
+│   ├── demo_alignment.py         # End-to-end alignment simulation runner
+│   └── README.md                 # Mathematical projection & setup documentation
+└── atr_activation/               # Anomaly-Triggered Reasoning activation layer
+    ├── detector_wrappers.py      # Unified model wrappers loading all pre-trained joblibs
+    ├── orchestrator.py           # State transition coordinator (IDLE <-> ACTIVE)
+    ├── demo_atr.py               # End-to-end streaming trigger simulation runner
+    └── README.md                 # System state and loaded models documentation
 ```
 
 ---
@@ -127,6 +137,12 @@ python ultrasonic_sensors/train_models.py
 ```bash
 # Run the simulated multi-modal sensor alignment demo
 python scisense_protocol/demo_alignment.py
+```
+
+### Running ATR Activation Demo
+```bash
+# Run the continuous streaming monitor and trigger simulator
+python atr_activation/demo_atr.py
 ```
 
 ---
