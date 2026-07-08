@@ -1,1 +1,3 @@
 /wall+following+robot+navigation+data/
+**/__pycache__/
+*.pyc

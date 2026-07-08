@@ -28,6 +28,11 @@ Predicts blast-induced seismic vibration levels (Peak Particle Velocity - PPV) n
 Classifies robot navigation decisions based on 2, 4, or 24-sensor configurations:
 - **Decision Classification**: Trains multiple ML algorithms (Logistic Regression, Decision Trees, Random Forests, Gradient Boosting, MLP) to predict robot commands (`Move-Forward`, `Slight-Right-Turn`, `Sharp-Right-Turn`, `Slight-Left-Turn`).
 
+### 5. SciSense Protocol (`scisense_protocol/`)
+Aligns heterogeneous underground sensor streams into a shared 4,096-dimensional embedding space:
+- **Multi-Modal PyTorch Encoders**: Custom network projections featuring LayerNorm and L2 normalization for Gas, Env, Vibration, and Ultrasonic features.
+- **Temporal Alignment**: Resamples and groups asynchronous sensor updates into aligned 1-second epochs.
+
 ---
 
 ## Directory Structure
@@ -64,11 +69,16 @@ FIELD_MIND (Project)/
 │   ├── train_models.py           # Classifier & regressor pipelines (vibration hazards & PPV)
 │   ├── vibration_data_prep.py    # Custom binary SEG-Y reader & feature extractor
 │   └── model_metrics_table.md    # Blast vibration prediction evaluation report
-└── ultrasonic_sensors/           # Robot navigation decision classification
-    ├── data/                     # CSV datasets (2, 4, 24 sensor readings)
-    ├── models/                   # Serialized classifier models
-    ├── train_models.py           # Training pipeline for multiple classifiers
-    └── model_metrics_table.md    # Classification performance report
+├── ultrasonic_sensors/           # Robot navigation decision classification
+│   ├── data/                     # CSV datasets (2, 4, 24 sensor readings)
+│   ├── models/                   # Serialized classifier models
+│   ├── train_models.py           # Training pipeline for multiple classifiers
+│   └── model_metrics_table.md    # Classification performance report
+└── scisense_protocol/            # Unified multi-modal alignment layer
+    ├── encoders.py               # PyTorch mapping encoders (Gas, Env, Vibration, Ultrasonic)
+    ├── alignment.py              # Temporal stream synchronization logic
+    ├── demo_alignment.py         # End-to-end alignment simulation runner
+    └── README.md                 # Mathematical projection & setup documentation
 ```
 
 ---
@@ -111,6 +121,12 @@ python vibration/train_models.py
 ```bash
 # Train ultrasonic sensor classification models
 python ultrasonic_sensors/train_models.py
+```
+
+### Running SciSense Protocol Demo
+```bash
+# Run the simulated multi-modal sensor alignment demo
+python scisense_protocol/demo_alignment.py
 ```
 
 ---
