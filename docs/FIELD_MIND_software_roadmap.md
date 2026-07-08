@@ -16,7 +16,7 @@ graph TD
 
     subgraph Layer 2: Memory & Monitoring
         L2A[ATR Tier 1 Anomaly Detectors] -->|Status: Done| L2B[ATR Tier 2 Activation logic] -->|Status: Done| Out2[LLM Trigger]
-        L2C[Expedition Knowledge Graph] -->|Status: Pending| L2D[FAISS Vector Store RAG] -->|Status: Pending| Out3[Knowledge Base]
+        L2C[Expedition Knowledge Graph] -->|Status: Done| L2D[FAISS Vector Store RAG] -->|Status: Pending| Out3[Knowledge Base]
     end
 
     subgraph Layer 3: Reasoning Core
@@ -70,12 +70,19 @@ graph TD
 ---
 
 ### 4. Expedition Knowledge Graph (EKG)
-* **Status**: 🔴 **To Be Done**
-* **Description**: Persistent site memory mapping spatial and temporal coordinates of mine operations (tunnels, blasts, machinery, anomalies) in Neo4j.
-* **Next Steps**:
-  * Set up local Neo4j database configurations.
-  * Define the property graph schema (Nodes: `TunnelSegment`, `SensorNode`, `VibrationAnomaly`, `BlastEvent`, `Equipment`).
-  * Implement Python connector scripts to dynamically update graph nodes as new sensor telemetry arrives.
+* **Status**: 🟢 **Completed**
+* **Description**: Persistent site memory mapping spatial and temporal coordinates of mine operations (tunnels, blasts, machinery, anomalies) using a NetworkX property graph with JSON persistence.
+* **Implemented Features**:
+  * **Property Graph Schema**: 7 typed node classes (TunnelSegment, SensorNode, BlastEvent, VibrationEvent, GasAnomaly, EnvironmentalReading, Equipment) with 5 typed edge relationships.
+    * Scripts: [schema.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/expedition_knowledge_graph/schema.py)
+  * **Graph Store Engine**: NetworkX-backed directed graph with label indexing, BFS traversal, temporal window queries, and full JSON serialisation.
+    * Scripts: [graph_store.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/expedition_knowledge_graph/graph_store.py)
+  * **Data Ingestion Pipelines**: Populates graph from blast/vibration CSV (62 blasts, 310 vibration events), gas anomaly CSV (547 events), and environmental telemetry CSV (200 readings), plus sensor and equipment nodes.
+    * Scripts: [ingest.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/expedition_knowledge_graph/ingest.py)
+  * **Query API**: High-level functions for risk profiling, gas trend analysis, blast history, event correlation, equipment status, and sensor inventory.
+    * Scripts: [query_api.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/expedition_knowledge_graph/query_api.py)
+  * **Demo Runner**: End-to-end ingestion, query, and persistence verification.
+    * Scripts: [demo_ekg.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/expedition_knowledge_graph/demo_ekg.py)
 
 ---
 

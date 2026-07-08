@@ -38,6 +38,13 @@ Coordinates continuous background monitoring and active deep reasoning triggers:
 - **Unified Model Wrappers**: Loads all pre-trained `scikit-learn` classifiers across Gas, Env, Vibration, and Navigation domains.
 - **State Transition Coordinator**: Switches device state dynamically between low-power continuous monitoring (`IDLE`) and active projection + reasoning (`ACTIVE_REASONING`) to conserve RAM.
 
+### 7. Expedition Knowledge Graph (EKG) (`expedition_knowledge_graph/`)
+Persistent mine memory mapping spatial and temporal coordinates of all operations:
+- **Property Graph Schema**: 7 node types (TunnelSegment, SensorNode, BlastEvent, VibrationEvent, GasAnomaly, EnvironmentalReading, Equipment) with typed relationships.
+- **Data Ingestion**: Populates the graph from workspace blast, gas, and environmental CSV datasets with auto-clustered tunnel segments.
+- **Query API**: High-level functions for risk profiling, gas trend analysis, blast history, and causal event correlation.
+- **JSON Persistence**: Full graph save/load for offline operation across sessions.
+
 ---
 
 ## Directory Structure
@@ -84,11 +91,19 @@ FIELD_MIND (Project)/
 │   ├── alignment.py              # Temporal stream synchronization logic
 │   ├── demo_alignment.py         # End-to-end alignment simulation runner
 │   └── README.md                 # Mathematical projection & setup documentation
-└── atr_activation/               # Anomaly-Triggered Reasoning activation layer
-    ├── detector_wrappers.py      # Unified model wrappers loading all pre-trained joblibs
-    ├── orchestrator.py           # State transition coordinator (IDLE <-> ACTIVE)
-    ├── demo_atr.py               # End-to-end streaming trigger simulation runner
-    └── README.md                 # System state and loaded models documentation
+├── atr_activation/               # Anomaly-Triggered Reasoning activation layer
+│   ├── detector_wrappers.py      # Unified model wrappers loading all pre-trained joblibs
+│   ├── orchestrator.py           # State transition coordinator (IDLE <-> ACTIVE)
+│   ├── demo_atr.py               # End-to-end streaming trigger simulation runner
+│   └── README.md                 # System state and loaded models documentation
+└── expedition_knowledge_graph/   # Persistent mine knowledge graph (Layer 2B)
+    ├── schema.py                 # Property graph node/edge type definitions
+    ├── graph_store.py            # NetworkX graph engine with JSON persistence
+    ├── ingest.py                 # CSV data ingestion pipelines
+    ├── query_api.py              # High-level query functions for reasoning agent
+    ├── demo_ekg.py               # End-to-end ingestion and query demo
+    ├── data/mine_graph.json      # Serialised graph (created after running demo)
+    └── README.md                 # Schema, query, and design documentation
 ```
 
 ---
@@ -143,6 +158,12 @@ python scisense_protocol/demo_alignment.py
 ```bash
 # Run the continuous streaming monitor and trigger simulator
 python atr_activation/demo_atr.py
+```
+
+### Running Expedition Knowledge Graph (EKG) Demo
+```bash
+# Ingest workspace datasets, run queries, and test persistence
+python -X utf8 expedition_knowledge_graph/demo_ekg.py
 ```
 
 ---
