@@ -9,31 +9,31 @@ The **Expedition Knowledge Graph (EKG)** is FIELD-MIND's persistent mine memory.
 ```
                   [ Workspace CSV Datasets ]
                            |
-              +------------+------------+
-              |            |            |
-        vibration/    gas_sensors/   temperature_humidity/
-              |            |            |
-              v            v            v
-    +------------------------------------------+
-    |     Ingestion Pipelines (ingest.py)       |
-    |  blast_events | gas_anomalies | env_data  |
-    +------------------------------------------+
-              |
-              v
-    +------------------------------------------+
-    |     MineKnowledgeGraph (graph_store.py)   |
-    |  NetworkX DiGraph + Label Index           |
-    |  JSON Persistence (mine_graph.json)       |
-    +------------------------------------------+
-              |
-              v
-    +------------------------------------------+
-    |     Query API (query_api.py)              |
-    |  risk_profile | gas_trend | correlate     |
-    +------------------------------------------+
-              |
-              v
-    [ Layer 3: Scientific Reasoning Core ]
+       +------------+------+-----+-------------------+
+       |            |            |                   |
+ vibration/    gas_sensors/   temp_humidity/   ultrasonic_sensors/
+       |            |            |                   |
+       v            v            v                   v
+ +---------------------------------------------------------------+
+ |               Ingestion Pipelines (ingest.py)                 |
+ | blast_events | gas_anomalies | env_data | navigation_events  |
+ +---------------------------------------------------------------+
+           |
+           v
+ +------------------------------------------+
+ |     MineKnowledgeGraph (graph_store.py)   |
+ |  NetworkX DiGraph + Label Index           |
+ |  JSON Persistence (mine_graph.json)       |
+ +------------------------------------------+
+           |
+           v
+ +------------------------------------------+
+ |     Query API (query_api.py)              |
+ |  risk_profile | gas_trend | correlate     |
+ +------------------------------------------+
+           |
+           v
+ [ Layer 3: Scientific Reasoning Core ]
 ```
 
 ---
@@ -50,6 +50,7 @@ The **Expedition Knowledge Graph (EKG)** is FIELD-MIND's persistent mine memory.
 | `VibrationEvent` | ppv, scaled_distance_usbm, hazard_flag, blast_id | vibration_features.csv |
 | `GasAnomaly` | gas_readings (dict), hazard_alert, blast_correlated | FIELDMIND_physics_dataset.csv |
 | `EnvironmentalReading` | temp, humidity, anomaly_flag | iot_telemetry_clean.csv |
+| `NavigationEvent` | command, sensor_readings (dict), min_distance, collision_risk | sensor_readings_24.csv |
 | `Equipment` | equipment_type, name, status | Synthetic mine equipment |
 
 ### Edge / Relationship Types
@@ -61,6 +62,8 @@ The **Expedition Knowledge Graph (EKG)** is FIELD-MIND's persistent mine memory.
 | `CAUSED_BY` | VibrationEvent -> BlastEvent | Causal link |
 | `CORRELATED_WITH` | GasAnomaly -> BlastEvent | Temporal correlation |
 | `OPERATES_IN` | Equipment -> TunnelSegment | Equipment location |
+| `RECORDED_BY` | Event -> SensorNode | Event source sensor |
+| `PRECEDED_BY` | Event -> Event | Temporal sequence of events |
 
 ---
 
@@ -68,13 +71,14 @@ The **Expedition Knowledge Graph (EKG)** is FIELD-MIND's persistent mine memory.
 
 | Metric | Count |
 |--------|-------|
-| Total Nodes | 1,135 |
-| Total Edges | 1,444 |
-| TunnelSegments | 4 |
+| Total Nodes | 1,386 |
+| Total Edges | 1,694 |
+| TunnelSegments | 5 |
 | BlastEvents | 62 |
 | VibrationEvents | 310 |
 | GasAnomalies | 547 |
 | EnvironmentalReadings | 200 |
+| NavigationEvents | 250 |
 | SensorNodes | 8 |
 | Equipment | 4 |
 

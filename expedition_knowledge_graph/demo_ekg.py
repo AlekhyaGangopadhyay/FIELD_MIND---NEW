@@ -71,15 +71,15 @@ def main():
             print(f"  [{atype.upper():>5}] Hazard at {a.get('timestamp_str', '?')} | "
                   f"Segment: {a.get('segment_id', '?')}")
         else:
-            print(f"  [{atype.upper():>5}] Temp: {a.get('temp', '?')}°C | Humidity: {a.get('humidity', '?')}% | "
+            print(f"  [{atype.upper():>5}] Temp: {a.get('temp', '?')} C | Humidity: {a.get('humidity', '?')}% | "
                   f"Segment: {a.get('segment_id', '?')}")
 
     # 2d. Gas trend (Methane)
     trend = get_gas_trend(graph, gas_column="MQ4_CH4_ppm", max_points=10)
     print(f"\n--- Methane (CH4) Trend (first 10 readings) ---")
     for t in trend:
-        marker = " ⚠️ HAZARD" if t["hazard_alert"] == 1 else ""
-        print(f"  {t['timestamp_str']:<22} | CH₄: {t['value']:>8.2f} ppm{marker}")
+        marker = " [HAZARD]" if t["hazard_alert"] == 1 else ""
+        print(f"  {t['timestamp_str']:<22} | CH4: {t['value']:>8.2f} ppm{marker}")
 
     # 2e. Blast history (first segment with blasts)
     blast_segments = [s for s in segments if "gas" not in s["node_id"] and "env" not in s["node_id"]]
@@ -98,7 +98,7 @@ def main():
         related = correlate_events(graph, target_vib)
         print(f"\n--- Event Correlation for {target_vib} ---")
         for r in related[:5]:
-            print(f"  → {r.get('label', '?')} [{r.get('causal_relationship', '?')}] | "
+            print(f"  -> {r.get('label', '?')} [{r.get('causal_relationship', '?')}] | "
                   f"Node: {r['node_id']}")
 
     # 2g. Equipment status
@@ -144,11 +144,11 @@ def main():
     s2 = graph2.summary()
     assert s1["total_nodes"] == s2["total_nodes"], "Node count mismatch after reload!"
     assert s1["total_edges"] == s2["total_edges"], "Edge count mismatch after reload!"
-    print(f"  ✅ Persistence verified: {s2['total_nodes']} nodes, {s2['total_edges']} edges match after reload.")
+    print(f"  [OK] Persistence verified: {s2['total_nodes']} nodes, {s2['total_edges']} edges match after reload.")
 
     # Quick query on reloaded graph
     segments_reloaded = graph2.query_by_label("TunnelSegment")
-    print(f"  ✅ Query on reloaded graph: {len(segments_reloaded)} TunnelSegment nodes found.")
+    print(f"  [OK] Query on reloaded graph: {len(segments_reloaded)} TunnelSegment nodes found.")
 
     print(f"\n{'=' * 80}")
     print("EKG Demo completed successfully!")
