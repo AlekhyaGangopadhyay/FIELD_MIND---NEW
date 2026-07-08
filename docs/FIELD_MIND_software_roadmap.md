@@ -15,7 +15,7 @@ graph TD
     end
 
     subgraph Layer 2: Memory & Monitoring
-        L2A[ATR Tier 1 Anomaly Detectors] -->|Status: Done| L2B[ATR Tier 2 Activation logic] -->|Status: Pending| Out2[LLM Trigger]
+        L2A[ATR Tier 1 Anomaly Detectors] -->|Status: Done| L2B[ATR Tier 2 Activation logic] -->|Status: Done| Out2[LLM Trigger]
         L2C[Expedition Knowledge Graph] -->|Status: Pending| L2D[FAISS Vector Store RAG] -->|Status: Pending| Out3[Knowledge Base]
     end
 
@@ -57,11 +57,15 @@ graph TD
 ---
 
 ### 3. Anomaly-Triggered Reasoning (ATR) - Tier 2 Activation
-* **Status**: 🔴 **To Be Done**
-* **Description**: Implementing the power-aware activation gate. It runs lightweight anomaly detectors (Isolation Forests, LSTM autoencoders) continuously at low power and boots/triggers the larger 3B model only when anomaly thresholds are breached.
-* **Next Steps**:
-  * Design an ATR orchestrator script that listens to streaming inputs and evaluates anomaly confidence scores from Tier 1.
-  * Write the model swapping / hot-loading logic to keep the LLM compressed or suspended in memory until triggered, saving RAM on the Jetson Nano.
+* **Status**: 🟢 **Completed**
+* **Description**: Implementing the power-aware activation gate. It runs lightweight anomaly detectors (Isolation Forests, Random Forests) continuously at low power and triggers the SciSense embedding alignment and larger 3B model only when anomaly thresholds are breached.
+* **Implemented Features**:
+  * **Unified Model Monitors**: Loads and runs inference across all 13 pre-trained scikit-learn models from the gas, environmental, vibration, and navigation domains with robust fallback mappings.
+    * Scripts: [detector_wrappers.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/atr_activation/detector_wrappers.py)
+  * **ATR Orchestrator**: Manages power states (`IDLE` vs. `ACTIVE_REASONING`) and triggers the SciSense Protocol embedding projections on temporal windows when a hazard alert occurs.
+    * Scripts: [orchestrator.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/atr_activation/orchestrator.py)
+  * **Ingestion Simulator**: Demonstrates end-to-end telemetry ingestion using real dataset slices to trigger transitions and recover idle memory states.
+    * Scripts: [demo_atr.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/atr_activation/demo_atr.py)
 
 ---
 
