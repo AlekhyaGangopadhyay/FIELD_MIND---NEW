@@ -1,3 +1,4 @@
 *.sgy filter=lfs diff=lfs merge=lfs -text
 *.joblib filter=lfs diff=lfs merge=lfs -text
 temperature_humidity/data/data_clean/iot_telemetry_clean.csv filter=lfs diff=lfs merge=lfs -text
+gas_sensors/data/MQ3/*.txt filter=lfs diff=lfs merge=lfs -text
