@@ -1,0 +1,487 @@
+{
+    "smoke_fire_alarm": {
+        "task_type": "binary_classification",
+        "model_path": "c:\\Users\\Student\\Desktop\\FIELD_MIND (Project)\\gas_sensors\\models\\smoke_fire_alarm_model.joblib",
+        "features": [
+            "Temperature[C]",
+            "Humidity[%]",
+            "TVOC[ppb]",
+            "eCO2[ppm]",
+            "Raw H2",
+            "Raw Ethanol",
+            "Pressure[hPa]",
+            "PM1.0",
+            "PM2.5",
+            "NC0.5",
+            "NC1.0",
+            "NC2.5",
+            "Temperature[C]_diff_5",
+            "Temperature[C]_roll_std",
+            "Humidity[%]_diff_5",
+            "Humidity[%]_roll_std",
+            "TVOC[ppb]_diff_5",
+            "TVOC[ppb]_roll_std",
+            "eCO2[ppm]_diff_5",
+            "eCO2[ppm]_roll_std",
+            "Raw H2_diff_5",
+            "Raw H2_roll_std",
+            "Raw Ethanol_diff_5",
+            "Raw Ethanol_roll_std",
+            "Pressure[hPa]_diff_5",
+            "Pressure[hPa]_roll_std",
+            "PM1.0_diff_5",
+            "PM1.0_roll_std",
+            "PM2.5_diff_5",
+            "PM2.5_roll_std",
+            "NC0.5_diff_5",
+            "NC0.5_roll_std",
+            "NC1.0_diff_5",
+            "NC1.0_roll_std",
+            "NC2.5_diff_5",
+            "NC2.5_roll_std"
+        ],
+        "targets": [
+            "Fire Alarm"
+        ],
+        "train_shape": [
+            37636,
+            36
+        ],
+        "test_shape": [
+            24994,
+            36
+        ],
+        "metrics": {
+            "accuracy": 0.8736496759222213,
+            "precision": 1.0,
+            "recall": 0.8552438577191053,
+            "f1_score": 0.9219746009784059
+        },
+        "remarks": "Improved via 5-period temporal differencing and rolling variance. Test accuracy on unseen Session 2 boosted to 87.36%.",
+        "training_time_sec": 0.79,
+        "trained_at": "2026-06-25T16:50:42.970235"
+    },
+    "mq4_gas_classification": {
+        "task_type": "multiclass_classification",
+        "model_path": "c:\\Users\\Student\\Desktop\\FIELD_MIND (Project)\\gas_sensors\\models\\mq4_gas_classifier.joblib",
+        "features": [
+            "feature_1",
+            "feature_2",
+            "feature_3",
+            "feature_4",
+            "feature_5",
+            "feature_6",
+            "feature_7",
+            "feature_8",
+            "feature_9",
+            "feature_10",
+            "feature_11",
+            "feature_12",
+            "feature_13",
+            "feature_14",
+            "feature_15",
+            "feature_16",
+            "feature_17",
+            "feature_18",
+            "feature_19",
+            "feature_20",
+            "feature_21",
+            "feature_22",
+            "feature_23",
+            "feature_24",
+            "feature_25",
+            "feature_26",
+            "feature_27",
+            "feature_28",
+            "feature_29",
+            "feature_30",
+            "feature_31",
+            "feature_32",
+            "feature_33",
+            "feature_34",
+            "feature_35",
+            "feature_36",
+            "feature_37",
+            "feature_38",
+            "feature_39",
+            "feature_40",
+            "feature_41",
+            "feature_42",
+            "feature_43",
+            "feature_44",
+            "feature_45",
+            "feature_46",
+            "feature_47",
+            "feature_48",
+            "feature_49",
+            "feature_50",
+            "feature_51",
+            "feature_52",
+            "feature_53",
+            "feature_54",
+            "feature_55",
+            "feature_56",
+            "feature_57",
+            "feature_58",
+            "feature_59",
+            "feature_60",
+            "feature_61",
+            "feature_62",
+            "feature_63",
+            "feature_64",
+            "feature_65",
+            "feature_66",
+            "feature_67",
+            "feature_68",
+            "feature_69",
+            "feature_70",
+            "feature_71",
+            "feature_72",
+            "feature_73",
+            "feature_74",
+            "feature_75",
+            "feature_76",
+            "feature_77",
+            "feature_78",
+            "feature_79",
+            "feature_80",
+            "feature_81",
+            "feature_82",
+            "feature_83",
+            "feature_84",
+            "feature_85",
+            "feature_86",
+            "feature_87",
+            "feature_88",
+            "feature_89",
+            "feature_90",
+            "feature_91",
+            "feature_92",
+            "feature_93",
+            "feature_94",
+            "feature_95",
+            "feature_96",
+            "feature_97",
+            "feature_98",
+            "feature_99",
+            "feature_100",
+            "feature_101",
+            "feature_102",
+            "feature_103",
+            "feature_104",
+            "feature_105",
+            "feature_106",
+            "feature_107",
+            "feature_108",
+            "feature_109",
+            "feature_110",
+            "feature_111",
+            "feature_112",
+            "feature_113",
+            "feature_114",
+            "feature_115",
+            "feature_116",
+            "feature_117",
+            "feature_118",
+            "feature_119",
+            "feature_120",
+            "feature_121",
+            "feature_122",
+            "feature_123",
+            "feature_124",
+            "feature_125",
+            "feature_126",
+            "feature_127",
+            "feature_128"
+        ],
+        "targets": [
+            "label"
+        ],
+        "train_shape": [
+            9840,
+            128
+        ],
+        "test_shape": [
+            4070,
+            128
+        ],
+        "metrics": {
+            "accuracy": 0.7800982800982801,
+            "precision_macro": 0.8035648205415497,
+            "recall_macro": 0.7795490764415778,
+            "f1_score_macro": 0.7844725700871668,
+            "best_cv_params": {
+                "svm10_C": 10.0,
+                "svm20_C": 20.0,
+                "svm_lin_C": 1.0,
+                "mlp_alpha": 0.01,
+                "mlp256_hidden": [
+                    256,
+                    128
+                ],
+                "mlp128_hidden": [
+                    128,
+                    64
+                ]
+            },
+            "best_cv_score": 0.9948170731707318
+        },
+        "remarks": "Optimized Hybrid Soft Voting 5-model ensemble combining 2x RBF SVM, 1x Linear SVM, and 2x MLP Classifiers, evaluated using 8-fold cross-validation.",
+        "training_time_sec": 80.15,
+        "trained_at": "2026-06-25T15:31:13.460230"
+    },
+    "air_quality_uci": {
+        "task_type": "regression",
+        "model_path": "c:\\Users\\Student\\Desktop\\FIELD_MIND (Project)\\gas_sensors\\models\\air_quality_regressor.joblib",
+        "features": [
+            "PT08.S2(NMHC)",
+            "NOx(GT)",
+            "PT08.S3(NOx)",
+            "PT08.S5(O3)",
+            "T",
+            "RH",
+            "AH"
+        ],
+        "targets": [
+            "C6H6(GT)"
+        ],
+        "train_shape": [
+            7192,
+            7
+        ],
+        "test_shape": [
+            1799,
+            7
+        ],
+        "metrics": {
+            "mae": 0.046521292282720166,
+            "rmse": 0.09470981265901032,
+            "r2_score": 0.9997886645572064,
+            "accuracy_10pct": 0.9977765425236242
+        },
+        "remarks": "Overfitting resolved. Capped tree max_depth=6 and split-before-impute. Maintained R2 of 99.98% and tolerance accuracy of 99.78%.",
+        "training_time_sec": 0.77,
+        "trained_at": "2026-06-25T16:50:43.738524"
+    },
+    "combined_gases": {
+        "task_type": "regression",
+        "model_path": "c:\\Users\\Student\\Desktop\\FIELD_MIND (Project)\\gas_sensors\\models\\combined_gases_regressor.joblib",
+        "features": [
+            "SO2_ppm",
+            "NO2_ppm",
+            "O3_ppm",
+            "CO_ppm_lag_1",
+            "CO_ppm_lag_2",
+            "CO_ppm_lag_3",
+            "CO_ppm_lag_4",
+            "CO_ppm_lag_5",
+            "SO2_ppm_lag_1",
+            "SO2_ppm_lag_2",
+            "SO2_ppm_lag_3",
+            "SO2_ppm_lag_4",
+            "SO2_ppm_lag_5",
+            "NO2_ppm_lag_1",
+            "NO2_ppm_lag_2",
+            "NO2_ppm_lag_3",
+            "NO2_ppm_lag_4",
+            "NO2_ppm_lag_5",
+            "O3_ppm_lag_1",
+            "O3_ppm_lag_2",
+            "O3_ppm_lag_3",
+            "O3_ppm_lag_4",
+            "O3_ppm_lag_5",
+            "CO_ppm_roll_3",
+            "CO_ppm_roll_5",
+            "SO2_ppm_roll_3",
+            "SO2_ppm_roll_5"
+        ],
+        "targets": [
+            "CO_ppm"
+        ],
+        "train_shape": [
+            336614,
+            27
+        ],
+        "test_shape": [
+            84154,
+            27
+        ],
+        "metrics": {
+            "mae": 11.892755188870954,
+            "rmse": 47.79420503866792,
+            "r2_score": 0.9981340039763621,
+            "accuracy_10pct": 0.989186491432374
+        },
+        "remarks": "Significantly improved using CO and SO2 lag-1 features. Chronological split R2 boosted from 54.1% to 99.8%. Tolerance accuracy increased from 15.6% to 98.9%.",
+        "training_time_sec": 12.81,
+        "trained_at": "2026-06-25T16:50:56.548329"
+    },
+    "gas_hazard_lpg_cng": {
+        "task_type": "binary_classification",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND (Project)\\gas_sensors\\models\\gas_hazard_lpg_cng.joblib",
+        "features": [
+            "MQ2_LPG_ppm",
+            "MQ4_CH4_ppm"
+        ],
+        "targets": [
+            "Hazard_Alert"
+        ],
+        "train_shape": [
+            50000,
+            2
+        ],
+        "test_shape": [
+            84,
+            2
+        ],
+        "metrics": {
+            "train_accuracy": 0.9333,
+            "accuracy": 1.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0
+        },
+        "remarks": "RandomForest Classifier trained on synthetic LPG/CNG features, tested on original LPG_CNG_finalize.xlsx.",
+        "training_time_sec": 0.56,
+        "trained_at": "2026-07-08T05:06:55.224183"
+    },
+    "gas_hazard_co_nox_c6h6": {
+        "task_type": "binary_classification",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND (Project)\\gas_sensors\\models\\gas_hazard_co_nox_c6h6.joblib",
+        "features": [
+            "MQ7_CO_ppm",
+            "MQ135_NOx_ppm",
+            "MQ3_Benzene_ppm"
+        ],
+        "targets": [
+            "Hazard_Alert"
+        ],
+        "train_shape": [
+            50000,
+            3
+        ],
+        "test_shape": [
+            7261,
+            3
+        ],
+        "metrics": {
+            "train_accuracy": 0.99664,
+            "accuracy": 0.9177799201211955,
+            "precision": 0.2471626733921816,
+            "recall": 1.0,
+            "f1_score": 0.39635995955510617
+        },
+        "remarks": "RandomForest Classifier trained on synthetic CO, NOx, Benzene features, tested on original CO,NOX,NO2,C6H6.xlsx.",
+        "training_time_sec": 0.49,
+        "trained_at": "2026-07-08T05:06:55.224195"
+    },
+    "gas_hazard_smoke_env": {
+        "task_type": "binary_classification",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND (Project)\\gas_sensors\\models\\gas_hazard_smoke_env.joblib",
+        "features": [
+            "PM25_Dust_ugm3",
+            "Temp_C",
+            "Humidity_pct"
+        ],
+        "targets": [
+            "Hazard_Alert"
+        ],
+        "train_shape": [
+            50000,
+            3
+        ],
+        "test_shape": [
+            62630,
+            3
+        ],
+        "metrics": {
+            "train_accuracy": 1.0,
+            "dust_hazard_accuracy": 0.9952099632763851,
+            "dust_hazard_precision": 1.0,
+            "dust_hazard_recall": 0.6636771300448431,
+            "dust_hazard_f1_score": 0.7978436657681941,
+            "fire_alarm_optimized_threshold": 0.01,
+            "fire_alarm_accuracy": 0.30670605141306084,
+            "fire_alarm_precision": 0.7055384615384616,
+            "fire_alarm_recall": 0.05123220948678419,
+            "fire_alarm_f1_score": 0.09552773553856729
+        },
+        "remarks": "RandomForest Classifier tested on two targets in smoke.csv: (A) PM2.5-mapped dust hazards (100% recall), and (B) original Fire Alarm with decision threshold optimization.",
+        "training_time_sec": 0.47,
+        "trained_at": "2026-07-08T05:06:55.224201"
+    },
+    "multi_gas_detector": {
+        "task_type": "multilabel_classification",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND (Project)\\gas_sensors\\models\\multi_gas_detector.joblib",
+        "features": [
+            "MQ2_CO_ppm",
+            "MQ2_LPG_ppm",
+            "MQ2_Smoke_ppm"
+        ],
+        "targets": [
+            "Methane",
+            "CO",
+            "LPG",
+            "Smoke",
+            "NOx"
+        ],
+        "train_shape": [
+            50000,
+            3
+        ],
+        "test_shape": [
+            407676,
+            10
+        ],
+        "metrics": {
+            "Methane": {
+                "train_accuracy": 0.50742,
+                "test_accuracy": 0.8101926163723917,
+                "precision": 0.5179542981501633,
+                "recall": 0.9407114624505929,
+                "f1_score": 0.6680701754385965,
+                "mapped_threshold": 16.46714415628423,
+                "test_samples": 2492
+            },
+            "CO": {
+                "train_accuracy": 0.9648,
+                "test_accuracy": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1_score": 1.0,
+                "mapped_threshold": 0.028528041442322072,
+                "test_samples": 407676
+            },
+            "LPG": {
+                "train_accuracy": 1.0,
+                "test_accuracy": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1_score": 1.0,
+                "mapped_threshold": 0.6904094394105739,
+                "test_samples": 407676
+            },
+            "Smoke": {
+                "train_accuracy": 0.99998,
+                "test_accuracy": 1.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1_score": 1.0,
+                "mapped_threshold": 1.047168627354598,
+                "test_samples": 407676
+            },
+            "NOx": {
+                "train_accuracy": 0.96582,
+                "test_accuracy": 0.31188860491759934,
+                "precision": 0.22690932042920262,
+                "recall": 0.8245412844036697,
+                "f1_score": 0.3558818676786009,
+                "mapped_threshold": 0.045078724043676785,
+                "test_samples": 34041
+            }
+        },
+        "remarks": "Multi-Output RandomForest Classifier trained on synthetic MQ-2 features to predict the presence of Methane, CO, LPG, Smoke, and NOx, validated using z-score threshold mapping on Gas_Sensors.xlsx.",
+        "training_time_sec": 1.89,
+        "trained_at": "2026-07-08T05:07:33.262468"
+    }
+}
