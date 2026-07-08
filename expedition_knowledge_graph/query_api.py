@@ -150,3 +150,20 @@ def get_sensor_inventory(graph: MineKnowledgeGraph) -> list[dict]:
     Return all registered sensor nodes with their locations.
     """
     return graph.query_by_label("SensorNode")
+
+
+def get_navigation_events(graph: MineKnowledgeGraph, collision_only: bool = False,
+                           segment_id: str = None, max_count: int = 50) -> list[dict]:
+    """
+    Return ultrasonic navigation events from the EKG.
+    If collision_only=True, return only events where collision_risk == 1.
+    """
+    if collision_only:
+        events = graph.query_by_label("NavigationEvent", filters={"collision_risk": 1})
+    elif segment_id:
+        events = graph.query_by_label("NavigationEvent", filters={"segment_id": segment_id})
+    else:
+        events = graph.query_by_label("NavigationEvent")
+
+    events.sort(key=lambda x: x.get("timestamp", 0.0), reverse=True)
+    return events[:max_count]

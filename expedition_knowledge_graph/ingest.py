@@ -17,7 +17,7 @@ from collections import defaultdict
 
 from schema import (
     TunnelSegment, SensorNode, BlastEvent, VibrationEvent,
-    GasAnomaly, EnvironmentalReading, Equipment,
+    GasAnomaly, EnvironmentalReading, NavigationEvent, Equipment,
     LOCATED_IN, RECORDED_BY, OCCURRED_IN, CAUSED_BY,
     CORRELATED_WITH, OPERATES_IN,
 )
@@ -315,6 +315,67 @@ def ingest_equipment(graph: MineKnowledgeGraph):
 
 
 # ---------------------------------------------------------------------------
+# 6. Ultrasonic navigation events
+# ---------------------------------------------------------------------------
+
+def ingest_navigation_events(graph: MineKnowledgeGraph, csv_path: str,
+                              sample_every_n: int = 20, max_events: int = 250):
+    """
+    Reads sensor_readings_24.csv and creates:
+      - NavigationEvent nodes (sampled from the dataset)
+      - OCCURRED_IN edges to a navigation tunnel segment
+    Flags collision risk when any sensor reading is below 0.5 m.
+    """
+    if not os.path.exists(csv_path):
+        print(f"  [SKIP] Ultrasonic CSV not found: {csv_path}")
+        return
+
+    df = pd.read_csv(csv_path, header=None)
+    # First row is the header row in this file
+    cols = [f'US{i}' for i in range(1, 25)] + ['command']
+    df.columns = cols
+    df = df.iloc[1:]  # drop the header row that was read as data
+
+    # Convert sensor columns to numeric
+    for c in cols[:-1]:
+        df[c] = pd.to_numeric(df[c], errors='coerce')
+    df = df.dropna()
+
+    print(f"  Ingesting ultrasonic data: {len(df)} rows from {os.path.basename(csv_path)}")
+
+    # Navigation tunnel segment
+    nav_seg = "seg_nav_tunnel"
+    _ensure_segment(graph, nav_seg, gx=324200.0, gy=7412200.0, gelev=-150.0)
+
+    # Sample the data
+    sample_df = df.iloc[::sample_every_n].head(max_events)
+
+    nav_count = 0
+    collision_count = 0
+    for _, row in sample_df.iterrows():
+        sensor_vals = {f'US{i}': float(row[f'US{i}']) for i in range(1, 25)}
+        min_dist = min(sensor_vals.values())
+        collision_risk = 1 if min_dist < 0.5 else 0
+        if collision_risk:
+            collision_count += 1
+
+        nav_event = NavigationEvent(
+            timestamp=float(nav_count),
+            command=str(row['command']),
+            sensor_readings=sensor_vals,
+            min_distance=round(min_dist, 4),
+            collision_risk=collision_risk,
+            segment_id=nav_seg,
+        )
+        nav_nid = f"nav_{nav_event.event_id}"
+        graph.add_node(nav_nid, "NavigationEvent", nav_event.to_dict())
+        graph.add_edge(nav_nid, nav_seg, OCCURRED_IN)
+        nav_count += 1
+
+    print(f"    Created {nav_count} NavigationEvent nodes ({collision_count} with collision risk)")
+
+
+# ---------------------------------------------------------------------------
 # Master ingestion function
 # ---------------------------------------------------------------------------
 
@@ -338,10 +399,14 @@ def run_full_ingestion(graph: MineKnowledgeGraph, workspace_root: str):
     env_csv = os.path.join(workspace_root, "temperature_humidity", "data", "data_clean", "iot_telemetry_clean.csv")
     ingest_environmental_readings(graph, env_csv)
 
-    # 4. Sensor placements
+    # 4. Ultrasonic navigation events
+    ultra_csv = os.path.join(workspace_root, "ultrasonic_sensors", "data", "sensor_readings_24.csv")
+    ingest_navigation_events(graph, ultra_csv)
+
+    # 5. Sensor placements
     ingest_sensor_nodes(graph)
 
-    # 5. Equipment
+    # 6. Equipment
     ingest_equipment(graph)
 
     print("-" * 80)

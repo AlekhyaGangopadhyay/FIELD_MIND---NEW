@@ -27,6 +27,7 @@ from query_api import (
     correlate_events,
     get_equipment_status,
     get_sensor_inventory,
+    get_navigation_events,
 )
 
 
@@ -113,6 +114,16 @@ def main():
     for s in sensors:
         print(f"  {s.get('name', s['node_id']):<35} | Type: {s.get('sensor_type', '?'):<12} | "
               f"Segment: {s.get('location_segment_id', 'unassigned')}")
+
+    # 2i. Navigation events (ultrasonic)
+    nav_events = get_navigation_events(graph, collision_only=False, max_count=10)
+    collision_events = get_navigation_events(graph, collision_only=True)
+    print(f"\n--- Ultrasonic Navigation Events (top 10 of {len(graph.query_by_label('NavigationEvent'))}) ---")
+    print(f"    Collision-risk events: {len(collision_events)}")
+    for n in nav_events[:10]:
+        risk_marker = " ** COLLISION RISK" if n.get('collision_risk') == 1 else ""
+        print(f"  Command: {n.get('command', '?'):<20} | Min Distance: {n.get('min_distance', 0):.3f} m | "
+              f"Segment: {n.get('segment_id', '?')}{risk_marker}")
 
     # ----------------------------------------------------------------
     # 3. Persistence: Save and Reload

@@ -118,6 +118,22 @@ class EnvironmentalReading:
 
 
 @dataclass
+class NavigationEvent:
+    """An ultrasonic sensor navigation decision record."""
+    label: str = "NavigationEvent"
+    event_id: str = field(default_factory=_uid)
+    timestamp: float = 0.0
+    command: str = ""           # Move-Forward | Sharp-Right-Turn | Slight-Right-Turn | Slight-Left-Turn
+    sensor_readings: dict = field(default_factory=dict)  # {US1: val, US2: val, ...}
+    min_distance: float = 0.0   # closest obstacle distance across all sensors
+    collision_risk: int = 0     # 1 if any sensor < 0.5m threshold
+    segment_id: str = ""
+
+    def to_dict(self):
+        return asdict(self)
+
+
+@dataclass
 class Equipment:
     """A piece of tracked underground machinery."""
     label: str = "Equipment"
