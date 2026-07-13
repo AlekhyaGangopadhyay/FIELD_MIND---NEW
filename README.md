@@ -8,115 +8,36 @@ Each sensor domain has been elevated from a passive ML model into a fully **auto
 
 ## Architecture Overview
 
-FIELD-MIND is designed as a decentralized, event-driven multi-agent network operating in hierarchical pipelines:
-
-### 1. Autonomous AI Agent System (High-Level Collaboration)
-
-```mermaid
-graph TD
-    classDef agentStyle fill:#16a085,stroke:#1abc9c,stroke-width:2px,color:#fff;
-    classDef orchestratorStyle fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff,font-weight:bold;
-    classDef busStyle fill:#d35400,stroke:#e67e22,stroke-width:2px,color:#fff;
-
-    Orchestrator["👑 MineOrchestratorAgent<br>(Global Hazard Fusion & State Management)"]
-    Bus["⚡ AgentBus<br>(Publish/Subscribe Message Broker)"]
-    
-    Gas["🤖 GasSensorAgent<br>(Observe -> Reason -> Act -> Learn)<br>[6 Gas Models]"]
-    Env["🤖 EnvSensorAgent<br>(Observe -> Reason -> Act -> Learn)<br>[Isolation Forest + RF]"]
-    Vib["🤖 VibrationSensorAgent<br>(Observe -> Reason -> Act -> Learn)<br>[RF Classifier + GB Regressor]"]
-    Ultra["🤖 UltrasonicSensorAgent<br>(Observe -> Reason -> Act -> Learn)<br>[24-Sensor Classifier]"]
-    EKG["🤖 EKGAgent<br>(Subscribes to ALERTs & Writes to Graph Memory)"]
-
-    Orchestrator <-->|Pub/Sub Alerts & State| Bus
-    Gas <-->|Publish ALERTs / Listen| Bus
-    Env <-->|Publish ALERTs / Listen| Bus
-    Vib <-->|Publish ALERTs / Listen| Bus
-    Ultra <-->|Publish ALERTs / Listen| Bus
-    EKG <-->|Subscribe ALERTs / Ingest| Bus
-
-    class Orchestrator orchestratorStyle;
-    class Bus busStyle;
-    class Gas,Env,Vib,Ultra,EKG agentStyle;
-```
-
----
-
-### 2. Detailed 3-Layer System Pipeline (Information Flow)
+FIELD-MIND is structured as an offline, edge-native safety intelligence loop:
 
 ```mermaid
 graph TD
     %% Define styles
-    classDef layerStyle fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff,font-weight:bold;
     classDef agentStyle fill:#16a085,stroke:#1abc9c,stroke-width:2px,color:#fff;
     classDef dbStyle fill:#2980b9,stroke:#3498db,stroke-width:2px,color:#fff;
     classDef reasoningStyle fill:#8e44ad,stroke:#9b59b6,stroke-width:2px,color:#fff;
     classDef busStyle fill:#d35400,stroke:#e67e22,stroke-width:2px,color:#fff;
 
-    %% Layer 1
-    subgraph L1 [Layer 1: Data Ingestion & SciSense Alignment]
-        Sensors["🔌 Heterogeneous Sensor Streams<br>(MQ-Gas, Geophones, Env, Ultrasonic)"]
-        GasAgent["🤖 GasSensorAgent<br>(6 joblib models)"]
-        EnvAgent["🤖 EnvSensorAgent<br>(Isolation Forest + RF)"]
-        VibAgent["🤖 VibrationSensorAgent<br>(RF + GB PPV)"]
-        NavAgent["🤖 UltrasonicSensorAgent<br>(24-sensor Nav)"]
-        SciSense["🧬 SciSense Projections<br>(Temporal Alignment + Encoders)"]
-        Embeddings["🌌 Unified 4096-D Embeddings"]
-    end
+    Sensors["🔌 Sensor Inputs<br>(Gas, Vibration, Env, Nav)"]
+    Agents["🤖 Autonomous AI Agents<br>(Observe -> Reason -> Act -> Learn)"]
+    Bus["⚡ Message AgentBus<br>(Local Pub/Sub Broker)"]
+    EKG["🕸️ Expedition Knowledge Graph<br>(Spatiotemporal Graph Memory)"]
+    RAG["📚 FAISS RAG Index<br>(Regulatory Safety DB)"]
+    Reasoning["🧠 LangGraph Reasoning Core<br>(LLM / Expert Fallback Plan)"]
+    Output["📢 Actionable Safety Advice<br>(User / Operator Interface)"]
 
-    %% Layer 2
-    subgraph L2 [Layer 2: Memory & Monitoring]
-        AgentBus["⚡ Event-Driven AgentBus<br>(Pub/Sub Signal Broker)"]
-        Orchestrator2["👑 MineOrchestratorAgent<br>(Weighted Score Fusion)"]
-        ReplayBuffer["🔄 Self-Learning Loop<br>(Experience Replay Buffer)"]
-        EKG["🕸️ Expedition Knowledge Graph<br>(NetworkX Graph Store)"]
-        FAISS["📚 FAISS Vector Store<br>(all-MiniLM-L6-v2 Safety RAG)"]
-        EKGAgent2["🤖 EKGAgent<br>(Saves Alerts to EKG)"]
-    end
+    Sensors --> Agents
+    Agents -->|Publish ALERTs| Bus
+    Bus -->|Save Events| EKG
+    Bus -->|Trigger EMERGENCY| Reasoning
+    EKG -->|Supply Context| Reasoning
+    RAG -->|Supply Regulations| Reasoning
+    Reasoning --> Output
 
-    %% Layer 3
-    subgraph L3 [Layer 3: Scientific Reasoning Core]
-        LangGraph["🕸️ LangGraph Workflow State Machine"]
-        GGUF["🦙 Quantized Llama-3.2-3B / Expert Fallback"]
-        Observe["1. Observe Anomalies"]
-        EKG_Ret["2. EKG-Retrieve Context"]
-        RAG_Ret["3. RAG-Retrieve Regulations"]
-        Hypo["4. Hypothesize Cause"]
-        Sugg["5. Suggest Mitigations"]
-        Update["6. Update EKG Database"]
-    end
-
-    %% Flow connections
-    Sensors --> GasAgent
-    Sensors --> EnvAgent
-    Sensors --> VibAgent
-    Sensors --> NavAgent
-
-    GasAgent & EnvAgent & VibAgent & NavAgent --> SciSense
-    SciSense --> Embeddings
-
-    GasAgent & EnvAgent & VibAgent & NavAgent -->|ALERTs| AgentBus
-    AgentBus --> Orchestrator2
-    AgentBus --> EKGAgent2
-    EKGAgent2 -->|Persist Events| EKG
-
-    GasAgent & EnvAgent & VibAgent & NavAgent -->|Feedback| ReplayBuffer
-    ReplayBuffer -->|Online Model Swap| GasAgent & EnvAgent & VibAgent & NavAgent
-
-    Orchestrator2 -->|Trigger EMERGENCY| LangGraph
-
-    LangGraph --> Observe --> EKG_Ret --> RAG_Ret --> Hypo --> Sugg --> Update
-    EKG -->|Supply Local Context| EKG_Ret
-    FAISS -->|Supply Regulatory Grounding| RAG_Ret
-    Hypo & Sugg --> GGUF
-    Update -->|Log Resolution| EKG
-    Sugg --> Output["📢 Actionable Advice Output<br>(Interactive CLI / rugged tablet)"]
-
-    %% Assign classes
-    class L1,L2,L3 layerStyle;
-    class GasAgent,EnvAgent,VibAgent,NavAgent,EKGAgent2,Orchestrator2 agentStyle;
-    class EKG,FAISS dbStyle;
-    class LangGraph,GGUF,Observe,EKG_Ret,RAG_Ret,Hypo,Sugg,Update reasoningStyle;
-    class AgentBus busStyle;
+    class Agents agentStyle;
+    class EKG,RAG dbStyle;
+    class Reasoning reasoningStyle;
+    class Bus busStyle;
 ```
 
 ### Agent Cycle (per tick)
