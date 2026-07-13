@@ -8,26 +8,82 @@ Each sensor domain has been elevated from a passive ML model into a fully **auto
 
 ## Architecture Overview
 
-```
-FIELD-MIND AI Agent System
-══════════════════════════════════════════════════════════════════
-                     MineOrchestratorAgent
-             (global hazard fusion · state management)
-                             │
-                        AgentBus
-          (publish/subscribe · 354+ msgs per session)
-     ┌──────────┬──────────┬──────────┬──────────┬──────────┐
-     │          │          │          │          │          │
-  Gas Agent  Env Agent  Vib Agent Ultra Agent  EKG Agent
-  ──────────  ──────────  ──────────  ──────────  ──────────
-  Observe     Observe     Observe     Observe     Subscribes
-  Reason      Reason      Reason      Reason      to all ALERTs
-  Act         Act         Act         Act         Writes EKG
-  Learn ★     Learn ★     Learn ★     Learn ★     Answers queries
-     │          │          │          │
-  6 gas      IsoForest  RF+GB PPV  24-sensor
-  models     + RF occ   classifier  nav model
-  joblibs    joblibs    joblibs     joblib
+FIELD-MIND is structured as an offline edge-native three-layer pipeline:
+
+```mermaid
+graph TD
+    %% Define styles
+    classDef layerStyle fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff,font-weight:bold;
+    classDef agentStyle fill:#16a085,stroke:#1abc9c,stroke-width:2px,color:#fff;
+    classDef dbStyle fill:#2980b9,stroke:#3498db,stroke-width:2px,color:#fff;
+    classDef reasoningStyle fill:#8e44ad,stroke:#9b59b6,stroke-width:2px,color:#fff;
+    classDef busStyle fill:#d35400,stroke:#e67e22,stroke-width:2px,color:#fff;
+
+    %% Layer 1
+    subgraph L1 [Layer 1: Data Ingestion & SciSense Alignment]
+        Sensors["🔌 Heterogeneous Sensor Streams<br>(MQ-Gas, Geophones, Env, Ultrasonic)"]
+        GasAgent["🤖 GasSensorAgent<br>(6 joblib models)"]
+        EnvAgent["🤖 EnvSensorAgent<br>(Isolation Forest + RF)"]
+        VibAgent["🤖 VibrationSensorAgent<br>(RF + GB PPV)"]
+        NavAgent["🤖 UltrasonicSensorAgent<br>(24-sensor Nav)"]
+        SciSense["🧬 SciSense Projections<br>(Temporal Alignment + Encoders)"]
+        Embeddings["🌌 Unified 4096-D Embeddings"]
+    end
+
+    %% Layer 2
+    subgraph L2 [Layer 2: Memory & Monitoring]
+        AgentBus["⚡ Event-Driven AgentBus<br>(Pub/Sub Signal Broker)"]
+        Orchestrator["👑 MineOrchestratorAgent<br>(Weighted Score Fusion)"]
+        ReplayBuffer["🔄 Self-Learning Loop<br>(Experience Replay Buffer)"]
+        EKG["🕸️ Expedition Knowledge Graph<br>(NetworkX Graph Store)"]
+        FAISS["📚 FAISS Vector Store<br>(all-MiniLM-L6-v2 Safety RAG)"]
+        EKGAgent["🤖 EKGAgent<br>(Saves Alerts to EKG)"]
+    end
+
+    %% Layer 3
+    subgraph L3 [Layer 3: Scientific Reasoning Core]
+        LangGraph["🕸️ LangGraph Workflow State Machine"]
+        GGUF["🦙 Quantized Llama-3.2-3B / Expert Fallback"]
+        Observe["1. Observe Anomalies"]
+        EKG_Ret["2. EKG-Retrieve Context"]
+        RAG_Ret["3. RAG-Retrieve Regulations"]
+        Hypo["4. Hypothesize Cause"]
+        Sugg["5. Suggest Mitigations"]
+        Update["6. Update EKG Database"]
+    end
+
+    %% Flow connections
+    Sensors --> GasAgent
+    Sensors --> EnvAgent
+    Sensors --> VibAgent
+    Sensors --> NavAgent
+
+    GasAgent & EnvAgent & VibAgent & NavAgent --> SciSense
+    SciSense --> Embeddings
+
+    GasAgent & EnvAgent & VibAgent & NavAgent -->|ALERTs| AgentBus
+    AgentBus --> Orchestrator
+    AgentBus --> EKGAgent
+    EKGAgent -->|Persist Events| EKG
+
+    GasAgent & EnvAgent & VibAgent & NavAgent -->|Feedback| ReplayBuffer
+    ReplayBuffer -->|Online Model Swap| GasAgent & EnvAgent & VibAgent & NavAgent
+
+    Orchestrator -->|Trigger EMERGENCY| LangGraph
+
+    LangGraph --> Observe --> EKG_Ret --> RAG_Ret --> Hypo --> Sugg --> Update
+    EKG -->|Supply Local Context| EKG_Ret
+    FAISS -->|Supply Regulatory Grounding| RAG_Ret
+    Hypo & Sugg --> GGUF
+    Update -->|Log Resolution| EKG
+    Sugg --> Output["📢 Actionable Advice Output<br>(Interactive CLI / rugged tablet)"]
+
+    %% Assign classes
+    class L1,L2,L3 layerStyle;
+    class GasAgent,EnvAgent,VibAgent,NavAgent,EKGAgent,Orchestrator agentStyle;
+    class EKG,FAISS dbStyle;
+    class LangGraph,GGUF,Observe,EKG_Ret,RAG_Ret,Hypo,Sugg,Update reasoningStyle;
+    class AgentBus busStyle;
 ```
 
 ### Agent Cycle (per tick)
