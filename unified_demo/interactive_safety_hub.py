@@ -15,8 +15,12 @@ Run: py -X utf8 unified_demo/interactive_safety_hub.py
 import os
 import sys
 import time
+import warnings
 import numpy as np
 from typing import Any, Dict
+
+# Ignore user warnings for clean console outputs
+warnings.simplefilter("ignore", category=UserWarning)
 
 # Setup workspace root
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))

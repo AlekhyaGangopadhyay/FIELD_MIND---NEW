@@ -1,7 +1,11 @@
 import os
+import warnings
 import joblib
 import pandas as pd
 import numpy as np
+
+# Suppress scikit-learn feature name validation UserWarnings
+warnings.simplefilter("ignore", category=UserWarning)
 
 class Tier1Monitor:
     """
