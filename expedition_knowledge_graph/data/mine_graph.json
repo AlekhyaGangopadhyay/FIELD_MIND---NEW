@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "saved_at": "2026-07-08T15:08:49.156861",
-    "total_nodes": 1135,
-    "total_edges": 1444
+    "saved_at": "2026-07-13T13:32:48.943170",
+    "total_nodes": 1395,
+    "total_edges": 1447
   },
   "nodes": [
     {
@@ -20691,6 +20691,3368 @@
         "location_segment_id": "seg_env_main",
         "status": "operational"
       }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925896267",
+      "properties": {
+        "timestamp": 1783925896.267626,
+        "timestamp_str": "2026-07-13 12:28:16",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925896364",
+      "properties": {
+        "timestamp": 1783925896.3646884,
+        "timestamp_str": "2026-07-13 12:28:16",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925896464",
+      "properties": {
+        "timestamp": 1783925896.4641345,
+        "timestamp_str": "2026-07-13 12:28:16",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925896664",
+      "properties": {
+        "timestamp": 1783925896.6645458,
+        "timestamp_str": "2026-07-13 12:28:16",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.0027294124121439722, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.003) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925896770",
+      "properties": {
+        "timestamp": 1783925896.770186,
+        "timestamp_str": "2026-07-13 12:28:16",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925896770",
+      "properties": {
+        "timestamp": 1783925896.770186,
+        "timestamp_str": "2026-07-13 12:28:16",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.013776614661414777, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.014) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925896875",
+      "properties": {
+        "timestamp": 1783925896.875173,
+        "timestamp_str": "2026-07-13 12:28:16",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925896875",
+      "properties": {
+        "timestamp": 1783925896.875173,
+        "timestamp_str": "2026-07-13 12:28:16",
+        "anomaly_flag": 1,
+        "severity": "MEDIUM",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.08123991698454858, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.6}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.081) | confidence=0.60",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925896971",
+      "properties": {
+        "timestamp": 1783925896.971849,
+        "timestamp_str": "2026-07-13 12:28:16",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925896971",
+      "properties": {
+        "timestamp": 1783925896.971849,
+        "timestamp_str": "2026-07-13 12:28:16",
+        "anomaly_flag": 1,
+        "severity": "MEDIUM",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.004040792979242536, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.6}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.004) | confidence=0.60",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925896971",
+      "properties": {
+        "timestamp": 1783925896.971849,
+        "timestamp_str": "2026-07-13 12:28:16",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "MEDIUM",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.60",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925897070",
+      "properties": {
+        "timestamp": 1783925897.0709946,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "MEDIUM",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.60",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925897199",
+      "properties": {
+        "timestamp": 1783925897.1996224,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925897301",
+      "properties": {
+        "timestamp": 1783925897.3010406,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.007547657631477134, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.008) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925897301",
+      "properties": {
+        "timestamp": 1783925897.3010406,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925897402",
+      "properties": {
+        "timestamp": 1783925897.4028037,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.07446047120259447, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.074) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925897402",
+      "properties": {
+        "timestamp": 1783925897.4028037,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925897505",
+      "properties": {
+        "timestamp": 1783925897.5057433,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925897505",
+      "properties": {
+        "timestamp": 1783925897.5057433,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "anomaly_flag": 1,
+        "severity": "MEDIUM",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.007547657631477134, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.6}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.008) | confidence=0.60",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925897505",
+      "properties": {
+        "timestamp": 1783925897.5057433,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925897605",
+      "properties": {
+        "timestamp": 1783925897.6051192,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "anomaly_flag": 1,
+        "severity": "MEDIUM",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.014808623468803628, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.6}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.015) | confidence=0.60",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925897605",
+      "properties": {
+        "timestamp": 1783925897.6051192,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925897710",
+      "properties": {
+        "timestamp": 1783925897.7100606,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925897806",
+      "properties": {
+        "timestamp": 1783925897.806937,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925897903",
+      "properties": {
+        "timestamp": 1783925897.9035532,
+        "timestamp_str": "2026-07-13 12:28:17",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925898003",
+      "properties": {
+        "timestamp": 1783925898.0030656,
+        "timestamp_str": "2026-07-13 12:28:18",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925898103",
+      "properties": {
+        "timestamp": 1783925898.1032681,
+        "timestamp_str": "2026-07-13 12:28:18",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925898203",
+      "properties": {
+        "timestamp": 1783925898.2030346,
+        "timestamp_str": "2026-07-13 12:28:18",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925898203",
+      "properties": {
+        "timestamp": 1783925898.2030346,
+        "timestamp_str": "2026-07-13 12:28:18",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925898308",
+      "properties": {
+        "timestamp": 1783925898.3089795,
+        "timestamp_str": "2026-07-13 12:28:18",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925898308",
+      "properties": {
+        "timestamp": 1783925898.3089795,
+        "timestamp_str": "2026-07-13 12:28:18",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.004040792979242536, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.004) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925898615",
+      "properties": {
+        "timestamp": 1783925898.6154554,
+        "timestamp_str": "2026-07-13 12:28:18",
+        "hazard_flag": 1,
+        "ppv": 5.227521917510262,
+        "severity": "CRITICAL",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=5.23 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=0.95",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925898717",
+      "properties": {
+        "timestamp": 1783925898.7170956,
+        "timestamp_str": "2026-07-13 12:28:18",
+        "hazard_flag": 1,
+        "ppv": 5.077097198963617,
+        "severity": "CRITICAL",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=5.08 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=0.95",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925899050",
+      "properties": {
+        "timestamp": 1783925899.050526,
+        "timestamp_str": "2026-07-13 12:28:19",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.003987992251544892, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.004) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925899156",
+      "properties": {
+        "timestamp": 1783925899.1561542,
+        "timestamp_str": "2026-07-13 12:28:19",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 26.246764346560894, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 26.2 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925899156",
+      "properties": {
+        "timestamp": 1783925899.1561542,
+        "timestamp_str": "2026-07-13 12:28:19",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.01561102991460217, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.016) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925899555",
+      "properties": {
+        "timestamp": 1783925899.555058,
+        "timestamp_str": "2026-07-13 12:28:19",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 21.360796959501002, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 21.4 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925899854",
+      "properties": {
+        "timestamp": 1783925899.854835,
+        "timestamp_str": "2026-07-13 12:28:19",
+        "hazard_flag": 1,
+        "ppv": 1.8860113829733642,
+        "severity": "HIGH",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=1.89 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=0.85",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925899972",
+      "properties": {
+        "timestamp": 1783925899.9724796,
+        "timestamp_str": "2026-07-13 12:28:19",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 30.405280286531642, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 30.4 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925899972",
+      "properties": {
+        "timestamp": 1783925899.9724796,
+        "timestamp_str": "2026-07-13 12:28:19",
+        "hazard_flag": 1,
+        "ppv": 1.6916968248809845,
+        "severity": "HIGH",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=1.69 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=0.85",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925900104",
+      "properties": {
+        "timestamp": 1783925900.1043007,
+        "timestamp_str": "2026-07-13 12:28:20",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 30.777155268186757, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 30.8 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925900204",
+      "properties": {
+        "timestamp": 1783925900.204895,
+        "timestamp_str": "2026-07-13 12:28:20",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 28.608017430297455, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 28.6 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925900204",
+      "properties": {
+        "timestamp": 1783925900.204895,
+        "timestamp_str": "2026-07-13 12:28:20",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.004220253179685218, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.004) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925900503",
+      "properties": {
+        "timestamp": 1783925900.5033965,
+        "timestamp_str": "2026-07-13 12:28:20",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.004040792979242536, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.004) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925900805",
+      "properties": {
+        "timestamp": 1783925900.8051584,
+        "timestamp_str": "2026-07-13 12:28:20",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.01757624791056911, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.018) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925900903",
+      "properties": {
+        "timestamp": 1783925900.9038167,
+        "timestamp_str": "2026-07-13 12:28:20",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925901105",
+      "properties": {
+        "timestamp": 1783925901.1053565,
+        "timestamp_str": "2026-07-13 12:28:21",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.002887067947202282, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.003) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925901316",
+      "properties": {
+        "timestamp": 1783925901.3168693,
+        "timestamp_str": "2026-07-13 12:28:21",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925901422",
+      "properties": {
+        "timestamp": 1783925901.4226635,
+        "timestamp_str": "2026-07-13 12:28:21",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925901422",
+      "properties": {
+        "timestamp": 1783925901.4226635,
+        "timestamp_str": "2026-07-13 12:28:21",
+        "hazard_flag": 1,
+        "ppv": 3.8103484897630624,
+        "severity": "HIGH",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=3.81 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=0.85",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925901520",
+      "properties": {
+        "timestamp": 1783925901.5209846,
+        "timestamp_str": "2026-07-13 12:28:21",
+        "hazard_flag": 1,
+        "ppv": 3.752658913663596,
+        "severity": "HIGH",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=3.75 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=0.85",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925901820",
+      "properties": {
+        "timestamp": 1783925901.8207757,
+        "timestamp_str": "2026-07-13 12:28:21",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.005116688132587255, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.005) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925901921",
+      "properties": {
+        "timestamp": 1783925901.9215076,
+        "timestamp_str": "2026-07-13 12:28:21",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925902020",
+      "properties": {
+        "timestamp": 1783925902.0208383,
+        "timestamp_str": "2026-07-13 12:28:22",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925902121",
+      "properties": {
+        "timestamp": 1783925902.121711,
+        "timestamp_str": "2026-07-13 12:28:22",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925902221",
+      "properties": {
+        "timestamp": 1783925902.2219326,
+        "timestamp_str": "2026-07-13 12:28:22",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925902418",
+      "properties": {
+        "timestamp": 1783925902.4185126,
+        "timestamp_str": "2026-07-13 12:28:22",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.018273874438890836, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.018) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925902517",
+      "properties": {
+        "timestamp": 1783925902.5176394,
+        "timestamp_str": "2026-07-13 12:28:22",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925902517",
+      "properties": {
+        "timestamp": 1783925902.5176394,
+        "timestamp_str": "2026-07-13 12:28:22",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.004576447090717917, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.005) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925902824",
+      "properties": {
+        "timestamp": 1783925902.8247104,
+        "timestamp_str": "2026-07-13 12:28:22",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925902922",
+      "properties": {
+        "timestamp": 1783925902.9224586,
+        "timestamp_str": "2026-07-13 12:28:22",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925903021",
+      "properties": {
+        "timestamp": 1783925903.0217674,
+        "timestamp_str": "2026-07-13 12:28:23",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925903120",
+      "properties": {
+        "timestamp": 1783925903.1207542,
+        "timestamp_str": "2026-07-13 12:28:23",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925903120",
+      "properties": {
+        "timestamp": 1783925903.1207542,
+        "timestamp_str": "2026-07-13 12:28:23",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.041898111964970064, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.042) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925903220",
+      "properties": {
+        "timestamp": 1783925903.2204945,
+        "timestamp_str": "2026-07-13 12:28:23",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925903220",
+      "properties": {
+        "timestamp": 1783925903.2204945,
+        "timestamp_str": "2026-07-13 12:28:23",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.004576447090717917, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.005) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925903327",
+      "properties": {
+        "timestamp": 1783925903.3273923,
+        "timestamp_str": "2026-07-13 12:28:23",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925903835",
+      "properties": {
+        "timestamp": 1783925903.8353565,
+        "timestamp_str": "2026-07-13 12:28:23",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.015071829753148802, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.015) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925903937",
+      "properties": {
+        "timestamp": 1783925903.937235,
+        "timestamp_str": "2026-07-13 12:28:23",
+        "anomaly_flag": 1,
+        "severity": "LOW",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.002939758172243012, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.5}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.003) | confidence=0.50",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925904052",
+      "properties": {
+        "timestamp": 1783925904.052289,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925904052",
+      "properties": {
+        "timestamp": 1783925904.052289,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "anomaly_flag": 1,
+        "severity": "MEDIUM",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.08382804019490198, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.6}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.084) | confidence=0.60",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925904152",
+      "properties": {
+        "timestamp": 1783925904.1528587,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925904152",
+      "properties": {
+        "timestamp": 1783925904.1528587,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19599199265483713, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.196) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925904253",
+      "properties": {
+        "timestamp": 1783925904.2535498,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925904253",
+      "properties": {
+        "timestamp": 1783925904.2535498,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.20373454585622364, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.204) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925904366",
+      "properties": {
+        "timestamp": 1783925904.3661647,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.20128338391670164, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.201) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925904471",
+      "properties": {
+        "timestamp": 1783925904.4715526,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.1992355642471616, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.199) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925904586",
+      "properties": {
+        "timestamp": 1783925904.5866783,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19826882871914864, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.198) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925904688",
+      "properties": {
+        "timestamp": 1783925904.6883247,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19826882871914864, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.198) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925904787",
+      "properties": {
+        "timestamp": 1783925904.7871315,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925904787",
+      "properties": {
+        "timestamp": 1783925904.7871315,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19826882871914864, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.198) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925904890",
+      "properties": {
+        "timestamp": 1783925904.8900874,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19826882871914864, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.198) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925904998",
+      "properties": {
+        "timestamp": 1783925904.9988134,
+        "timestamp_str": "2026-07-13 12:28:24",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19826882871914864, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.198) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925905117",
+      "properties": {
+        "timestamp": 1783925905.117009,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925905117",
+      "properties": {
+        "timestamp": 1783925905.117009,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19826882871914864, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.198) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925905234",
+      "properties": {
+        "timestamp": 1783925905.2344675,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925905234",
+      "properties": {
+        "timestamp": 1783925905.2344675,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19826882871914864, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.198) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925905336",
+      "properties": {
+        "timestamp": 1783925905.336802,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925905336",
+      "properties": {
+        "timestamp": 1783925905.336802,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19826882871914864, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.198) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925905440",
+      "properties": {
+        "timestamp": 1783925905.4402359,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925905440",
+      "properties": {
+        "timestamp": 1783925905.4402359,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19826882871914864, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.198) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925905440",
+      "properties": {
+        "timestamp": 1783925905.4402359,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "hazard_flag": 1,
+        "ppv": 1.5018108148036973,
+        "severity": "HIGH",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=1.50 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=0.85",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925905545",
+      "properties": {
+        "timestamp": 1783925905.5455003,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925905545",
+      "properties": {
+        "timestamp": 1783925905.5455003,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19826882871914864, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.198) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925905545",
+      "properties": {
+        "timestamp": 1783925905.5455003,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "hazard_flag": 1,
+        "ppv": 1.5825900540576188,
+        "severity": "HIGH",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=1.58 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=0.85",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925905646",
+      "properties": {
+        "timestamp": 1783925905.6463947,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "anomaly_flag": 1,
+        "severity": "CRITICAL",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.19826882871914864, 'temp_out_of_range': 1, 'hum_out_of_range': 1, 'occupancy_pred': 0, 'confidence': 1.0}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.198) | Temperature out of safe range | Humidity out of safe range | confidence=1.00",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925905646",
+      "properties": {
+        "timestamp": 1783925905.6463947,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "hazard_flag": 1,
+        "ppv": 3.8775117555616565,
+        "severity": "CRITICAL",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=3.88 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=1.00",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925905646",
+      "properties": {
+        "timestamp": 1783925905.6463947,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "MEDIUM",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.60",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925905756",
+      "properties": {
+        "timestamp": 1783925905.7564664,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "anomaly_flag": 1,
+        "severity": "MEDIUM",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.16131365615910154, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.6483940968477304}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.161) | confidence=0.65",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925905756",
+      "properties": {
+        "timestamp": 1783925905.7564664,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "hazard_flag": 1,
+        "ppv": 3.7421783110391367,
+        "severity": "CRITICAL",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=3.74 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=1.00",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925905756",
+      "properties": {
+        "timestamp": 1783925905.7564664,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "MEDIUM",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.60",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925905856",
+      "properties": {
+        "timestamp": 1783925905.8568337,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "anomaly_flag": 1,
+        "severity": "MEDIUM",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.14999875317441014, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.6449996259523231}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.150) | confidence=0.64",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925905856",
+      "properties": {
+        "timestamp": 1783925905.8568337,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "hazard_flag": 1,
+        "ppv": 3.9790660805282,
+        "severity": "CRITICAL",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=3.98 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=1.00",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925905856",
+      "properties": {
+        "timestamp": 1783925905.8568337,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925905964",
+      "properties": {
+        "timestamp": 1783925905.9640563,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "anomaly_flag": 1,
+        "severity": "MEDIUM",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.1781004854465682, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.6534301456339704}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.178) | confidence=0.65",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925905964",
+      "properties": {
+        "timestamp": 1783925905.9640563,
+        "timestamp_str": "2026-07-13 12:28:25",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_EnvSensorAgent_1783925906068",
+      "properties": {
+        "timestamp": 1783925906.0681372,
+        "timestamp_str": "2026-07-13 12:28:26",
+        "anomaly_flag": 1,
+        "severity": "MEDIUM",
+        "env_readings": "{'anomaly_detected': 1, 'anomaly_score': -0.13721226554535482, 'temp_out_of_range': 0, 'hum_out_of_range': 0, 'occupancy_pred': 0, 'confidence': 0.6411636796636064}",
+        "agent_source": "EnvSensorAgent",
+        "reason": "IsolationForest anomaly (score=-0.137) | confidence=0.64",
+        "label": "EnvironmentalReading"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925906068",
+      "properties": {
+        "timestamp": 1783925906.0681372,
+        "timestamp_str": "2026-07-13 12:28:26",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925906173",
+      "properties": {
+        "timestamp": 1783925906.1733596,
+        "timestamp_str": "2026-07-13 12:28:26",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925906275",
+      "properties": {
+        "timestamp": 1783925906.2758846,
+        "timestamp_str": "2026-07-13 12:28:26",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925906275",
+      "properties": {
+        "timestamp": 1783925906.2758846,
+        "timestamp_str": "2026-07-13 12:28:26",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925906658",
+      "properties": {
+        "timestamp": 1783925906.6583917,
+        "timestamp_str": "2026-07-13 12:28:26",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925906658",
+      "properties": {
+        "timestamp": 1783925906.6583917,
+        "timestamp_str": "2026-07-13 12:28:26",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925906778",
+      "properties": {
+        "timestamp": 1783925906.7788067,
+        "timestamp_str": "2026-07-13 12:28:26",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925906901",
+      "properties": {
+        "timestamp": 1783925906.901205,
+        "timestamp_str": "2026-07-13 12:28:26",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925907023",
+      "properties": {
+        "timestamp": 1783925907.0234838,
+        "timestamp_str": "2026-07-13 12:28:27",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925907023",
+      "properties": {
+        "timestamp": 1783925907.0234838,
+        "timestamp_str": "2026-07-13 12:28:27",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925907143",
+      "properties": {
+        "timestamp": 1783925907.1436024,
+        "timestamp_str": "2026-07-13 12:28:27",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925907264",
+      "properties": {
+        "timestamp": 1783925907.264086,
+        "timestamp_str": "2026-07-13 12:28:27",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925907390",
+      "properties": {
+        "timestamp": 1783925907.3901916,
+        "timestamp_str": "2026-07-13 12:28:27",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925907509",
+      "properties": {
+        "timestamp": 1783925907.5096638,
+        "timestamp_str": "2026-07-13 12:28:27",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925907628",
+      "properties": {
+        "timestamp": 1783925907.628567,
+        "timestamp_str": "2026-07-13 12:28:27",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925907753",
+      "properties": {
+        "timestamp": 1783925907.7539017,
+        "timestamp_str": "2026-07-13 12:28:27",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925907909",
+      "properties": {
+        "timestamp": 1783925907.9096584,
+        "timestamp_str": "2026-07-13 12:28:27",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925908031",
+      "properties": {
+        "timestamp": 1783925908.031422,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925908156",
+      "properties": {
+        "timestamp": 1783925908.156617,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925908277",
+      "properties": {
+        "timestamp": 1783925908.2772114,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925908277",
+      "properties": {
+        "timestamp": 1783925908.2772114,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925908398",
+      "properties": {
+        "timestamp": 1783925908.3986948,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925908398",
+      "properties": {
+        "timestamp": 1783925908.3986948,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925908522",
+      "properties": {
+        "timestamp": 1783925908.5223508,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925908522",
+      "properties": {
+        "timestamp": 1783925908.5223508,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925908643",
+      "properties": {
+        "timestamp": 1783925908.6433022,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925908643",
+      "properties": {
+        "timestamp": 1783925908.6433022,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925908770",
+      "properties": {
+        "timestamp": 1783925908.7708628,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925908770",
+      "properties": {
+        "timestamp": 1783925908.7708628,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925908897",
+      "properties": {
+        "timestamp": 1783925908.8976352,
+        "timestamp_str": "2026-07-13 12:28:28",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925909027",
+      "properties": {
+        "timestamp": 1783925909.0271347,
+        "timestamp_str": "2026-07-13 12:28:29",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925909155",
+      "properties": {
+        "timestamp": 1783925909.1553123,
+        "timestamp_str": "2026-07-13 12:28:29",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925909290",
+      "properties": {
+        "timestamp": 1783925909.2905197,
+        "timestamp_str": "2026-07-13 12:28:29",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925909409",
+      "properties": {
+        "timestamp": 1783925909.4098785,
+        "timestamp_str": "2026-07-13 12:28:29",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925909409",
+      "properties": {
+        "timestamp": 1783925909.4098785,
+        "timestamp_str": "2026-07-13 12:28:29",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925909529",
+      "properties": {
+        "timestamp": 1783925909.5293815,
+        "timestamp_str": "2026-07-13 12:28:29",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925909683",
+      "properties": {
+        "timestamp": 1783925909.6838582,
+        "timestamp_str": "2026-07-13 12:28:29",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925909808",
+      "properties": {
+        "timestamp": 1783925909.8081052,
+        "timestamp_str": "2026-07-13 12:28:29",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925909927",
+      "properties": {
+        "timestamp": 1783925909.927199,
+        "timestamp_str": "2026-07-13 12:28:29",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925910055",
+      "properties": {
+        "timestamp": 1783925910.0550911,
+        "timestamp_str": "2026-07-13 12:28:30",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925910175",
+      "properties": {
+        "timestamp": 1783925910.1759853,
+        "timestamp_str": "2026-07-13 12:28:30",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925910295",
+      "properties": {
+        "timestamp": 1783925910.295839,
+        "timestamp_str": "2026-07-13 12:28:30",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925911171",
+      "properties": {
+        "timestamp": 1783925911.1717198,
+        "timestamp_str": "2026-07-13 12:28:31",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925911686",
+      "properties": {
+        "timestamp": 1783925911.6867466,
+        "timestamp_str": "2026-07-13 12:28:31",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925911812",
+      "properties": {
+        "timestamp": 1783925911.8127363,
+        "timestamp_str": "2026-07-13 12:28:31",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925912573",
+      "properties": {
+        "timestamp": 1783925912.573037,
+        "timestamp_str": "2026-07-13 12:28:32",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925912971",
+      "properties": {
+        "timestamp": 1783925912.9718583,
+        "timestamp_str": "2026-07-13 12:28:32",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925913110",
+      "properties": {
+        "timestamp": 1783925913.1106741,
+        "timestamp_str": "2026-07-13 12:28:33",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925913235",
+      "properties": {
+        "timestamp": 1783925913.2351644,
+        "timestamp_str": "2026-07-13 12:28:33",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925913874",
+      "properties": {
+        "timestamp": 1783925913.8743086,
+        "timestamp_str": "2026-07-13 12:28:33",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925913994",
+      "properties": {
+        "timestamp": 1783925913.994194,
+        "timestamp_str": "2026-07-13 12:28:33",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925914136",
+      "properties": {
+        "timestamp": 1783925914.1368325,
+        "timestamp_str": "2026-07-13 12:28:34",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925914258",
+      "properties": {
+        "timestamp": 1783925914.2587507,
+        "timestamp_str": "2026-07-13 12:28:34",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925914380",
+      "properties": {
+        "timestamp": 1783925914.3808339,
+        "timestamp_str": "2026-07-13 12:28:34",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925914506",
+      "properties": {
+        "timestamp": 1783925914.5063715,
+        "timestamp_str": "2026-07-13 12:28:34",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925915123",
+      "properties": {
+        "timestamp": 1783925915.123446,
+        "timestamp_str": "2026-07-13 12:28:35",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925915243",
+      "properties": {
+        "timestamp": 1783925915.2432892,
+        "timestamp_str": "2026-07-13 12:28:35",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925915370",
+      "properties": {
+        "timestamp": 1783925915.370902,
+        "timestamp_str": "2026-07-13 12:28:35",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925916106",
+      "properties": {
+        "timestamp": 1783925916.1065521,
+        "timestamp_str": "2026-07-13 12:28:36",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "MEDIUM",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.60",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925916239",
+      "properties": {
+        "timestamp": 1783925916.2395267,
+        "timestamp_str": "2026-07-13 12:28:36",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "MEDIUM",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.60",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925916359",
+      "properties": {
+        "timestamp": 1783925916.3598263,
+        "timestamp_str": "2026-07-13 12:28:36",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925916488",
+      "properties": {
+        "timestamp": 1783925916.4889815,
+        "timestamp_str": "2026-07-13 12:28:36",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925916644",
+      "properties": {
+        "timestamp": 1783925916.6440067,
+        "timestamp_str": "2026-07-13 12:28:36",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925916644",
+      "properties": {
+        "timestamp": 1783925916.6440067,
+        "timestamp_str": "2026-07-13 12:28:36",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925916779",
+      "properties": {
+        "timestamp": 1783925916.779975,
+        "timestamp_str": "2026-07-13 12:28:36",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925916906",
+      "properties": {
+        "timestamp": 1783925916.9066985,
+        "timestamp_str": "2026-07-13 12:28:36",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925917161",
+      "properties": {
+        "timestamp": 1783925917.1614482,
+        "timestamp_str": "2026-07-13 12:28:37",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925917527",
+      "properties": {
+        "timestamp": 1783925917.5276709,
+        "timestamp_str": "2026-07-13 12:28:37",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "MEDIUM",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.60",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925918138",
+      "properties": {
+        "timestamp": 1783925918.1389778,
+        "timestamp_str": "2026-07-13 12:28:38",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925918138",
+      "properties": {
+        "timestamp": 1783925918.1389778,
+        "timestamp_str": "2026-07-13 12:28:38",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "MEDIUM",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.60",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925918259",
+      "properties": {
+        "timestamp": 1783925918.2597673,
+        "timestamp_str": "2026-07-13 12:28:38",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "MEDIUM",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.60",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925918380",
+      "properties": {
+        "timestamp": 1783925918.3801343,
+        "timestamp_str": "2026-07-13 12:28:38",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925918504",
+      "properties": {
+        "timestamp": 1783925918.5047512,
+        "timestamp_str": "2026-07-13 12:28:38",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925918504",
+      "properties": {
+        "timestamp": 1783925918.5047512,
+        "timestamp_str": "2026-07-13 12:28:38",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925918624",
+      "properties": {
+        "timestamp": 1783925918.6245782,
+        "timestamp_str": "2026-07-13 12:28:38",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925918744",
+      "properties": {
+        "timestamp": 1783925918.7444165,
+        "timestamp_str": "2026-07-13 12:28:38",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925918873",
+      "properties": {
+        "timestamp": 1783925918.873264,
+        "timestamp_str": "2026-07-13 12:28:38",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925919113",
+      "properties": {
+        "timestamp": 1783925919.1130981,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925919241",
+      "properties": {
+        "timestamp": 1783925919.241078,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925919241",
+      "properties": {
+        "timestamp": 1783925919.241078,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=0.90",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925919360",
+      "properties": {
+        "timestamp": 1783925919.3609848,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925919360",
+      "properties": {
+        "timestamp": 1783925919.3609848,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=0.90",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925919484",
+      "properties": {
+        "timestamp": 1783925919.484978,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925919484",
+      "properties": {
+        "timestamp": 1783925919.484978,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925919608",
+      "properties": {
+        "timestamp": 1783925919.608081,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925919608",
+      "properties": {
+        "timestamp": 1783925919.608081,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925919729",
+      "properties": {
+        "timestamp": 1783925919.7296944,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925919729",
+      "properties": {
+        "timestamp": 1783925919.7296944,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925919855",
+      "properties": {
+        "timestamp": 1783925919.8554416,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925919855",
+      "properties": {
+        "timestamp": 1783925919.8554416,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925919975",
+      "properties": {
+        "timestamp": 1783925919.9751506,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925919975",
+      "properties": {
+        "timestamp": 1783925919.9751506,
+        "timestamp_str": "2026-07-13 12:28:39",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925920095",
+      "properties": {
+        "timestamp": 1783925920.0950959,
+        "timestamp_str": "2026-07-13 12:28:40",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925920095",
+      "properties": {
+        "timestamp": 1783925920.0950959,
+        "timestamp_str": "2026-07-13 12:28:40",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925920222",
+      "properties": {
+        "timestamp": 1783925920.2223253,
+        "timestamp_str": "2026-07-13 12:28:40",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925920222",
+      "properties": {
+        "timestamp": 1783925920.2223253,
+        "timestamp_str": "2026-07-13 12:28:40",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925920342",
+      "properties": {
+        "timestamp": 1783925920.3427384,
+        "timestamp_str": "2026-07-13 12:28:40",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925920342",
+      "properties": {
+        "timestamp": 1783925920.3427384,
+        "timestamp_str": "2026-07-13 12:28:40",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925920470",
+      "properties": {
+        "timestamp": 1783925920.470874,
+        "timestamp_str": "2026-07-13 12:28:40",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925920591",
+      "properties": {
+        "timestamp": 1783925920.5915284,
+        "timestamp_str": "2026-07-13 12:28:40",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925920711",
+      "properties": {
+        "timestamp": 1783925920.7112603,
+        "timestamp_str": "2026-07-13 12:28:40",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925920835",
+      "properties": {
+        "timestamp": 1783925920.8353598,
+        "timestamp_str": "2026-07-13 12:28:40",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "CRITICAL",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | Proximity alert — min distance=0.10m | confidence=1.00",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925921127",
+      "properties": {
+        "timestamp": 1783925921.127314,
+        "timestamp_str": "2026-07-13 12:28:41",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925921251",
+      "properties": {
+        "timestamp": 1783925921.2519782,
+        "timestamp_str": "2026-07-13 12:28:41",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925921374",
+      "properties": {
+        "timestamp": 1783925921.3746338,
+        "timestamp_str": "2026-07-13 12:28:41",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940398, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925921494",
+      "properties": {
+        "timestamp": 1783925921.4944117,
+        "timestamp_str": "2026-07-13 12:28:41",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925921619",
+      "properties": {
+        "timestamp": 1783925921.6197932,
+        "timestamp_str": "2026-07-13 12:28:41",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925921758",
+      "properties": {
+        "timestamp": 1783925921.7585225,
+        "timestamp_str": "2026-07-13 12:28:41",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925921881",
+      "properties": {
+        "timestamp": 1783925921.8814616,
+        "timestamp_str": "2026-07-13 12:28:41",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925922006",
+      "properties": {
+        "timestamp": 1783925922.0065145,
+        "timestamp_str": "2026-07-13 12:28:42",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925922128",
+      "properties": {
+        "timestamp": 1783925922.128249,
+        "timestamp_str": "2026-07-13 12:28:42",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925922255",
+      "properties": {
+        "timestamp": 1783925922.255589,
+        "timestamp_str": "2026-07-13 12:28:42",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925922375",
+      "properties": {
+        "timestamp": 1783925922.3754885,
+        "timestamp_str": "2026-07-13 12:28:42",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925922748",
+      "properties": {
+        "timestamp": 1783925922.748019,
+        "timestamp_str": "2026-07-13 12:28:42",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925922871",
+      "properties": {
+        "timestamp": 1783925922.8717265,
+        "timestamp_str": "2026-07-13 12:28:42",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925923237",
+      "properties": {
+        "timestamp": 1783925923.237844,
+        "timestamp_str": "2026-07-13 12:28:43",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925923237",
+      "properties": {
+        "timestamp": 1783925923.237844,
+        "timestamp_str": "2026-07-13 12:28:43",
+        "hazard_flag": 1,
+        "ppv": 18.984173526523534,
+        "severity": "LOW",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "PPV exceeds threshold (1.0 mm/s) | confidence=0.50",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_VibrationSensorAgent_1783925923361",
+      "properties": {
+        "timestamp": 1783925923.3611176,
+        "timestamp_str": "2026-07-13 12:28:43",
+        "hazard_flag": 1,
+        "ppv": 19.459929566390002,
+        "severity": "CRITICAL",
+        "agent_source": "VibrationSensorAgent",
+        "reason": "Blast vibration hazard detected (PPV=19.46 mm/s) | PPV exceeds threshold (1.0 mm/s) | confidence=1.00",
+        "label": "VibrationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925924118",
+      "properties": {
+        "timestamp": 1783925924.118076,
+        "timestamp_str": "2026-07-13 12:28:44",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925924255",
+      "properties": {
+        "timestamp": 1783925924.2558153,
+        "timestamp_str": "2026-07-13 12:28:44",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925924376",
+      "properties": {
+        "timestamp": 1783925924.3762665,
+        "timestamp_str": "2026-07-13 12:28:44",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925925747",
+      "properties": {
+        "timestamp": 1783925925.7473087,
+        "timestamp_str": "2026-07-13 12:28:45",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 45.57124732227233, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 45.6 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925926113",
+      "properties": {
+        "timestamp": 1783925926.1139183,
+        "timestamp_str": "2026-07-13 12:28:46",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 24.522685120236122, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 24.5 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925926239",
+      "properties": {
+        "timestamp": 1783925926.239241,
+        "timestamp_str": "2026-07-13 12:28:46",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 38.76711895652996, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 38.8 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925926360",
+      "properties": {
+        "timestamp": 1783925926.360096,
+        "timestamp_str": "2026-07-13 12:28:46",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 29.32316796113103, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 29.3 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925926730",
+      "properties": {
+        "timestamp": 1783925926.7306297,
+        "timestamp_str": "2026-07-13 12:28:46",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 18.56835734446452, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 18.6 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925927459",
+      "properties": {
+        "timestamp": 1783925927.4599407,
+        "timestamp_str": "2026-07-13 12:28:47",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 28.802243711493666, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 28.8 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925927584",
+      "properties": {
+        "timestamp": 1783925927.5841212,
+        "timestamp_str": "2026-07-13 12:28:47",
+        "hazard_alert": 1,
+        "severity": "LOW",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 51.16306161271797, 'confidence': 0.5}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | confidence=0.50",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925927706",
+      "properties": {
+        "timestamp": 1783925927.7067082,
+        "timestamp_str": "2026-07-13 12:28:47",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 42.476516129451504, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 42.5 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925927826",
+      "properties": {
+        "timestamp": 1783925927.8262477,
+        "timestamp_str": "2026-07-13 12:28:47",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925928200",
+      "properties": {
+        "timestamp": 1783925928.2005818,
+        "timestamp_str": "2026-07-13 12:28:48",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925928328",
+      "properties": {
+        "timestamp": 1783925928.328384,
+        "timestamp_str": "2026-07-13 12:28:48",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925928949",
+      "properties": {
+        "timestamp": 1783925928.9493876,
+        "timestamp_str": "2026-07-13 12:28:48",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925929083",
+      "properties": {
+        "timestamp": 1783925929.08389,
+        "timestamp_str": "2026-07-13 12:28:49",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940402, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925929462",
+      "properties": {
+        "timestamp": 1783925929.4620204,
+        "timestamp_str": "2026-07-13 12:28:49",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "MEDIUM",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.60",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925929582",
+      "properties": {
+        "timestamp": 1783925929.5826802,
+        "timestamp_str": "2026-07-13 12:28:49",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "MEDIUM",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.60",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925929704",
+      "properties": {
+        "timestamp": 1783925929.7047026,
+        "timestamp_str": "2026-07-13 12:28:49",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925929704",
+      "properties": {
+        "timestamp": 1783925929.7047026,
+        "timestamp_str": "2026-07-13 12:28:49",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925929824",
+      "properties": {
+        "timestamp": 1783925929.824352,
+        "timestamp_str": "2026-07-13 12:28:49",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925929947",
+      "properties": {
+        "timestamp": 1783925929.947446,
+        "timestamp_str": "2026-07-13 12:28:49",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925930071",
+      "properties": {
+        "timestamp": 1783925930.0717669,
+        "timestamp_str": "2026-07-13 12:28:50",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925930191",
+      "properties": {
+        "timestamp": 1783925930.1915786,
+        "timestamp_str": "2026-07-13 12:28:50",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925930313",
+      "properties": {
+        "timestamp": 1783925930.3135517,
+        "timestamp_str": "2026-07-13 12:28:50",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.6781221801940401, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_UltrasonicSensorAgent_1783925930313",
+      "properties": {
+        "timestamp": 1783925930.3135517,
+        "timestamp_str": "2026-07-13 12:28:50",
+        "collision_risk": 1,
+        "steering": "Sharp-Right-Turn",
+        "severity": "HIGH",
+        "agent_source": "UltrasonicSensorAgent",
+        "reason": "Collision avoidance required: Sharp-Right-Turn | confidence=0.75",
+        "label": "NavigationEvent"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925930436",
+      "properties": {
+        "timestamp": 1783925930.4364173,
+        "timestamp_str": "2026-07-13 12:28:50",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925930557",
+      "properties": {
+        "timestamp": 1783925930.5570726,
+        "timestamp_str": "2026-07-13 12:28:50",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "agent_alert_GasSensorAgent_1783925930922",
+      "properties": {
+        "timestamp": 1783925930.9223099,
+        "timestamp_str": "2026-07-13 12:28:50",
+        "hazard_alert": 1,
+        "severity": "MEDIUM",
+        "gas_readings": "{'lpg_hazard': 0, 'co_nox_hazard': 1, 'smoke_env_hazard': 1, 'air_quality_score': 0.67812218019404, 'confidence': 0.6}",
+        "agent_source": "GasSensorAgent",
+        "reason": "CO/NOx toxic gas spike | Smoke+Env hazard | Poor air quality score: 0.7 | confidence=0.60",
+        "label": "GasAnomaly"
+      }
+    },
+    {
+      "id": "TUNNEL_A1",
+      "properties": {
+        "segment_id": "TUNNEL_A1",
+        "name": "Tunnel Section A1",
+        "depth_m": 150.0,
+        "status": "active",
+        "label": "TunnelSegment"
+      }
+    },
+    {
+      "id": "reasoning_event_1783929768758",
+      "properties": {
+        "timestamp": 1783929768.758359,
+        "hypothesis": "CRITICAL Methane build-up detected (12500.0 ppm). Likely caused by ventilation pocket failure or sudden gas pocket release in the heading. | Environmental comfort indices deviated from normal baseline monitoring parameters.",
+        "suggestions": "IMMEDIATELY EVACUATE all personnel from the affected segment.; Activate secondary auxiliary ventilation fans to dilute combustible concentrations.; Power down all non-explosion-proof electrical equipment in the sector.",
+        "segment_id": "TUNNEL_A1",
+        "label": "ReasoningResolution"
+      }
+    },
+    {
+      "id": "TUNNEL_A3",
+      "properties": {
+        "segment_id": "TUNNEL_A3",
+        "name": "Tunnel Section A3",
+        "depth_m": 150.0,
+        "status": "active",
+        "label": "TunnelSegment"
+      }
+    },
+    {
+      "id": "reasoning_event_1783929768846",
+      "properties": {
+        "timestamp": 1783929768.8467443,
+        "hypothesis": "High peak particle velocity (15.80 mm/s) registered. Unexplained seismic vibration, indicating potential rockburst or structural shifts.",
+        "suggestions": "Inspect tunnel roof structures for damage, new cracks, or rock spalling.; Halt all subsequent blasting operations in adjacent segments until geological inspection completes.",
+        "segment_id": "TUNNEL_A3",
+        "label": "ReasoningResolution"
+      }
+    },
+    {
+      "id": "TUNNEL_B1",
+      "properties": {
+        "segment_id": "TUNNEL_B1",
+        "name": "Tunnel Section B1",
+        "depth_m": 150.0,
+        "status": "active",
+        "label": "TunnelSegment"
+      }
+    },
+    {
+      "id": "reasoning_event_1783929768942",
+      "properties": {
+        "timestamp": 1783929768.9429505,
+        "hypothesis": "Robot proximity alert (US minimum distance=0.18m). A wall or physical obstacle is blocking the path.",
+        "suggestions": "Command robotic platform to execute immediate reverse/backup maneuvers.; Recalibrate autonomous navigation steering coefficients.",
+        "segment_id": "TUNNEL_B1",
+        "label": "ReasoningResolution"
+      }
     }
   ],
   "edges": [
@@ -30803,6 +34165,27 @@
       "to": "seg_env_main",
       "properties": {
         "rel_type": "OPERATES_IN"
+      }
+    },
+    {
+      "from": "reasoning_event_1783929768758",
+      "to": "TUNNEL_A1",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
+      }
+    },
+    {
+      "from": "reasoning_event_1783929768846",
+      "to": "TUNNEL_A3",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
+      }
+    },
+    {
+      "from": "reasoning_event_1783929768942",
+      "to": "TUNNEL_B1",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
       }
     }
   ]
