@@ -61,7 +61,7 @@ reasoning_core/
 ├── state.py             # AgentState schema defining context, history, and outputs
 ├── llm_runner.py        # GGUF llama.cpp inference engine with robust Expert Rule fallback
 ├── agent_loop.py        # LangGraph StateGraph state machine and node implementations
-├── chat_assistant.py    # Conversational agent analyzing data inputs and safety measures
+├── chat_assistant.py    # Conversational agent analyzing data inputs, safety measures, and multi-node trends
 ├── demo_reasoning.py    # Workflow demo simulating critical gas, blast, and robot alerts
 ├── demo_chat.py         # Conversational dialogue scenarios demonstrating the safety chat assistant
 └── README.md            # Workflow architecture, usage guidelines, and specifications
@@ -146,7 +146,7 @@ assistant = MineSafetyChatAssistant(
     model_path     = "models/Llama-3.2-3B-Instruct-Q4_K_M.gguf"  # Optional GGUF path
 )
 
-# Chat with safety-first data and regulations analysis
+# Simple single-node query (original API, still works)
 reply = assistant.chat(
     user_message = "What safety measures apply to the current methane readings?",
     segment_id   = "TUNNEL_A1",
@@ -157,4 +157,41 @@ reply = assistant.chat(
 )
 print(reply)
 ```
+
+#### Multi-node streaming query (new)
+
+When calling from the streaming simulation, pass the full sensor readings,
+model predictions, and cross-node trend context so the assistant can reason
+about gradual rises, falling clearance, and cross-node differences:
+
+```python
+reply = assistant.chat(
+    user_message     = "Analyze the 10-timestamp trend across 3 nodes.",
+    segment_id       = "TUNNEL_SIM_01",
+    active_anomalies = {"MQ4_CH4_ppm": 6480, "MQ7_CO_ppm": 36.9},
+    model_predictions = {
+        "methane_hazard": 0,
+        "co_nox_hazard": 1,
+        "vibration_hazard": 1,
+        "predicted_ppv": 11.78,
+        "steering_decision": "Slight-Left-Turn",
+    },
+    sensor_readings = {
+        "MQ4_CH4_ppm": 6480,
+        "MQ7_CO_ppm": 36.9,
+        "temp": 22.0,
+        "predicted_ppv": 11.78,
+        "min_distance": 2.51,
+    },
+    trend_context = (
+        "NODE_1: CH4 379->6480 ppm (rising); CO 10.9->36.9 ppm (rising)\n"
+        "NODE_2: PPV 11.78->25.04 mm/s (rising)\n"
+        "NODE_3: clearance 2.51->0.18 m (falling)"
+    ),
+)
+print(reply)
 ```
+
+The `trend_context` string is included verbatim in the prompt and in the
+structured assessment response, giving the LLM and the rule-engine full
+visibility into the time-series progression across all nodes.
