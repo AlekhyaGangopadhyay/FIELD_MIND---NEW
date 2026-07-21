@@ -41,56 +41,99 @@ def _clamp(value: float, low: float, high: float) -> float:
 
 
 def generate_readings(rng: random.Random, node_index: int, tick: int) -> Dict[str, float]:
-    """Generate one plausible sample with gradual, node-specific hazard drift."""
-    node_scale = (0.96, 1.0, 1.04)[node_index % 3]
-    gas_rise = max(0, tick - 4)
-    heat_rise = max(0, tick - 5)
-    clearance_rise = max(0, tick - 5)
+    """Generate one plausible sample with distinct, node-specific hazard profiles.
 
-    ch4 = rng.gauss(400 * node_scale, 28)
-    co = rng.gauss(12 * node_scale, 1.5)
-    lpg = rng.gauss(80 * node_scale, 6)
-    nox = rng.gauss(2.1, 0.15)
-    benzene = rng.gauss(0.5, 0.05)
-    dust = rng.gauss(35 * node_scale, 2.5)
-    temp = rng.gauss(22 + 0.1 * node_index, 0.15)
-    humidity = rng.gauss(55 + 0.5 * node_index, 0.8)
-    max_charge = rng.gauss(45, 1.5)
-    num_holes = rng.gauss(18, 0.7)
-    distance = rng.gauss(350, 5)
-    min_distance = rng.gauss(2.5, 0.08)
+    The three nodes simulate physically different locations inside the same
+    tunnel.  Their sensor signatures and drift patterns are designed so
+    that the simulation produces a realistic mix of statuses and *different*
+    alarm signatures per node.
 
-    # Node 1: slow gas accumulation. The final samples cross warning ranges.
+    Node 0 — "Gas-leak zone"  (near methane seepage):
+        CH4 and CO ramp steadily.  CO crosses the 25 ppm WARNING
+        threshold around tick 4, giving a brief WARNING window before
+        CH4 crosses the 5 000 ppm CRITICAL line around tick 8.
+        Expected progression:  REVIEW → WARNING → CRITICAL.
+
+    Node 1 — "Moderate downstream exposure"  (diesel exhaust / post-blast):
+        CO sits around 28–30 ppm — just above the 25 ppm warning limit
+        so the co_nox_hazard model and the threshold-based check agree.
+        Everything else stays safe.
+        Expected status:  WARNING throughout.
+
+    Node 2 — "Structural / navigation concern"  (far from gas source):
+        All gas readings are low.  Robot clearance drifts from ~3 m
+        toward ~0.5 m (WARNING zone <1.0 m, but never reaching the
+        CRITICAL <0.3 m stop threshold).  Temperature creeps gently
+        upward.  The co_nox_hazard model fires at safe CO values
+        (inherent model behaviour) so status stays
+        REVIEW_MODEL_DISAGREEMENT.
+    """
+    # ---- common safe baselines ----
+    ch4   = rng.gauss(250, 20)       # safe: <1 000 ppm
+    co    = rng.gauss(5, 1.0)        # safe: <25 ppm
+    lpg   = rng.gauss(50, 5)         # safe: <1 000 ppm
+    nox   = rng.gauss(1.2, 0.15)     # safe: <3 ppm
+    benzene = rng.gauss(0.2, 0.03)   # low baseline
+    dust  = rng.gauss(18, 2.0)       # safe particulate level
+    temp  = rng.gauss(22, 0.2)       # safe: <28 °C
+    humidity = rng.gauss(48, 1.0)    # safe: 15–85 %
+    max_charge  = rng.gauss(25, 1.5) # moderate charge weight
+    num_holes   = rng.gauss(12, 0.5) # typical hole count
+    distance    = rng.gauss(500, 8)  # far from blast face
+    min_distance = rng.gauss(3.0, 0.06)  # comfortable clearance
+
+    # ================================================================
+    # Node 0 — GAS LEAK
+    #   CH4/CO ramp; CO crosses 25 ppm around tick 4 (so co_nox_hazard
+    #   and threshold AGREE → WARNING);  CH4 crosses 5 000 ppm around
+    #   tick 8 → CRITICAL.
+    # ================================================================
     if node_index == 0:
-        ch4 += 180 * tick + 900 * gas_rise
-        co += 0.7 * tick + 4.0 * gas_rise
-        dust += 1.2 * tick
+        ch4 += 80 * tick + max(0, tick - 7) * 5000
+        co  += 5.5 * tick                     # ~5→55 ppm over 10 ticks
+        dust += 0.8 * tick                    # slight correlated dust rise
 
-    # Node 2: thermal and blast-load drift.
+    # ================================================================
+    # Node 1 — MODERATE CO EXPOSURE (e.g. downstream diesel fumes)
+    #   CO steady around 28 ppm → above the 25 ppm warning threshold so
+    #   that the co_nox_hazard model alarm AGREES with the protocol
+    #   check.  This avoids MODEL_ALERT and produces a clean WARNING
+    #   status.  All other sensors remain safely within limits.
+    # ================================================================
     elif node_index == 1:
-        temp += 0.25 * tick + 1.2 * heat_rise
-        humidity += 0.8 * tick + 2.0 * heat_rise
-        max_charge += 2.0 * tick + 7.0 * heat_rise
-        distance -= 5.0 * tick + 24.0 * heat_rise
+        co  = rng.gauss(28 + 0.3 * tick, 0.8)  # 28→31 ppm, always >25
+        ch4 += 8 * np.sin(tick * 0.7)           # tiny sine wobble
+        temp += 0.1 * np.cos(tick * 0.4)
+        humidity += 0.3 * np.sin(tick * 0.6)
 
-    # Node 3: gradually closing robot clearance, creating a late collision risk.
+    # ================================================================
+    # Node 2 — STRUCTURAL / NAV CONCERN (far from gas source)
+    #   All gas values stay low.  Clearance drifts from ~3 m toward
+    #   ~0.5 m (enters WARNING <1.0 m, never reaches CRITICAL <0.3 m).
+    #   Temperature creeps toward the 28 °C caution line.
+    #   co_nox_hazard model fires at safe CO (inherent model behaviour)
+    #   → REVIEW_MODEL_DISAGREEMENT.
+    # ================================================================
     else:
-        min_distance -= 0.12 * tick + 0.45 * clearance_rise
-        max_charge += 0.4 * tick
+        min_distance -= 0.18 * tick + max(0, tick - 5) * 0.12
+        min_distance = max(0.5, min_distance)   # clamp above collision-stop
+        temp += 0.35 * tick                     # reaches ~25–26 °C late
+        humidity += 0.25 * tick                 # mild correlated rise
+        max_charge += 0.3 * tick                # slight charge increase
 
     return {
-        "MQ4_CH4_ppm": round(max(0.0, ch4), 3),
-        "MQ7_CO_ppm": round(max(0.0, co), 3),
-        "MQ2_LPG_ppm": round(max(0.0, lpg), 3),
-        "MQ135_NOx_ppm": round(max(0.0, nox), 3),
+        "MQ4_CH4_ppm":    round(max(0.0, ch4), 3),
+        "MQ7_CO_ppm":     round(max(0.0, co), 3),
+        "MQ2_LPG_ppm":    round(max(0.0, lpg), 3),
+        "MQ135_NOx_ppm":  round(max(0.0, nox), 3),
         "MQ3_Benzene_ppm": round(max(0.0, benzene), 3),
         "PM25_Dust_ugm3": round(max(0.0, dust), 3),
-        "temp": round(temp, 3),
-        "humidity": round(_clamp(humidity, 5.0, 98.0), 3),
-        "max_charge": round(max(1.0, max_charge), 3),
-        "num_holes": round(max(1.0, num_holes), 3),
-        "distance": round(max(30.0, distance), 3),
-        "min_distance": round(_clamp(min_distance, 0.18, 5.0), 3),
+        "temp":           round(temp, 3),
+        "humidity":       round(_clamp(humidity, 5.0, 98.0), 3),
+        "max_charge":     round(max(1.0, max_charge), 3),
+        "num_holes":      round(max(1.0, num_holes), 3),
+        "distance":       round(max(30.0, distance), 3),
+        "min_distance":   round(_clamp(min_distance, 0.18, 5.0), 3),
     }
 
 
