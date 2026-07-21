@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Optional
 
 from .llm_runner import OfflineLLMRunner
 from .agent_loop import ScientificReasoningCore
+from faiss_rag import SafetyProtocolEvaluator
 
 # Add EKG path to import safely
 EKG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "expedition_knowledge_graph")
@@ -51,12 +52,15 @@ class MineSafetyChatAssistant:
         self.llm_runner = self.core.llm_runner
         self.ekg_json_path = self.core.ekg_json_path
         self.rag_retriever = self.core.rag_retriever
+        self.protocol_evaluator = SafetyProtocolEvaluator(self.rag_retriever)
 
     def chat(
         self,
         user_message: str,
         segment_id: str,
-        active_anomalies: Dict[str, Any]
+        active_anomalies: Dict[str, Any],
+        model_predictions: Optional[Dict[str, Any]] = None,
+        sensor_readings: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         Processes a user question, analyzes active readings, retrieves EKG and RAG,
@@ -84,18 +88,16 @@ class MineSafetyChatAssistant:
         else:
             ekg_context = f"EKG context for segment {segment_id} is unavailable."
 
-        # 2. Fetch FAISS RAG safety guidelines
-        rag_context = ""
-        if self.rag_retriever:
-            try:
-                # Retrieve using terms in the user query + active anomalies
-                search_query = f"{user_message} " + " ".join(active_anomalies.keys())
-                results = self.rag_retriever.retrieve(search_query, top_k=2)
-                rag_context = self.rag_retriever.format_context(results)
-            except Exception as e:
-                rag_context = f"FAISS safety regulations retrieval error: {e}"
-        else:
-            rag_context = "FAISS safety guidelines index is unavailable."
+        # 2. Compare raw readings with explicit OSHA/NIOSH/industry limits and
+        # retrieve the supporting FAISS passages in one batched operation.
+        model_predictions = model_predictions or {}
+        assessment = self.protocol_evaluator.assess(
+            readings=sensor_readings or active_anomalies,
+            predictions=model_predictions,
+            top_k=2,
+        )
+        rag_context = assessment.rag_context or "FAISS safety guidelines index is unavailable."
+        protocol_report = assessment.format_report()
 
         # 3. Format Prompt
         prompt = (
@@ -104,6 +106,8 @@ class MineSafetyChatAssistant:
             "and suggest safety measures based on regulations.\n\n"
             f"LOCATION SEGMENT: {segment_id}\n"
             f"ACTIVE DATA INPUTS (anomalies/readings): {active_anomalies}\n"
+            f"MODEL PREDICTIONS: {model_predictions}\n"
+            f"MODEL VS PROTOCOL ASSESSMENT:\n{protocol_report}\n"
             f"SAFETY MEASURES & REGULATIONS (RAG context):\n{rag_context}\n"
             f"EKG HISTORICAL GRAPH CONTEXT:\n{ekg_context}\n\n"
             f"USER QUERY: {user_message}\n\n"
