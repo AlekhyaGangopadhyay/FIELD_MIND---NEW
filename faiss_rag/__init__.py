@@ -31,10 +31,14 @@ from .chunker       import DocumentChunker
 from .embedder      import SentenceEmbedder
 from .index_builder import FAISSIndexBuilder
 from .retriever     import RAGRetriever
+from .safety_evaluator import ProtocolCheck, SafetyAssessment, SafetyProtocolEvaluator
 
 __all__ = [
     "DocumentChunker",
     "SentenceEmbedder",
     "FAISSIndexBuilder",
     "RAGRetriever",
+    "ProtocolCheck",
+    "SafetyAssessment",
+    "SafetyProtocolEvaluator",
 ]
