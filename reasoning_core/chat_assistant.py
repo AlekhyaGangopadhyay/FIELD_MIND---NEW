@@ -91,11 +91,21 @@ class MineSafetyChatAssistant:
         # 2. Compare raw readings with explicit OSHA/NIOSH/industry limits and
         # retrieve the supporting FAISS passages in one batched operation.
         model_predictions = model_predictions or {}
-        assessment = self.protocol_evaluator.assess(
-            readings=sensor_readings or active_anomalies,
-            predictions=model_predictions,
-            top_k=2,
-        )
+        try:
+            assessment = self.protocol_evaluator.assess(
+                readings=sensor_readings or active_anomalies,
+                predictions=model_predictions,
+                top_k=2,
+            )
+        except Exception as exc:
+            # A missing/offline embedding model must not suppress deterministic
+            # safety checks or the operator response.
+            assessment = SafetyProtocolEvaluator().assess(
+                readings=sensor_readings or active_anomalies,
+                predictions=model_predictions,
+                top_k=2,
+            )
+            assessment.rag_context = f"FAISS retrieval unavailable: {exc}"
         rag_context = assessment.rag_context or "FAISS safety guidelines index is unavailable."
         protocol_report = assessment.format_report()
 
@@ -106,6 +116,7 @@ class MineSafetyChatAssistant:
             "and suggest safety measures based on regulations.\n\n"
             f"LOCATION SEGMENT: {segment_id}\n"
             f"ACTIVE DATA INPUTS (anomalies/readings): {active_anomalies}\n"
+            f"ALL SENSOR READINGS: {sensor_readings or active_anomalies}\n"
             f"MODEL PREDICTIONS: {model_predictions}\n"
             f"MODEL VS PROTOCOL ASSESSMENT:\n{protocol_report}\n"
             f"SAFETY MEASURES & REGULATIONS (RAG context):\n{rag_context}\n"
@@ -127,7 +138,14 @@ class MineSafetyChatAssistant:
         if response == "Unknown task type.":
             # If the fallback doesn't support task_type="chat", build conversational response locally
             response = self._build_conversational_response(
-                user_message, segment_id, active_anomalies, ekg_context, rag_context
+                user_message,
+                segment_id,
+                active_anomalies,
+                ekg_context,
+                rag_context,
+                assessment=assessment,
+                sensor_readings=sensor_readings or active_anomalies,
+                model_predictions=model_predictions,
             )
 
         return response
@@ -138,11 +156,27 @@ class MineSafetyChatAssistant:
         segment_id: str,
         active_anomalies: Dict[str, Any],
         ekg_context: str,
-        rag_context: str
+        rag_context: str,
+        assessment=None,
+        sensor_readings: Optional[Dict[str, Any]] = None,
+        model_predictions: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         Fallback conversational response builder analyzing data inputs and safety measures.
         """
+        # The old rule-by-query response is retained for compatibility with
+        # callers that invoke this private method directly. Normal chat turns
+        # now use the structured assessment below.
+        if assessment is not None:
+            return self._build_assessment_response(
+                user_message=user_message,
+                segment_id=segment_id,
+                assessment=assessment,
+                ekg_context=ekg_context,
+                sensor_readings=sensor_readings or active_anomalies,
+                model_predictions=model_predictions or {},
+            )
+
         # Parse query keywords
         q = user_message.lower()
         is_methane = "methane" in q or "ch4" in q or "gas" in q
@@ -228,5 +262,96 @@ class MineSafetyChatAssistant:
 
         for act in actions:
             lines.append(f"1. {act}")
+
+        return "\n".join(lines)
+
+    def _build_assessment_response(
+        self,
+        user_message: str,
+        segment_id: str,
+        assessment,
+        ekg_context: str,
+        sensor_readings: Dict[str, Any],
+        model_predictions: Dict[str, Any],
+    ) -> str:
+        """Render one consistent, dynamic response from protocol checks."""
+        lines = [
+            f"FIELD-MIND safety assessment for {segment_id}",
+            f"Overall status: **{assessment.overall_status}**",
+            "",
+        ]
+
+        active_checks = [
+            check for check in assessment.checks
+            if check.severity != "OK" or check.status not in {"WITHIN_LIMIT", "ALERT"}
+        ]
+        normal_checks = [
+            check for check in assessment.checks
+            if check.severity == "OK" and check.status == "WITHIN_LIMIT"
+        ]
+        if active_checks:
+            lines.append("### Findings")
+            for check in active_checks:
+                signal = ""
+                if check.model_signal is not None:
+                    signal = f" Model output: `{check.model_signal}`."
+                lines.append(
+                    f"- **{check.metric}**: {check.reading:g} {check.unit} - "
+                    f"{check.severity} / {check.status}.{signal} {check.message}"
+                )
+            lines.append("")
+        else:
+            lines.extend([
+                "### Findings",
+                "All supplied numeric readings are within the configured protocol limits, and no model disagreement was detected.",
+                "",
+            ])
+
+        if normal_checks:
+            normal_summary = "; ".join(
+                f"{check.metric} {check.reading:g} {check.unit}"
+                for check in normal_checks
+            )
+            lines.extend([
+                "### Normal checks",
+                f"Within configured limits: {normal_summary}.",
+                "",
+            ])
+
+        # Model outputs that are useful context but are not numeric protocol
+        # checks should still be visible to the operator.
+        model_context = []
+        if "occupancy_state" in model_predictions:
+            occupied = bool(model_predictions["occupancy_state"])
+            model_context.append(f"Occupancy classifier: {'occupied' if occupied else 'unoccupied'}.")
+        if "air_quality_score" in model_predictions:
+            model_context.append(
+                f"Air-quality model score: {float(model_predictions['air_quality_score']):.2f} "
+                "(interpret against the model's documented scale; it is not a direct regulatory limit)."
+            )
+        if "steering_decision" in model_predictions:
+            model_context.append(f"Navigation model decision: {model_predictions['steering_decision']}.")
+        if model_context:
+            lines.append("### Model context")
+            lines.extend(f"- {item}" for item in model_context)
+            lines.append("")
+
+        lines.append("### Recommended actions")
+        if assessment.actions:
+            lines.extend(f"{index}. {action}" for index, action in enumerate(assessment.actions, 1))
+        else:
+            lines.append("1. Maintain baseline monitoring and normal mine operating procedures.")
+        lines.append("")
+
+        if ekg_context:
+            lines.append(f"### Mine memory\n{ekg_context}\n")
+        if assessment.rag_results:
+            evidence = ", ".join(
+                f"{item['source']} ({item['score']:.2f})"
+                for item in assessment.rag_results[:4]
+            )
+            lines.append(f"### Grounding\nFAISS evidence consulted: {evidence}.")
+        else:
+            lines.append("### Grounding\nNo FAISS evidence was returned; treat this as baseline rule-engine output.")
 
         return "\n".join(lines)
