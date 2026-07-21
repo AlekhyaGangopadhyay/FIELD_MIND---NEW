@@ -211,55 +211,103 @@ def build_trend_summary(history: List[Dict[str, Any]]) -> str:
         by_timestamp[item["timestamp"]].append(item["status"])
 
     lines = [
-        f"10-sample trend window across {len(by_node)} nodes; samples are 2 seconds apart.",
-        "Each node reports the same sensor set. Rising/falling describes first-to-last movement.",
+        f"Trend window: {len(next(iter(by_node.values())))} samples across {len(by_node)} nodes, 2 seconds apart.",
+        "All sensor groups tracked per node. Rising/falling describes first-to-last movement.",
+        "",
     ]
     for node_id, rows in sorted(by_node.items()):
         def vals(key):
             return [float(row["readings"].get(key, 0.0)) for row in rows]
 
+        def fmt(key, unit, decimals=0):
+            v = vals(key)
+            f_str = f"{{:.{decimals}f}}"
+            return f"{f_str.format(v[0])}->{f_str.format(v[-1])} {unit} ({_direction(v)})"
+
+        lines.append(f"-- {node_id} --")
         lines.append(
-            f"{node_id}: CH4 {vals('MQ4_CH4_ppm')[0]:.0f}->{vals('MQ4_CH4_ppm')[-1]:.0f} ppm ({_direction(vals('MQ4_CH4_ppm'))}); "
-            f"CO {vals('MQ7_CO_ppm')[0]:.1f}->{vals('MQ7_CO_ppm')[-1]:.1f} ppm ({_direction(vals('MQ7_CO_ppm'))}); "
-            f"PPV {vals('predicted_ppv')[0]:.2f}->{vals('predicted_ppv')[-1]:.2f} mm/s ({_direction(vals('predicted_ppv'))}); "
-            f"clearance {vals('min_distance')[0]:.2f}->{vals('min_distance')[-1]:.2f} m ({_direction(vals('min_distance'))})."
-        )
+            f"  Gas:   CH4 {fmt('MQ4_CH4_ppm','ppm')}; CO {fmt('MQ7_CO_ppm','ppm',1)}; "
+            f"LPG {fmt('MQ2_LPG_ppm','ppm')}; NOx {fmt('MQ135_NOx_ppm','ppm',2)}; "
+            f"Benzene {fmt('MQ3_Benzene_ppm','ppm',2)}; PM2.5 {fmt('PM25_Dust_ugm3','ug/m3')}")
+        lines.append(
+            f"  Env:   Temp {fmt('temp','C',1)}; Humidity {fmt('humidity','%',1)}")
+        lines.append(
+            f"  Blast: Charge {fmt('max_charge','kg',1)}; Holes {fmt('num_holes','',0)}; "
+            f"Distance {fmt('distance','m')}; PPV {fmt('predicted_ppv','mm/s',2)}")
+        lines.append(
+            f"  Nav:   Clearance {fmt('min_distance','m',2)}")
         alarms = [
             key for key in ("methane_hazard", "co_nox_hazard", "smoke_alarm", "anomaly_detected", "vibration_hazard", "sharp_turn_required")
             if sum(int(bool(row["predictions"].get(key, 0))) for row in rows) > 0
         ]
-        lines.append(f"  Model alarm streams observed: {', '.join(alarms) if alarms else 'none' }.")
+        lines.append(f"  Alarms: {', '.join(alarms) if alarms else 'none'}.")
+        lines.append("")
 
     lines.append("Latest node snapshots (values below are node-specific; do not merge them into one physical location):")
     for node_id, rows in sorted(by_node.items()):
         latest = rows[-1]
+        r = latest["readings"]
         lines.append(
-            f"  {node_id}: status={latest['status']}; "
-            f"CH4={latest['readings']['MQ4_CH4_ppm']:.0f} ppm; "
-            f"CO={latest['readings']['MQ7_CO_ppm']:.1f} ppm; "
-            f"temp={latest['readings']['temp']:.1f} C; "
-            f"PPV={latest['readings']['predicted_ppv']:.2f} mm/s; "
-            f"clearance={latest['readings']['min_distance']:.2f} m."
+            f"  {node_id}: status={latest['status']}\n"
+            f"    Gas:   CH4={r['MQ4_CH4_ppm']:.0f} ppm; CO={r['MQ7_CO_ppm']:.1f} ppm; "
+            f"LPG={r['MQ2_LPG_ppm']:.0f} ppm; NOx={r['MQ135_NOx_ppm']:.2f} ppm; "
+            f"Benzene={r['MQ3_Benzene_ppm']:.2f} ppm; PM2.5={r['PM25_Dust_ugm3']:.0f} ug/m3\n"
+            f"    Env:   Temp={r['temp']:.1f}C; Humidity={r['humidity']:.1f}%\n"
+            f"    Blast: Charge={r['max_charge']:.1f}kg; Holes={r['num_holes']:.0f}; "
+            f"Dist={r['distance']:.0f}m; PPV={r['predicted_ppv']:.2f} mm/s\n"
+            f"    Nav:   Clearance={r['min_distance']:.2f} m"
         )
 
     lines.append("Timestamp status progression:")
     for timestamp, statuses in sorted(by_timestamp.items()):
         lines.append(f"  {timestamp}: {', '.join(statuses)}")
 
-    rising_nodes = [
+    rising_gas = [
         node for node, rows in by_node.items()
         if _direction([row["readings"]["MQ4_CH4_ppm"] for row in rows]) == "rising"
-        or _direction([row["readings"]["predicted_ppv"] for row in rows]) == "rising"
+        or _direction([row["readings"]["MQ7_CO_ppm"] for row in rows]) == "rising"
+    ]
+    rising_ppv = [
+        node for node, rows in by_node.items()
+        if _direction([row["readings"]["predicted_ppv"] for row in rows]) == "rising"
     ]
     falling_clearance = [
         node for node, rows in by_node.items()
         if _direction([row["readings"]["min_distance"] for row in rows]) == "falling"
     ]
-    if rising_nodes:
-        lines.append(f"Interpretation: gradual gas/PPV escalation is visible at {', '.join(sorted(rising_nodes))}.")
+    rising_temp = [
+        node for node, rows in by_node.items()
+        if _direction([row["readings"]["temp"] for row in rows]) == "rising"
+    ]
+    rising_dust = [
+        node for node, rows in by_node.items()
+        if _direction([row["readings"]["PM25_Dust_ugm3"] for row in rows]) == "rising"
+    ]
+    rising_charge = [
+        node for node, rows in by_node.items()
+        if _direction([row["readings"]["max_charge"] for row in rows]) == "rising"
+    ]
+    lines.append("")
+    any_trend = False
+    if rising_gas:
+        lines.append(f"Interpretation: gradual gas escalation (CH4/CO) at {', '.join(sorted(rising_gas))}; preemptive ventilation recommended.")
+        any_trend = True
+    if rising_ppv:
+        lines.append(f"Interpretation: PPV is rising at {', '.join(sorted(rising_ppv))}; review blast parameters and structural integrity.")
+        any_trend = True
     if falling_clearance:
         lines.append(f"Interpretation: robot clearance is shrinking at {', '.join(sorted(falling_clearance))}; late-window readings deserve priority.")
-    if not rising_nodes and not falling_clearance:
+        any_trend = True
+    if rising_temp:
+        lines.append(f"Interpretation: temperature trending upward at {', '.join(sorted(rising_temp))}; monitor heat stress thresholds.")
+        any_trend = True
+    if rising_dust:
+        lines.append(f"Interpretation: dust levels increasing at {', '.join(sorted(rising_dust))}; check ventilation adequacy.")
+        any_trend = True
+    if rising_charge:
+        lines.append(f"Interpretation: blast charge weight increasing at {', '.join(sorted(rising_charge))}; review explosive loading plan.")
+        any_trend = True
+    if not any_trend:
         lines.append("Interpretation: no strong monotonic hazard trend was detected in this window.")
     return "\n".join(lines)
 
@@ -275,6 +323,8 @@ def aggregate_latest(history: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]
         "MQ7_CO_ppm": max(row["readings"]["MQ7_CO_ppm"] for row in rows),
         "MQ2_LPG_ppm": max(row["readings"]["MQ2_LPG_ppm"] for row in rows),
         "MQ135_NOx_ppm": max(row["readings"]["MQ135_NOx_ppm"] for row in rows),
+        "MQ3_Benzene_ppm": max(row["readings"]["MQ3_Benzene_ppm"] for row in rows),
+        "PM25_Dust_ugm3": max(row["readings"]["PM25_Dust_ugm3"] for row in rows),
         "temp": max(row["readings"]["temp"] for row in rows),
         "humidity": max(row["readings"]["humidity"] for row in rows),
         "predicted_ppv": max(row["readings"]["predicted_ppv"] for row in rows),
@@ -344,6 +394,7 @@ def run_simulation(args: argparse.Namespace) -> None:
     for tick in range(args.timestamps):
         loop_started = time.perf_counter()
         timestamp = (start + timedelta(seconds=tick * args.interval)).isoformat()
+        print(f"\n[t={tick:02d} | +{tick * args.interval:.0f}s] " + "-" * 70)
         for node_index in range(args.nodes):
             node_id = f"{tunnel_id}_NODE_{node_index + 1}"
             readings = generate_readings(rng, node_index, tick)
@@ -358,15 +409,18 @@ def run_simulation(args: argparse.Namespace) -> None:
                 "predictions": result["predictions"],
                 "status": check.overall_status,
             })
-            print(
-                f"[t={tick:02d} +{tick * args.interval:>4.0f}s] {node_id:<22} "
-                f"CH4={check_readings['MQ4_CH4_ppm']:>7.0f} "
-                f"CO={check_readings['MQ7_CO_ppm']:>5.1f} "
-                f"PPV={check_readings['predicted_ppv']:>6.2f} "
-                f"clearance={check_readings['min_distance']:>4.2f}m "
-                f"status={check.overall_status}"
-            )
+            r = check_readings
+            print(f"  {node_id}")
+            print(f"    Gas:   CH4={r['MQ4_CH4_ppm']:>7.0f}  CO={r['MQ7_CO_ppm']:>5.1f}  "
+                  f"LPG={r['MQ2_LPG_ppm']:>6.1f}  NOx={r['MQ135_NOx_ppm']:>4.2f}  "
+                  f"C6H6={r['MQ3_Benzene_ppm']:>4.2f}  PM2.5={r['PM25_Dust_ugm3']:>5.1f}")
+            print(f"    Env:   T={r['temp']:>5.1f}C  RH={r['humidity']:>5.1f}%  "
+                  f"Blast: Chg={r['max_charge']:>5.1f}kg  #{r['num_holes']:>2.0f}holes  "
+                  f"D={r['distance']:>5.0f}m -> PPV={r['predicted_ppv']:>6.2f}mm/s")
+            print(f"    Nav:   Clr={r['min_distance']:>4.2f}m  "
+                  f">> {check.overall_status}")
 
+        sys.stdout.flush()
         if not args.fast and tick < args.timestamps - 1:
             remaining = args.interval - (time.perf_counter() - loop_started)
             if remaining > 0:
