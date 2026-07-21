@@ -166,6 +166,41 @@ context = retriever.format_context(results, max_chars=3000)
 print(context)
 ```
 
+### Compare model predictions with protocols
+
+The evaluator is the bridge between Tier-1 model output and the chatbot. It
+keeps safety decisions deterministic while FAISS supplies the supporting
+OSHA/NIOSH/IS/ISEE/AS-4024 passages. It also flags possible model misses and
+false alarms for later calibration work:
+
+```python
+from faiss_rag import SafetyProtocolEvaluator
+
+evaluator = SafetyProtocolEvaluator(retriever)
+assessment = evaluator.assess(
+    readings={
+        "MQ4_CH4_ppm": 12500,
+        "MQ7_CO_ppm": 35,
+        "predicted_ppv": 2.4,
+        "min_distance": 0.8,
+    },
+    predictions={
+        "methane_hazard": 1,
+        "co_nox_hazard": 0,
+        "vibration_hazard": 1,
+        "sharp_turn_required": 0,
+    },
+)
+
+print(assessment.overall_status)  # CRITICAL, WARNING, SAFE, or REVIEW_MODEL_DISAGREEMENT
+print(assessment.format_report())
+```
+
+For a streaming turn, `RAGRetriever.retrieve_many()` embeds all active domain
+queries in one batch. Repeated queries are kept in a small bounded in-process
+cache, reducing embedding overhead without changing the existing `retrieve()`
+API.
+
 ### Sample output
 
 ```
