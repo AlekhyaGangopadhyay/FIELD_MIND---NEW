@@ -175,7 +175,6 @@ class SafetyProtocolEvaluator:
         expected_alert_at: Optional[float] = None,
         higher_is_worse: bool = True,
     ) -> None:
-        queries.append(query)
         protocol_alert = reading > limit if higher_is_worse else reading < limit
         severity = "WARNING" if protocol_alert else "OK"
         message = warning_message if protocol_alert else f"Within {limit_text}."
@@ -186,6 +185,11 @@ class SafetyProtocolEvaluator:
             severity = "CRITICAL"
             message = critical_message
         model_alert = self._is_alert(model_signal)
+        # Normal readings do not need a regulatory retrieval round-trip. Keep
+        # the deterministic check, but retrieve grounding only for an active
+        # protocol condition or a model alarm that needs verification.
+        if protocol_alert or model_alert:
+            queries.append(query)
         comparison_limit = expected_alert_at if expected_alert_at is not None else limit
         expected_model_alert = (
             reading > comparison_limit if higher_is_worse else reading < comparison_limit
@@ -216,6 +220,39 @@ class SafetyProtocolEvaluator:
             action=action if protocol_alert else "",
         ))
 
+    def _model_only_check(
+        self,
+        checks: List[ProtocolCheck],
+        actions: List[str],
+        queries: List[str],
+        *,
+        domain: str,
+        metric: str,
+        signal: Any,
+        source: str,
+        message: str,
+        action: str,
+        query: str,
+    ) -> None:
+        """Record a model alarm when no numeric protocol limit confirms it."""
+        if not self._is_alert(signal):
+            return
+        queries.append(query)
+        checks.append(ProtocolCheck(
+            domain=domain,
+            metric=metric,
+            reading=1.0,
+            unit="model flag",
+            protocol_limit="No direct numeric threshold supplied",
+            source=source,
+            severity="WARNING",
+            status="MODEL_SIGNAL",
+            model_signal=signal,
+            message=message,
+            action=action,
+        ))
+        actions.append(action)
+
     def _evaluate_gas(self, r, p, checks, actions, queries):
         ch4 = self._value(r, "MQ4_CH4_ppm", "ch4_ppm", "methane_ppm")
         if ch4 is not None:
@@ -233,7 +270,7 @@ class SafetyProtocolEvaluator:
                 critical=200, source="OSHA/NIOSH", model_signal=self._signal(p, "co_nox_hazard"),
                 action="Investigate the source, increase ventilation, and prevent re-entry until CO is below 25 ppm.",
                 query="OSHA NIOSH carbon monoxide CO post blast re-entry ventilation limit",
-                queries=queries, warning_message="Above the configured post-blast re-entry limit.",
+                queries=queries, warning_message="Above the post-blast re-entry limit; compare with the NIOSH REL of 35 ppm and OSHA PEL of 50 ppm.",
                 critical_message="Danger range; evacuate personnel and initiate emergency ventilation.")
         lpg = self._value(r, "MQ2_LPG_ppm", "lpg_ppm")
         if lpg is not None:
@@ -248,42 +285,64 @@ class SafetyProtocolEvaluator:
         if nox is not None:
             self._check(checks, actions, domain="gas", metric="NOx/NO2", reading=nox,
                 unit="ppm", limit=3, limit_text="NIOSH NO2 TWA 3 ppm",
-                critical=5, source="NIOSH", model_signal=self._signal(p, "co_nox_hazard"),
+                critical=5, source="NIOSH", model_signal=None,
                 action="Increase ventilation and investigate diesel or post-blast fumes.",
                 query="NIOSH NO2 NOx underground mine exposure limit blast fumes",
                 queries=queries, warning_message="Exceeds the NIOSH NO2 time-weighted reference.",
                 critical_message="At or above the NIOSH short-term reference; restrict exposure and ventilate.")
+        self._model_only_check(
+            checks, actions, queries,
+            domain="gas", metric="smoke/fire alarm",
+            signal=self._signal(p, "smoke_alarm"), source="FIELD-MIND smoke model",
+            message="The smoke/fire classifier raised an alarm; confirm with dust, visibility, and fire/gas sensors.",
+            action="Inspect for smoke, fire, or abnormal dust and keep personnel clear until the alarm is verified.",
+            query="underground mine smoke fire dust emergency response ventilation protocol",
+        )
 
     def _evaluate_environment(self, r, p, checks, actions, queries):
         temp = self._value(r, "temp", "temperature_c", "temperature")
+        humidity = self._value(r, "humidity", "humidity_pct", "relative_humidity")
+        env_signal = self._signal(p, "anomaly_detected")
+        temp_alert = temp is not None and (temp > 28 or temp < 5)
+        humidity_alert = humidity is not None and (humidity > 85 or humidity < 15)
         if temp is not None:
             self._check(checks, actions, domain="environment", metric="temperature", reading=temp,
-                unit="°C", limit=28, limit_text="OSHA/NIOSH warning reference 28 °C",
-                critical=35, source="OSHA/NIOSH/MHSA", model_signal=self._signal(p, "anomaly_detected"),
+                unit="°C", limit=28, limit_text="warning reference 28 °C; danger reference 35 °C",
+                critical=35, source="OSHA/NIOSH/MHSA",
                 action="Increase cooling and enforce hydration/rest cycles for workers.",
                 query="OSHA NIOSH MHSA underground mine temperature heat stress wet bulb protocol",
                 queries=queries, warning_message="Heat-stress caution range; increase environmental controls.",
                 critical_message="Danger range; restrict work and activate engineering heat controls.",
-                expected_alert_at=28)
-        humidity = self._value(r, "humidity", "humidity_pct", "relative_humidity")
+                expected_alert_at=28,
+                model_signal=env_signal if temp_alert else None)
         if humidity is not None:
             self._check(checks, actions, domain="environment", metric="relative humidity", reading=humidity,
                 unit="%", limit=85, limit_text="operating range 15–85% RH",
-                critical=90, source="FIELD-MIND environmental protocol", model_signal=self._signal(p, "anomaly_detected"),
+                critical=90, source="FIELD-MIND environmental protocol",
                 action="Control humidity and check condensation, slip, and heat-stress risk.",
                 query="underground mine humidity heat stress OSHA environmental safety limit",
                 queries=queries, warning_message="Outside the normal operating range.",
-                critical_message="Extreme humidity; treat heat stress and equipment condensation as immediate risks.")
+                critical_message="Extreme humidity; treat heat stress and equipment condensation as immediate risks.",
+                model_signal=env_signal if humidity_alert else None)
+        if env_signal is not None and not temp_alert and not humidity_alert:
+            self._model_only_check(
+                checks, actions, queries,
+                domain="environment", metric="isolation-forest anomaly",
+                signal=env_signal, source="FIELD-MIND Isolation Forest",
+                message="The anomaly detector flagged the environmental feature pattern even though simple temperature and humidity limits are within range.",
+                action="Review recent environmental history, rolling features, and sensor calibration before escalating the event.",
+                query="underground mine environmental anomaly heat humidity sensor validation protocol",
+            )
 
     def _evaluate_vibration(self, r, p, checks, actions, queries):
         ppv = self._value(r, "predicted_ppv", "ppv", "PPV")
         if ppv is not None:
             self._check(checks, actions, domain="vibration", metric="PPV", reading=ppv,
-                unit="mm/s", limit=1, limit_text="FIELD-MIND early-warning threshold 1 mm/s",
+                unit="mm/s", limit=1, limit_text="FIELD-MIND early warning 1; IS 6922 industrial 5; residential 12.5 mm/s",
                 critical=25, source="IS 6922/ISEE", model_signal=self._signal(p, "vibration_hazard"),
                 action="Pause further blasting and inspect the tunnel and nearby structures.",
                 query="IS 6922 ISEE USBM blast vibration PPV underground mine safety limit protocol",
-                queries=queries, warning_message="Above the conservative FIELD-MIND early-warning threshold.",
+                queries=queries, warning_message="Elevated: above the FIELD-MIND early-warning and industrial reference; structure type and frequency are needed for final classification.",
                 critical_message="High damage-risk range under IS 6922; stop blasting and perform structural inspection.")
 
     def _evaluate_navigation(self, r, p, checks, actions, queries):
