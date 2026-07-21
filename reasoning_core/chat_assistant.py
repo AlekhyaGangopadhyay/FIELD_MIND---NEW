@@ -61,6 +61,7 @@ class MineSafetyChatAssistant:
         active_anomalies: Dict[str, Any],
         model_predictions: Optional[Dict[str, Any]] = None,
         sensor_readings: Optional[Dict[str, Any]] = None,
+        trend_context: Optional[str] = None,
     ) -> str:
         """
         Processes a user question, analyzes active readings, retrieves EKG and RAG,
@@ -119,6 +120,7 @@ class MineSafetyChatAssistant:
             f"ALL SENSOR READINGS: {sensor_readings or active_anomalies}\n"
             f"MODEL PREDICTIONS: {model_predictions}\n"
             f"MODEL VS PROTOCOL ASSESSMENT:\n{protocol_report}\n"
+            f"MULTI-NODE TIME-SERIES TREND:\n{trend_context or 'No historical trend supplied.'}\n"
             f"SAFETY MEASURES & REGULATIONS (RAG context):\n{rag_context}\n"
             f"EKG HISTORICAL GRAPH CONTEXT:\n{ekg_context}\n\n"
             f"USER QUERY: {user_message}\n\n"
@@ -146,6 +148,7 @@ class MineSafetyChatAssistant:
                 assessment=assessment,
                 sensor_readings=sensor_readings or active_anomalies,
                 model_predictions=model_predictions,
+                trend_context=trend_context,
             )
 
         return response
@@ -160,6 +163,7 @@ class MineSafetyChatAssistant:
         assessment=None,
         sensor_readings: Optional[Dict[str, Any]] = None,
         model_predictions: Optional[Dict[str, Any]] = None,
+        trend_context: Optional[str] = None,
     ) -> str:
         """
         Fallback conversational response builder analyzing data inputs and safety measures.
@@ -175,6 +179,7 @@ class MineSafetyChatAssistant:
                 ekg_context=ekg_context,
                 sensor_readings=sensor_readings or active_anomalies,
                 model_predictions=model_predictions or {},
+                trend_context=trend_context,
             )
 
         # Parse query keywords
@@ -273,6 +278,7 @@ class MineSafetyChatAssistant:
         ekg_context: str,
         sensor_readings: Dict[str, Any],
         model_predictions: Dict[str, Any],
+        trend_context: Optional[str] = None,
     ) -> str:
         """Render one consistent, dynamic response from protocol checks."""
         lines = [
@@ -334,6 +340,11 @@ class MineSafetyChatAssistant:
         if model_context:
             lines.append("### Model context")
             lines.extend(f"- {item}" for item in model_context)
+            lines.append("")
+
+        if trend_context:
+            lines.append("### Multi-node trend")
+            lines.append(trend_context)
             lines.append("")
 
         lines.append("### Recommended actions")
