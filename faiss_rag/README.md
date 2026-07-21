@@ -201,6 +201,27 @@ queries in one batch. Repeated queries are kept in a small bounded in-process
 cache, reducing embedding overhead without changing the existing `retrieve()`
 API.
 
+### Streaming simulation usage
+
+The multi-node streaming simulation (`unified_demo/streaming_safety_simulation.py`)
+instantiates a `SafetyProtocolEvaluator` and calls `.assess()` for every
+node × timestamp sample (30 calls in the default 3-node × 10-timestamp run).
+Each call produces a status (`SAFE`, `WARNING`, `CRITICAL`,
+`REVIEW_MODEL_DISAGREEMENT`) that is recorded in the history JSON and fed
+into the final trend summary:
+
+```python
+from faiss_rag import SafetyProtocolEvaluator
+
+evaluator = SafetyProtocolEvaluator()          # retriever is optional
+for tick in range(10):
+    for node in range(3):
+        readings = generate_readings(rng, node, tick)
+        result   = evaluate_sample(monitor, readings)
+        check    = evaluator.assess(result["readings"], result["predictions"])
+        # check.overall_status → "SAFE" | "WARNING" | "CRITICAL" | "REVIEW_MODEL_DISAGREEMENT"
+```
+
 ### Sample output
 
 ```
