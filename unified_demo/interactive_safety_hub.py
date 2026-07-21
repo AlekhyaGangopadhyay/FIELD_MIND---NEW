@@ -240,7 +240,29 @@ def main():
 
     print("\n  🔍 Analyzing data inputs, EKG records, and FAISS safety regulations...")
     t0 = time.time()
-    response = assistant.chat(user_query, segment_id, active_anomalies)
+    all_readings = {
+        "MQ4_CH4_ppm": ch4,
+        "MQ7_CO_ppm": co,
+        "MQ2_LPG_ppm": lpg,
+        "MQ135_NOx_ppm": nox,
+        "temp": temp,
+        "humidity": humidity,
+        "predicted_ppv": vib_results.get("predicted_ppv", 0.0),
+        "min_distance": min_dist,
+    }
+    model_predictions = {
+        **gas_results,
+        **env_results,
+        **vib_results,
+        **ultra_results,
+    }
+    response = assistant.chat(
+        user_query,
+        segment_id,
+        active_anomalies,
+        model_predictions=model_predictions,
+        sensor_readings=all_readings,
+    )
     elapsed = time.time() - t0
 
     print("\n" + "=" * 80)
