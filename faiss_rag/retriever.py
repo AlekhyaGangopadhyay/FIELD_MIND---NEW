@@ -22,6 +22,7 @@ The RAGRetriever is designed to be called from:
 
 import os
 import time
+from collections import OrderedDict
 from typing import List, Dict, Any, Optional
 
 import numpy as np
@@ -60,6 +61,12 @@ class RAGRetriever:
         self._builder  = FAISSIndexBuilder.load(index_path, metadata_path)
         self._query_count  = 0
         self._total_query_ms = 0.0
+        self._cache_hits = 0
+        # Query text is repeated frequently by the streaming agents.  A small
+        # in-process cache avoids paying the embedding cost again for identical
+        # questions while keeping memory bounded for Jetson-class devices.
+        self._query_cache: "OrderedDict[tuple, List[Dict[str, Any]]]" = OrderedDict()
+        self._max_cache_entries = 128
 
     # ------------------------------------------------------------------
     # Core retrieval
@@ -85,55 +92,129 @@ class RAGRetriever:
         list of result dicts:
             {rank, score, text, source, chunk_id, start_char, end_char}
         """
+        self._validate_query_args(query, top_k, min_score)
+        cache_key = (query.strip(), top_k, float(min_score))
+        cached = self._query_cache.get(cache_key)
+        if cached is not None:
+            self._cache_hits += 1
+            self._query_cache.move_to_end(cache_key)
+            return [dict(item) for item in cached]
+
         t0 = time.time()
+        query_vec = self._embedder.embed(query).astype(np.float32)
+        results = self._search_vectors(query_vec, top_k=top_k, min_score=min_score)[0]
+        self._record_query(time.time() - t0)
+        self._cache_put(cache_key, results)
+        return [dict(item) for item in results]
 
-        # Embed query
-        query_vec = self._embedder.embed(query)   # shape (1, 384)
-        query_vec = query_vec.astype(np.float32)
+    def retrieve_many(
+        self,
+        queries: List[str],
+        top_k: int = 5,
+        min_score: float = 0.0,
+    ) -> Dict[str, List[Dict[str, Any]]]:
+        """Retrieve several queries in one embedding and FAISS search batch.
 
-        # FAISS search
-        scores, indices = self._builder.index.search(query_vec, top_k)
+        The reasoning core commonly asks for gas, vibration, environment, and
+        navigation guidance in the same turn.  Encoding those queries in one
+        batch materially reduces Python/model overhead compared with calling
+        :meth:`retrieve` once per domain.  Results are returned under the
+        original query strings, preserving a simple public API.
+        """
+        if not isinstance(queries, list):
+            raise TypeError("queries must be a list of strings")
+        self._validate_query_args("batch", top_k, min_score)
 
-        # Build results — deduplicate overlapping chunks from the same source
-        seen: List[Dict[str, Any]] = []   # track (source, start_char) of included chunks
-        results: List[Dict[str, Any]] = []
-        rank_out = 1
+        unique_queries = list(dict.fromkeys(q.strip() for q in queries if isinstance(q, str) and q.strip()))
+        if not unique_queries:
+            return {}
 
-        for score, idx in zip(scores[0], indices[0]):
-            if idx < 0:                    # FAISS returns -1 for empty slots
-                continue
-            if float(score) < min_score:
-                continue
+        output: Dict[str, List[Dict[str, Any]]] = {}
+        missing: List[str] = []
+        for query in unique_queries:
+            cache_key = (query, top_k, float(min_score))
+            cached = self._query_cache.get(cache_key)
+            if cached is None:
+                missing.append(query)
+            else:
+                self._cache_hits += 1
+                self._query_cache.move_to_end(cache_key)
+                output[query] = [dict(item) for item in cached]
 
-            meta = self._builder.metadata[idx]
-            # Skip if a chunk from the same source with very close start_char already included
-            is_duplicate = any(
-                s["source"] == meta["source"]
-                and abs(s["start_char"] - meta["start_char"]) < 300
-                for s in seen
-            )
-            if is_duplicate:
-                continue
+        if missing:
+            t0 = time.time()
+            vectors = self._embedder.embed(missing).astype(np.float32)
+            batch_results = self._search_vectors(vectors, top_k=top_k, min_score=min_score)
+            self._record_query(time.time() - t0, count=len(missing))
+            for query, results in zip(missing, batch_results):
+                cache_key = (query, top_k, float(min_score))
+                self._cache_put(cache_key, results)
+                output[query] = [dict(item) for item in results]
 
-            seen.append({"source": meta["source"], "start_char": meta["start_char"]})
-            results.append({
-                "rank"      : rank_out,
-                "score"     : float(score),
-                "text"      : meta["text"],
-                "source"    : meta["source"],
-                "chunk_id"  : meta["chunk_id"],
-                "start_char": meta["start_char"],
-                "end_char"  : meta["end_char"],
-            })
-            rank_out += 1
-            if rank_out > top_k:
-                break
+        return {query: output[query] for query in unique_queries}
 
-        elapsed_ms = (time.time() - t0) * 1000
-        self._query_count    += 1
-        self._total_query_ms += elapsed_ms
+    @staticmethod
+    def _validate_query_args(query: str, top_k: int, min_score: float) -> None:
+        if not isinstance(query, str) or not query.strip():
+            raise ValueError("query must be a non-empty string")
+        if not isinstance(top_k, int) or top_k < 1:
+            raise ValueError("top_k must be a positive integer")
+        if not isinstance(min_score, (int, float)):
+            raise TypeError("min_score must be numeric")
 
-        return results
+    def _search_vectors(
+        self,
+        vectors: np.ndarray,
+        top_k: int,
+        min_score: float,
+    ) -> List[List[Dict[str, Any]]]:
+        if self._builder.index is None or self._builder.total_vectors == 0:
+            return [[] for _ in range(len(vectors))]
+
+        # Search more candidates than the requested K because adjacent chunks
+        # are intentionally deduplicated after the FAISS search.
+        candidate_k = min(self._builder.total_vectors, max(top_k, top_k * 4))
+        scores, indices = self._builder.index.search(vectors, candidate_k)
+        all_results: List[List[Dict[str, Any]]] = []
+
+        for row_scores, row_indices in zip(scores, indices):
+            seen: List[Dict[str, Any]] = []
+            results: List[Dict[str, Any]] = []
+            for score, idx in zip(row_scores, row_indices):
+                if idx < 0 or float(score) < min_score:
+                    continue
+                meta = self._builder.metadata[int(idx)]
+                is_duplicate = any(
+                    item["source"] == meta["source"]
+                    and abs(item["start_char"] - meta["start_char"]) < 300
+                    for item in seen
+                )
+                if is_duplicate:
+                    continue
+                seen.append({"source": meta["source"], "start_char": meta["start_char"]})
+                results.append({
+                    "rank": len(results) + 1,
+                    "score": float(score),
+                    "text": meta["text"],
+                    "source": meta["source"],
+                    "chunk_id": meta["chunk_id"],
+                    "start_char": meta["start_char"],
+                    "end_char": meta["end_char"],
+                })
+                if len(results) >= top_k:
+                    break
+            all_results.append(results)
+        return all_results
+
+    def _cache_put(self, key: tuple, results: List[Dict[str, Any]]) -> None:
+        self._query_cache[key] = [dict(item) for item in results]
+        self._query_cache.move_to_end(key)
+        while len(self._query_cache) > self._max_cache_entries:
+            self._query_cache.popitem(last=False)
+
+    def _record_query(self, elapsed_seconds: float, count: int = 1) -> None:
+        self._query_count += count
+        self._total_query_ms += elapsed_seconds * 1000
 
     # ------------------------------------------------------------------
     # Formatting for LLM context
@@ -259,5 +340,6 @@ class RAGRetriever:
             "total_chunks"   : self.total_chunks,
             "embed_dim"      : self._builder.embed_dim,
             "queries_made"   : self._query_count,
+            "cache_hits"     : self._cache_hits,
             "avg_query_ms"   : round(avg_ms, 2),
         }
