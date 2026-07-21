@@ -72,6 +72,17 @@ class RAGRetriever:
     # Core retrieval
     # ------------------------------------------------------------------
 
+    def warmup(self) -> float:
+        """Load the embedding model before the first operator query.
+
+        Returns the warm-up time in milliseconds. This keeps the first chat
+        response from appearing artificially slow because model initialization
+        is mixed into query latency.
+        """
+        t0 = time.perf_counter()
+        self._embedder.embed("underground mine safety warmup")
+        return round((time.perf_counter() - t0) * 1000, 2)
+
     def retrieve(
         self,
         query : str,
