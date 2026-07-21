@@ -62,6 +62,13 @@ def main():
     print("\n[Setup] Loading safety retrieval resources...")
     try:
         assistant = MineSafetyChatAssistant(workspace_root=WORKSPACE_ROOT)
+        if assistant.rag_retriever:
+            print("[Setup] Loading the local FAISS embedding model (first run may take several seconds)...")
+            try:
+                warmup_ms = assistant.rag_retriever.warmup()
+                print(f"[Setup] FAISS embedder ready in {warmup_ms:.0f} ms.")
+            except Exception as warmup_error:
+                print(f"[Setup] FAISS warm-up skipped: {warmup_error}")
         print("  ✓ Conversational resources loaded successfully.")
     except Exception as e:
         print(f"  ✗ Failed to initialize chat assistant: {e}")
@@ -75,6 +82,8 @@ def main():
     segment_id = input("Enter Tunnel Segment ID [default: TUNNEL_A1]: ").strip().upper()
     if not segment_id:
         segment_id = "TUNNEL_A1"
+    elif segment_id.isdigit():
+        segment_id = f"TUNNEL_{segment_id}"
 
     # Gas concentrations
     print("\n--- [Gas Sensor Features] ---")
@@ -222,9 +231,13 @@ def main():
         active_anomalies["MQ2_LPG_ppm"] = lpg
     if gas_results.get("co_nox_hazard") == 1 or co > 25:
         active_anomalies["MQ7_CO_ppm"] = co
+    if gas_results.get("smoke_alarm") == 1:
+        active_anomalies["smoke_alarm"] = 1
     if env_results.get("anomaly_detected") == 1 or temp > 28.0:
         active_anomalies["temp"] = temp
         active_anomalies["humidity"] = humidity
+        if env_results.get("anomaly_detected") == 1:
+            active_anomalies["environment_model_anomaly"] = 1
     if vib_results.get("vibration_hazard") == 1 or vib_results.get("predicted_ppv", 0.0) > 1.0:
         active_anomalies["predicted_ppv"] = vib_results.get("predicted_ppv", 0.0)
     if ultra_results.get("sharp_turn_required") == 1 or min_dist < 0.5:
