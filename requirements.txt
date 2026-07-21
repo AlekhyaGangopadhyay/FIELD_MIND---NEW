@@ -1,0 +1,25 @@
+# FIELD-MIND runtime and training dependencies
+# Python 3.10+ recommended
+
+# Core data and ML stack
+numpy>=1.24
+pandas>=2.0
+scikit-learn>=1.3
+joblib>=1.3
+openpyxl>=3.1
+
+# Expedition Knowledge Graph
+networkx>=3.0
+
+# SciSense Protocol and ATR multimodal encoders
+torch>=2.0
+
+# FAISS RAG and local sentence embeddings
+faiss-cpu>=1.7.4
+sentence-transformers>=2.7
+
+# Scientific Reasoning Core
+langgraph>=0.2
+
+# Optional local GGUF inference. Install separately if using model_path:
+# llama-cpp-python>=0.2
