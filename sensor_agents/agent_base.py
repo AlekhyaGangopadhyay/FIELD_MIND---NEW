@@ -331,7 +331,7 @@ class SensorAgentBase(ABC):
             self.model = new_model
 
             print(
-                f"\n  ★ [{self.agent_name}] LEARNING UPDATE — "
+                f"\n  [*] [{self.agent_name}] LEARNING UPDATE -- "
                 f"Refit #{self._metrics['refit_count']} on {len(X)} samples | "
                 f"In-sample accuracy: {in_sample_acc:.3f}"
             )
