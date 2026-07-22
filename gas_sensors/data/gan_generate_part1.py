@@ -2,10 +2,11 @@
 gan_generate_part1.py — PyTorch Conditional GAN (CGAN) for ESP32 Sensor Telemetry Class Balancing
 
 Loads: gas_sensors/data/mine_part1_clean.csv
-Target Class: is_warmup (0: Steady-State Baseline, 1: Warmup/Transient State)
+Target Class: is_warmup (False: Steady-State Baseline, True: Warmup/Transient State)
 
-Calculates N_max = max count across state classes.
-Synthesizes minority class samples (Warmup/Transient) using a trained PyTorch CGAN until both classes have N_max rows.
+Calculates N_max = max count across state classes (1721).
+Synthesizes minority class samples (is_warmup=True) using a trained PyTorch CGAN until both classes have N_max rows.
+Fills ALL 12 columns for all 3442 rows with zero NaNs and accurate domain bounds.
 
 Outputs: gas_sensors/data/mine_part1_balanced_gan.csv
 """
@@ -64,8 +65,15 @@ def run_part1_gan():
     print(f"Loaded input data: {INPUT_CSV} ({len(df)} rows)")
 
     feature_cols = ["air_quality", "smoke", "alcohol", "flamable_gas", "MQ136_raw", "MQ7_raw", "t", "h"]
+    for col in feature_cols:
+        df[col] = df.groupby("is_warmup")[col].transform(lambda x: x.fillna(x.median()))
+        df[col] = df[col].fillna(df[col].median())
+
+    if "dt_s" in df.columns:
+        df["dt_s"] = df["dt_s"].fillna(0.0)
+
     X_raw = df[feature_cols].values
-    y_raw = df["is_warmup"].values.astype(int)
+    y_raw = df["is_warmup"].astype(int).values
 
     num_classes = 2
     noise_dim = 32
@@ -75,7 +83,7 @@ def run_part1_gan():
     N_max = max(class_counts.values())
     print("\nOriginal Class Distribution:")
     for cls in range(num_classes):
-        cls_name = "Steady State (0)" if cls == 0 else "Warmup/Transient (1)"
+        cls_name = "Steady State (False)" if cls == 0 else "Warmup/Transient (True)"
         print(f"  Class {cls} ({cls_name}): {class_counts.get(cls, 0)} samples")
     print(f"Target Count per Class (N_max): {N_max} samples")
 
@@ -95,7 +103,7 @@ def run_part1_gan():
     optimizerD = optim.Adam(netD.parameters(), lr=2e-4, betas=(0.5, 0.999))
     criterion = nn.BCEWithLogitsLoss()
 
-    epochs = 50
+    epochs = 150
     print(f"\nTraining PyTorch CGAN for {epochs} epochs...")
 
     for epoch in range(epochs):
@@ -143,14 +151,40 @@ def run_part1_gan():
                 gen_raw = scaler.inverse_transform(gen_scaled)
 
                 df_gen = pd.DataFrame(gen_raw, columns=feature_cols)
-                df_gen["is_warmup"] = cls
+                df_gen["is_warmup"] = (cls == 1)
+
+                # Physical bounds enforcement
                 df_gen["air_quality"] = np.clip(df_gen["air_quality"], 0, None)
                 df_gen["smoke"] = np.clip(df_gen["smoke"], 0, None)
-                df_gen["alcohol"] = np.clip(df_gen["alcohol"], 0, None)
+
+                # Warmup alcohol in real sensor data is constant 25.0
+                if cls == 1:
+                    df_gen["alcohol"] = 25.0
+                else:
+                    df_gen["alcohol"] = np.clip(df_gen["alcohol"], 0, None)
+
                 df_gen["flamable_gas"] = np.clip(df_gen["flamable_gas"], 0, None)
                 df_gen["MQ136_raw"] = np.clip(df_gen["MQ136_raw"], 0, None)
                 df_gen["MQ7_raw"] = np.clip(df_gen["MQ7_raw"], 0, None)
+                df_gen["t"] = np.clip(df_gen["t"], 15.0, 45.0)
+                df_gen["h"] = np.clip(df_gen["h"], 20.0, 95.0)
 
+                # Metadata columns
+                real_dt = df[df["is_warmup"] == (cls == 1)]["dt_s"].dropna().values
+                if len(real_dt) == 0 or np.all(real_dt == 0):
+                    real_dt = np.array([6.0, 7.0])
+                synthetic_dt = np.random.choice(real_dt[real_dt > 0], size=needed)
+                df_gen["dt_s"] = synthetic_dt
+
+                real_elapsed = df[df["is_warmup"] == (cls == 1)]["elapsed_s"].values
+                min_el, max_el = (real_elapsed.min(), real_elapsed.max()) if len(real_elapsed) > 0 else (0, 600)
+                df_gen["elapsed_s"] = np.random.randint(min_el, max_el + 1, size=needed)
+
+                base_time = pd.to_datetime("3/20/2023 16:55")
+                gen_timestamps = [ (base_time + pd.Timedelta(seconds=int(es))).strftime("%m/%d/%Y %H:%M") for es in df_gen["elapsed_s"] ]
+                df_gen["timestamp"] = gen_timestamps
+
+                df_gen = df_gen[df.columns]
                 synthetic_dfs.append(df_gen)
 
     df_balanced = pd.concat(synthetic_dfs, ignore_index=True)
@@ -161,10 +195,10 @@ def run_part1_gan():
     print("=" * 60)
     print("Final Class Distribution:")
     final_counts = df_balanced["is_warmup"].value_counts().to_dict()
-    for cls in range(num_classes):
-        cls_name = "Steady State (0)" if cls == 0 else "Warmup/Transient (1)"
-        print(f"  Class {cls} ({cls_name}): {final_counts.get(cls, 0)} samples")
+    for cls in [False, True]:
+        print(f"  Class {cls}: {final_counts.get(cls, 0)} samples")
     print(f"Total Rows: {len(df_balanced)}")
+    print(f"Total NaNs across all columns: {df_balanced.isna().sum().sum()}")
 
 if __name__ == "__main__":
     run_part1_gan()
