@@ -1,0 +1,54 @@
+{
+  "gas_hazard_lpg_cng": {
+    "positives_in_test": 29146,
+    "total_test": 30000,
+    "accuracy": 0.028466666666666668,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "confusion_matrix": [
+      [
+        854,
+        0
+      ],
+      [
+        29146,
+        0
+      ]
+    ]
+  },
+  "gas_hazard_co_nox_c6h6": {
+    "positives_in_test": 9996,
+    "total_test": 30000,
+    "accuracy": 0.3378333333333333,
+    "precision": 0.3347510130270252,
+    "recall": 1.0,
+    "f1": 0.5015931956745364,
+    "confusion_matrix": [
+      [
+        139,
+        19865
+      ],
+      [
+        0,
+        9996
+      ]
+    ]
+  },
+  "multi_gas_detector_CH4": {
+    "positives_in_test": 29832,
+    "total_test": 30000,
+    "accuracy": 0.9970333333333333,
+    "precision": 0.9970255004846095,
+    "recall": 1.0,
+    "f1": 0.9985105350358978
+  },
+  "multi_gas_detector_CO": {
+    "positives_in_test": 9996,
+    "total_test": 30000,
+    "accuracy": 0.3350666666666667,
+    "precision": 0.3338231365215068,
+    "recall": 1.0,
+    "f1": 0.5005508262393591
+  }
+}

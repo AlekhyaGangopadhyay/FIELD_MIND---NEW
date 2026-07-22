@@ -1,8 +1,19 @@
 import os
+import sys
 import warnings
 import joblib
 import pandas as pd
 import numpy as np
+
+# Ensure gas_sensors directory is in sys.path for PyTorch DL wrappers unpickling
+gas_sensors_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "gas_sensors"))
+if gas_sensors_dir not in sys.path:
+    sys.path.insert(0, gas_sensors_dir)
+
+try:
+    import dl_wrappers
+except ImportError:
+    pass
 
 # Suppress scikit-learn feature name validation UserWarnings
 warnings.simplefilter("ignore", category=UserWarning)
@@ -22,15 +33,17 @@ class Tier1Monitor:
         """Loads all project models from their serialized joblib locations."""
         print("Loading Tier 1 pre-trained model registry...")
         
-        # 1. Gas Models
+        # 1. Gas Models (Production Core Suite)
         gas_dir = os.path.join(self.root_dir, "gas_sensors", "models")
         gas_files = {
-            'methane': 'mq4_gas_classifier.joblib',
-            'smoke_fire': 'smoke_fire_alarm_model.joblib',
-            'lpg_cng': 'gas_hazard_lpg_cng.joblib',
-            'co_nox': 'gas_hazard_co_nox_c6h6.joblib',
-            'smoke_env': 'gas_hazard_smoke_env.joblib',
-            'air_quality': 'air_quality_regressor.joblib'
+            'lpg_cng'         : 'gas_hazard_lpg_cng.joblib',
+            'co_nox'          : 'gas_hazard_co_nox_c6h6.joblib',
+            'multi_gas'       : 'multi_gas_detector.joblib',
+            'baseline_iforest': 'mine_baseline_iforest.joblib',
+            'severity_ch4'    : 'severity_ch4.joblib',
+            'severity_co'     : 'severity_co.joblib',
+            'severity_co2'    : 'severity_co2.joblib',
+            'severity_h2'     : 'severity_h2.joblib',
         }
         for key, name in gas_files.items():
             path = os.path.join(gas_dir, name)

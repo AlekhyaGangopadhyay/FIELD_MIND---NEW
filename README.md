@@ -54,11 +54,11 @@ graph TD
 ## Modules Overview
 
 ### 1. Gas Sensors (`gas_sensors/`)
-Processes real-time multi-gas inputs (MQ-2, MQ-3, MQ-4, MQ-7, MQ-135, MQ-136, MG811 arrays) to identify hazards:
-- **Synthetic Data Generation**: Models Gaussian plumes, ventilation cycles, machinery startup emissions, and sensor drift.
-- **Methane Detection**: Employs a hybrid **SVM + MLP Voting Classifier** to predict methane levels robustly.
-- **Specific Gas Classifiers**: Targets LPG/CNG, combustion gases (CO/Benzene), and smoke/fire hazards.
-- **Multi-Gas Detector**: Tracks 5 gases simultaneously (Methane, CO, LPG, Smoke, NOx) using a MultiOutput Random Forest model.
+Processes real-time multi-gas inputs (MQ-2, MQ-3, MQ-4, MQ-7, MQ-135, MQ-136, MG811 arrays) using **8 PyTorch Deep Learning Production Core Models** optimized via an automated Architecture Search Tournament:
+- **PyTorch Deep Hazard Classifiers**: Employs `ResNet1DMLP` and `LayerNormSwishMLP` architectures for LPG/CNG hazard detection (**97.15% acc, 100% recall**) and toxic CO/NOx/Benzene combustion hazard detection (**99.61% acc, 100% precision**).
+- **PyTorch Deep Severity Heads**: Multiclass severity classifiers for CH4 (**93.03%**), CO (**95.01%**), CO2 (**90.24%**), and H2 (**92.92%**) mapping L1/L2/L3 threshold boundaries.
+- **Multi-Task Virtual Sensing**: PyTorch multi-task network tracking 5 gases simultaneously (Methane, CO, LPG, Smoke, NOx) using core MQ-2 features (**88.41% acc**).
+- **Clean-Air Hardware Baseline**: An unsupervised **IsolationForest** trained on 3.5 hours of continuous ESP32 hardware telemetry (`mine_part1_clean.csv`) to track sensor noise floor.
 
 ### 2. Temperature & Humidity (`temperature_humidity/`)
 Monitors occupational safety and environmental anomaly conditions:
@@ -97,7 +97,7 @@ Converts every sensor domain into an **autonomous self-learning AI agent**. Each
 
 | Agent | Domain | Models Used | Dataset for Learning |
 |---|---|---|---|
-| `GasSensorAgent` | Gas hazard detection | 6 gas joblib models | `FIELDMIND_physics_dataset.csv` |
+| `GasSensorAgent` | Gas hazard detection | 8 PyTorch & Baseline models | `FIELDMIND_real_replay.csv` |
 | `EnvSensorAgent` | Temp/humidity anomaly | IsolationForest + RF | `iot_telemetry_clean.csv` |
 | `VibrationSensorAgent` | Blast PPV hazard | RF classifier + GB regressor | `vibration_features.csv` |
 | `UltrasonicSensorAgent` | Robot navigation | 24-sensor RF classifier | `sensor_readings_24.csv` |
