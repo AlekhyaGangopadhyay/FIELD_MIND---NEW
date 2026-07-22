@@ -27,9 +27,20 @@ Self-Learning:
 """
 
 import os
+import sys
 import joblib
 import numpy as np
 from typing import Any, Dict, Optional
+
+# Ensure gas_sensors path is in sys.path for PyTorch DL wrappers unpickling
+gas_sensors_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "gas_sensors"))
+if gas_sensors_path not in sys.path:
+    sys.path.insert(0, gas_sensors_path)
+
+try:
+    import dl_wrappers
+except ImportError:
+    pass
 
 from sklearn.ensemble import RandomForestClassifier
 
@@ -52,7 +63,8 @@ class GasSensorAgent(SensorAgentBase):
     verbose        : bool
     """
 
-    def __init__(self, workspace_root: str, bus: AgentBus, verbose: bool = True):
+    def __init__(self, workspace_root: str, bus: AgentBus, verbose: bool = True,
+                 dataset_name: str = "FIELDMIND_physics_dataset.csv"):
         self.workspace_root = workspace_root
 
         # ── Load all gas models ──────────────────────────────────────────
@@ -66,8 +78,10 @@ class GasSensorAgent(SensorAgentBase):
         ))
 
         # Dataset path for experience replay seeding
+        # Supports A/B testing: pass dataset_name="FIELDMIND_real_replay.csv"
+        # to use real mine data instead of synthetic physics data.
         dataset_path = os.path.join(
-            workspace_root, "gas_sensors", "data", "FIELDMIND_physics_dataset.csv"
+            workspace_root, "gas_sensors", "data", dataset_name
         )
 
         super().__init__(
@@ -89,23 +103,25 @@ class GasSensorAgent(SensorAgentBase):
 
     def _load_models(self, model_dir: str) -> None:
         model_map = {
-            "methane"    : "mq4_gas_classifier.joblib",
-            "smoke_fire" : "smoke_fire_alarm_model.joblib",
-            "lpg_cng"    : "gas_hazard_lpg_cng.joblib",
-            "co_nox"     : "gas_hazard_co_nox_c6h6.joblib",
-            "smoke_env"  : "gas_hazard_smoke_env.joblib",
-            "air_quality": "air_quality_regressor.joblib",
+            "lpg_cng"         : "gas_hazard_lpg_cng.joblib",
+            "co_nox"          : "gas_hazard_co_nox_c6h6.joblib",
+            "multi_gas"       : "multi_gas_detector.joblib",
+            "baseline_iforest": "mine_baseline_iforest.joblib",
+            "severity_ch4"    : "severity_ch4.joblib",
+            "severity_co"     : "severity_co.joblib",
+            "severity_co2"    : "severity_co2.joblib",
+            "severity_h2"     : "severity_h2.joblib",
         }
         for key, fname in model_map.items():
             path = os.path.join(model_dir, fname)
             if os.path.exists(path):
                 try:
                     self._models[key] = joblib.load(path)
-                    print(f"  [GasSensorAgent] ✓ Loaded model: {key}")
+                    print(f"  [GasSensorAgent] [OK] Loaded model: {key}")
                 except Exception as e:
-                    print(f"  [GasSensorAgent] ✗ Failed to load {key}: {e}")
+                    print(f"  [GasSensorAgent] [ERROR] Failed to load {key}: {e}")
             else:
-                print(f"  [GasSensorAgent] ⚠ Model not found: {fname}")
+                print(f"  [GasSensorAgent] [WARNING] Model not found: {fname}")
 
     # -----------------------------------------------------------------------
     # Replay Seeding from Original Dataset
@@ -152,17 +168,17 @@ class GasSensorAgent(SensorAgentBase):
         return features
 
     def infer(self, features: Dict[str, Any]) -> Dict[str, Any]:
-        """Run all gas ML models and return a combined result dict."""
+        """Run all production gas ML & Deep Learning models and return a combined result dict."""
         result: Dict[str, Any] = {}
 
-        # 1. LPG / CNG hazard (primary learnable model, 2 features)
+        # 1. LPG / CNG hazard (primary learnable PyTorch Deep model, 2 features)
         lpg_vec = np.array([features["MQ2_LPG_ppm"], features["MQ4_CH4_ppm"]]).reshape(1, -1)
         try:
             result["lpg_hazard"] = int(self.model.predict(lpg_vec)[0])
         except Exception:
             result["lpg_hazard"] = 0
 
-        # 2. CO / NOx / Benzene (3 features — frozen model)
+        # 2. CO / NOx / Benzene (3 features — PyTorch Deep model)
         if "co_nox" in self._models:
             co_vec = np.array([
                 features["MQ7_CO_ppm"],
@@ -174,54 +190,53 @@ class GasSensorAgent(SensorAgentBase):
             except Exception:
                 result["co_nox_hazard"] = 0
 
-        # 3. Smoke + Env hazard (3 features — frozen model)
-        if "smoke_env" in self._models:
-            se_vec = np.array([
-                features["PM25_Dust_ugm3"],
-                features["Temp_C"],
-                features["Humidity_pct"],
-            ]).reshape(1, -1)
-            try:
-                result["smoke_env_hazard"] = int(self._models["smoke_env"].predict(se_vec)[0])
-            except Exception:
-                result["smoke_env_hazard"] = 0
+        # 3. PyTorch Deep Severity Levels (CH4, CO, CO2, H2)
+        for gas_key, feat_name in [("ch4", "MQ4_CH4_ppm"), ("co", "MQ7_CO_ppm"), ("co2", "MG811_CO2_ppm"), ("h2", "MQ2_LPG_ppm")]:
+            model_key = f"severity_{gas_key}"
+            if model_key in self._models:
+                try:
+                    val_vec = np.array([features.get(feat_name, 0.0)]).reshape(1, -1)
+                    result[f"{gas_key}_severity"] = int(self._models[model_key].predict(val_vec)[0])
+                except Exception:
+                    result[f"{gas_key}_severity"] = 0
 
-        # 4. Air quality score (7 features — frozen regressor)
-        if "air_quality" in self._models:
-            aq_vec = np.array([
-                features["MQ2_LPG_ppm"],
-                features["MQ4_CH4_ppm"],
-                features["MQ7_CO_ppm"],
-                features["MQ135_NOx_ppm"],
-                features["MQ3_Benzene_ppm"],
-                features["PM25_Dust_ugm3"],
-                features["MG811_CO2_ppm"],
-            ]).reshape(1, -1)
+        # 4. Clean-air hardware baseline anomaly detection
+        if "baseline_iforest" in self._models:
             try:
-                result["air_quality_score"] = float(self._models["air_quality"].predict(aq_vec)[0])
+                raw_feats = np.array([
+                    features.get("MQ2_LPG_ppm", 10.0),
+                    features.get("MQ2_Smoke_ppm", 250.0),
+                    features.get("MQ3_Alcohol_ppm", 30.0),
+                    features.get("MQ4_CH4_ppm", 100.0),
+                    features.get("MQ135_NOx_ppm", 220.0),
+                    features.get("MQ7_CO_ppm", 120.0),
+                    features.get("Temp_C", 30.0),
+                    features.get("Humidity_pct", 60.0),
+                ]).reshape(1, -1)
+                # IsolationForest predict returns -1 for anomaly, 1 for normal
+                anom_dict = self._models["baseline_iforest"]
+                iforest_model = anom_dict["model"] if isinstance(anom_dict, dict) else anom_dict
+                result["hardware_anomaly"] = int(iforest_model.predict(raw_feats)[0] == -1)
             except Exception:
-                result["air_quality_score"] = 100.0
+                result["hardware_anomaly"] = 0
 
         return result
 
     def compute_confidence(self, inference_result: Dict[str, Any]) -> float:
         """
-        Confidence = weighted sum of hazard flags.
-        LPG hazard is primary (learned), others are secondary signals.
+        Confidence = weighted sum of hazard & severity flags.
         """
         weights = {
-            "lpg_hazard"       : 0.40,
-            "co_nox_hazard"    : 0.30,
-            "smoke_env_hazard" : 0.20,
+            "lpg_hazard"       : 0.35,
+            "co_nox_hazard"    : 0.25,
+            "hardware_anomaly" : 0.20,
+            "ch4_severity"     : 0.10,
+            "co_severity"      : 0.10,
         }
         conf = 0.0
         for key, w in weights.items():
-            conf += w * float(inference_result.get(key, 0))
-
-        # Air quality bonus (low score = bad air)
-        aq = inference_result.get("air_quality_score", 100.0)
-        if aq < 50.0:
-            conf += 0.10
+            val = float(inference_result.get(key, 0))
+            conf += w * (val / 2.0 if "severity" in key else val)
 
         # Trend boost: if last 3 memory entries were also hazardous
         recent = list(self._memory)[-3:]
