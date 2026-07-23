@@ -43,10 +43,10 @@ warnings.filterwarnings("ignore")
 # PATHS
 # ─────────────────────────────────────────────────────────────────────────────
 script_dir = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = script_dir
-PROJECT_ROOT = os.path.join(script_dir, "..", "..")
-PLOT_DIR = os.path.join(DATA_DIR, "..", "evaluation_plots")
-DOCS_DIR = os.path.join(PROJECT_ROOT, "docs")
+DATA_DIR = os.path.join(script_dir, "data")
+PROJECT_ROOT = os.path.join(script_dir, "..")
+PLOT_DIR = os.path.join(script_dir, "evaluation_plots")
+DOCS_DIR = os.path.join(script_dir, "..", "docs")
 os.makedirs(PLOT_DIR, exist_ok=True)
 os.makedirs(DOCS_DIR, exist_ok=True)
 
