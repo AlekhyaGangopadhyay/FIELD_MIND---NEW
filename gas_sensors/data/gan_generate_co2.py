@@ -1,16 +1,11 @@
 """
-gan_generate_co2.py — PyTorch CGAN for Carbon Dioxide (CO2) Balancing over_tlv & severity
+gan_generate_co2.py — PyTorch CGAN for Carbon Dioxide (CO2) Dataset Balancing
 
-Performs CGAN dataset balancing across target features: 'over_tlv' (0,1) and 'severity' (0,1,2).
-Joint classes (severity, over_tlv):
-  (0, 0): Real 4,087 samples -> Synthesize 5,913 CGAN samples
-  (0, 1): Real 5,913 samples -> Synthesize 4,087 CGAN samples
-  (1, 0): Real 0 samples -> Synthesize 10,000 CGAN samples
-  (1, 1): Real 10,000 samples
-  (2, 0): Real 0 samples -> Synthesize 10,000 CGAN samples
-  (2, 1): Real 10,000 samples
+Performs PyTorch CGAN telemetry synthesis conditioned on 'severity' (0, 1, 2),
+preserving strict physical concentration monotonicity across levels (L1 < L2 < L3).
+Computes over_tlv deterministically from physical thresholding (pct >= 0.03% / ppm >= 300.0).
 
-Total output dataset: 60,000 rows (perfectly balanced: 10,000 per joint class).
+Total output dataset: 60,000 rows (20,000 rows per severity class).
 Output file: gas_sensors/data/mine_part2_co2_balanced_cgan.csv
 """
 import os
@@ -27,11 +22,8 @@ INPUT_CSV = os.path.join(script_dir, "mine_part2_co2_realistic.csv")
 OUTPUT_CSV = os.path.join(script_dir, "mine_part2_co2_balanced_cgan.csv")
 
 FEATURE_COLS = ["pct", "ppm", "ppm_noisy"]
-TARGET_COLS = ["severity", "over_tlv"]
-
-# Constant properties for CO2 TLV
-TLV_PCT_CONST = 0.02
-TLV_PPM_CONST = 200.0
+TLV_PCT_CONST = 0.03
+TLV_PPM_CONST = 300.0
 
 
 class Generator(nn.Module):
@@ -73,22 +65,9 @@ class Discriminator(nn.Module):
         return self.net(torch.cat([features, labels], dim=1))
 
 
-def create_joint_class(df):
-    """
-    Map (severity, over_tlv) into 6 distinct joint classes:
-      0: (0, 0)
-      1: (1, 0)
-      2: (2, 0)
-      3: (0, 1)
-      4: (1, 1)
-      5: (2, 1)
-    """
-    return df["severity"] + df["over_tlv"] * 3
-
-
-def train_cgan(X_scaled, y_joint, num_classes=6, noise_dim=32, epochs=60, batch_size=256):
+def train_cgan(X_scaled, y_sev, num_classes=3, noise_dim=32, epochs=60, batch_size=256):
     tensor_x = torch.tensor(X_scaled, dtype=torch.float32)
-    tensor_y = torch.nn.functional.one_hot(torch.tensor(y_joint, dtype=torch.long), num_classes=num_classes).float()
+    tensor_y = torch.nn.functional.one_hot(torch.tensor(y_sev, dtype=torch.long), num_classes=num_classes).float()
     dataset = TensorDataset(tensor_x, tensor_y)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
@@ -124,135 +103,89 @@ def train_cgan(X_scaled, y_joint, num_classes=6, noise_dim=32, epochs=60, batch_
     return netG
 
 
-def synthesize(netG, scaler, cls_idx, num_classes, count, noise_dim=32):
+def synthesize(netG, scaler, sev_idx, num_classes, count, noise_dim=32):
     netG.eval()
     with torch.no_grad():
         z = torch.randn(count, noise_dim)
         c = torch.zeros(count, num_classes)
-        c[:, cls_idx] = 1.0
+        c[:, sev_idx] = 1.0
         gen_scaled = netG(z, c).numpy()
     return scaler.inverse_transform(gen_scaled)
 
 
 def run():
     print("=" * 70)
-    print("  PYTORCH CGAN: CO2 SYNTHESIS FOR over_tlv & severity BALANCING")
+    print("  PYTORCH CGAN: CARBON DIOXIDE (CO2) PHYSICAL SEVERITY BALANCING")
     print("=" * 70)
 
-    df_real = pd.read_csv(INPUT_CSV)
-    print(f"Loaded {len(df_real):,} rows from {INPUT_CSV}")
+    if os.path.exists(INPUT_CSV):
+        df_real = pd.read_csv(INPUT_CSV)
+    else:
+        bands_csv = os.path.join(script_dir, "mine_part2_bands.csv")
+        df_all = pd.read_csv(bands_csv)
+        df_real = df_all[df_all["gas"] == "CO2"].copy()
+        if "ppm_noisy" not in df_real.columns:
+            df_real["ppm_noisy"] = df_real["ppm"] + np.random.normal(0, 10, len(df_real))
 
-    # Enforce constant tlv_pct (0.02) and tlv_ppm (200.0) in real data
     df_real["tlv_pct"] = TLV_PCT_CONST
     df_real["tlv_ppm"] = TLV_PPM_CONST
+    df_real["over_tlv"] = np.where(df_real["pct"] >= TLV_PCT_CONST, 1, 0)
 
-    # Verify over_tlv in real data (0 if pct < 0.02 else 1)
-    df_real["over_tlv"] = np.where(np.round(df_real["pct"], 6) >= TLV_PCT_CONST, 1, 0)
-    df_real["joint_cls"] = create_joint_class(df_real)
+    print(f"Loaded {len(df_real):,} real rows")
 
-    print("\nInitial joint class distribution (severity, over_tlv):")
-    counts = df_real["joint_cls"].value_counts().to_dict()
-    for jc in range(6):
-        sev = jc % 3
-        otlv = jc // 3
-        print(f"  Class {jc} (severity={sev}, over_tlv={otlv}): {counts.get(jc, 0):,} rows")
-
-    N_max = max(counts.values())
-    print(f"\nMaximum class count N_max = {N_max:,}. Target count per class = {N_max:,}.")
-
-    # Construct representative seeds for missing joint classes (1,0) and (2,0) so CGAN can learn all conditions
-    seed_dfs = [df_real.copy()]
-    noise_std = np.std(df_real["ppm_noisy"] - df_real["ppm"])
-
-    # Seed for Class 1 (severity 1, over_tlv 0): pct in [0.010, 0.0199]
-    n_seed = 2000
-    pct_c1 = np.random.uniform(0.010, 0.0199, n_seed)
-    ppm_c1 = pct_c1 * 10000.0
-    seed_dfs.append(pd.DataFrame({
-        "gas": "CO2", "level": "L2", "pct": pct_c1, "ppm": ppm_c1,
-        "tlv_pct": TLV_PCT_CONST, "tlv_ppm": TLV_PPM_CONST,
-        "over_tlv": 0, "severity": 1, "ppm_noisy": ppm_c1 + np.random.normal(0, noise_std, n_seed),
-        "joint_cls": 1
-    }))
-
-    # Seed for Class 2 (severity 2, over_tlv 0): pct in [0.015, 0.0199]
-    pct_c2 = np.random.uniform(0.015, 0.0199, n_seed)
-    ppm_c2 = pct_c2 * 10000.0
-    seed_dfs.append(pd.DataFrame({
-        "gas": "CO2", "level": "L3", "pct": pct_c2, "ppm": ppm_c2,
-        "tlv_pct": TLV_PCT_CONST, "tlv_ppm": TLV_PPM_CONST,
-        "over_tlv": 0, "severity": 2, "ppm_noisy": ppm_c2 + np.random.normal(0, noise_std, n_seed),
-        "joint_cls": 2
-    }))
-
-    df_train_base = pd.concat(seed_dfs, ignore_index=True)
-
-    X_train_raw = df_train_base[FEATURE_COLS].values.astype(float)
-    y_train_joint = df_train_base["joint_cls"].values.astype(int)
+    X_train_raw = df_real[FEATURE_COLS].values.astype(float)
+    y_train_sev = df_real["severity"].values.astype(int)
 
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train_raw)
 
-    print("\nTraining PyTorch CGAN on all 6 joint classes...")
-    netG = train_cgan(X_train_scaled, y_train_joint, num_classes=6, noise_dim=32, epochs=60, batch_size=256)
+    print("Training PyTorch CGAN conditioned on 3 severity classes...")
+    netG = train_cgan(X_train_scaled, y_train_sev, num_classes=3, noise_dim=32, epochs=60, batch_size=256)
     print("CGAN training complete.")
 
-    # Synthesize underrepresented / missing classes
     all_dfs = [df_real.copy()]
+    target_per_sev = 20000
 
-    for jc in range(6):
-        sev = jc % 3
-        otlv = jc // 3
-        existing = counts.get(jc, 0)
-        needed = N_max - existing
-
+    for sev in [0, 1, 2]:
+        existing_count = (df_real["severity"] == sev).sum()
+        needed = target_per_sev - existing_count
         if needed > 0:
-            print(f"Synthesizing {needed:,} CGAN samples for Class {jc} (severity={sev}, over_tlv={otlv})...")
-            gen_raw = synthesize(netG, scaler, jc, num_classes=6, count=needed, noise_dim=32)
-
+            print(f"Synthesizing {needed:,} CGAN samples for Severity {sev} (Level L{sev+1})...")
+            gen_raw = synthesize(netG, scaler, sev, num_classes=3, count=needed, noise_dim=32)
             df_gen = pd.DataFrame(gen_raw, columns=FEATURE_COLS)
 
-            if otlv == 1:
-                # Ensure physical consistency for over_tlv = 1 (pct >= 0.02 / ppm >= 200.0)
-                df_gen["pct"] = np.clip(df_gen["pct"], 0.0200, 0.1000)
-                df_gen["ppm"] = df_gen["pct"] * 10000.0
-                df_gen["ppm_noisy"] = np.clip(df_gen["ppm_noisy"], df_gen["ppm"] - 50, df_gen["ppm"] + 50)
-                df_gen["over_tlv"] = 1
+            # Enforce physical monotonicity per severity level
+            if sev == 0:
+                df_gen["pct"] = np.clip(df_gen["pct"], 0.0, 0.040)
+            elif sev == 1:
+                df_gen["pct"] = np.clip(df_gen["pct"], 0.040, 0.100)
             else:
-                # Ensure physical consistency for over_tlv = 0 (pct < 0.02 / ppm < 200.0)
-                df_gen["pct"] = np.clip(df_gen["pct"], 0.0001, 0.0199)
-                df_gen["ppm"] = df_gen["pct"] * 10000.0
-                df_gen["ppm_noisy"] = np.clip(df_gen["ppm_noisy"], 0, None)
-                df_gen["over_tlv"] = 0
+                df_gen["pct"] = np.clip(df_gen["pct"], 0.100, 0.500)
+
+            df_gen["ppm"] = df_gen["pct"] * 10000.0
+            noise_std = np.std(df_real["ppm_noisy"] - df_real["ppm"])
+            df_gen["ppm_noisy"] = np.clip(df_gen["ppm"] + np.random.normal(0, max(noise_std, 1.0), len(df_gen)), 0, None)
 
             df_gen["gas"] = "CO2"
-            df_gen["severity"] = sev
             df_gen["level"] = f"L{sev+1}"
+            df_gen["severity"] = sev
             df_gen["tlv_pct"] = TLV_PCT_CONST
             df_gen["tlv_ppm"] = TLV_PPM_CONST
-            df_gen["joint_cls"] = jc
+            df_gen["over_tlv"] = np.where(df_gen["pct"] >= TLV_PCT_CONST, 1, 0)
 
-            # Order columns strictly to match original schema
             df_gen = df_gen[df_real.columns]
             all_dfs.append(df_gen)
 
-    df_balanced = pd.concat(all_dfs, ignore_index=True).drop(columns=["joint_cls"])
-
-    # Double check tlv constants and over_tlv index calculation
+    df_balanced = pd.concat(all_dfs, ignore_index=True)
     df_balanced["tlv_pct"] = TLV_PCT_CONST
     df_balanced["tlv_ppm"] = TLV_PPM_CONST
-    df_balanced["over_tlv"] = np.where(np.round(df_balanced["pct"], 6) >= TLV_PCT_CONST, 1, 0)
+    df_balanced["over_tlv"] = np.where(df_balanced["pct"] >= TLV_PCT_CONST, 1, 0)
 
     df_balanced.to_csv(OUTPUT_CSV, index=False)
-    print(f"\nSuccessfully saved balanced dataset to: {OUTPUT_CSV}")
+    print(f"\nSaved balanced dataset to: {OUTPUT_CSV}")
     print(f"Total rows: {len(df_balanced):,}")
-
-    print("\nFinal Dataset Distributions:")
     print("Severity distribution:\n", df_balanced["severity"].value_counts().to_dict())
     print("Over_TLV distribution:\n", df_balanced["over_tlv"].value_counts().to_dict())
-    print("Joint (severity, over_tlv) distribution:\n", df_balanced.groupby(["severity", "over_tlv"]).size().to_dict())
-    print("tlv_pct constant count:\n", df_balanced["tlv_pct"].value_counts().to_dict())
-    print("tlv_ppm constant count:\n", df_balanced["tlv_ppm"].value_counts().to_dict())
 
 
 if __name__ == "__main__":
