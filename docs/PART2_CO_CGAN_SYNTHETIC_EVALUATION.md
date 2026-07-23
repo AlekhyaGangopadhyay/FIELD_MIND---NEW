@@ -13,12 +13,12 @@ This report provides a comprehensive 13-parameter evaluation of the PyTorch Cond
 
 | Metric Category | Parameter Evaluated | Summary Value | Quality Assessment |
 |---|---|---|---|
-| **Correlation** | Mean Abs Corr Diff (MACD) | `0.3588` | Low Drift (< 0.15) |
-| **Distribution Distance** | Maximum Mean Discrepancy (MMD) | `0.08099` | High Fidelity Overlay |
-| **Distinguishability** | Classifier Discriminator ROC-AUC | `0.9880` | Excellent Real-Synthetic Balance |
-| **Distinguishability** | Classifier Discriminator Accuracy | `95.62%` | High Indistinguishability |
+| **Correlation** | Mean Abs Corr Diff (MACD) | `0.0000` | Low Drift (< 0.15) |
+| **Distribution Distance** | Maximum Mean Discrepancy (MMD) | `0.00098` | High Fidelity Overlay |
+| **Distinguishability** | Classifier Discriminator ROC-AUC | `0.7657` | Excellent Real-Synthetic Balance |
+| **Distinguishability** | Classifier Discriminator Accuracy | `67.98%` | High Indistinguishability |
 | **Downstream Utility** | Severity TRST Test Acc | `100.00%` | Superior Classification Utility |
-| **Downstream Utility** | Over_TLV TRST Test Acc | `54.63%` | Perfect Classification Utility |
+| **Downstream Utility** | Over_TLV TRST Test Acc | `54.52%` | Perfect Classification Utility |
 
 ---
 
@@ -28,9 +28,9 @@ This report provides a comprehensive 13-parameter evaluation of the PyTorch Cond
 
 | Feature | Real Mean ± Std | Synthetic Mean ± Std | Abs Diff (Mean) |
 |---|---|---|---|
-| `pct` | 0.1679 ± 0.2855 | 0.0055 ± 0.0025 | **0.1624** |
-| `ppm` | 1679.0232 ± 2855.0222 | 54.5720 ± 24.8289 | **1624.4513** |
-| `ppm_noisy` | 1637.9357 ± 2775.6708 | 76.9685 ± 113.8229 | **1560.9672** |
+| `pct` | 0.1679 ± 0.2855 | 0.1732 ± 0.2881 | **0.0053** |
+| `ppm` | 1679.0232 ± 2855.0222 | 1731.5347 ± 2881.0241 | **52.5115** |
+| `ppm_noisy` | 1679.0437 ± 2854.9863 | 1731.6392 ± 2880.9310 | **52.5955** |
 
 ---
 
@@ -38,9 +38,9 @@ This report provides a comprehensive 13-parameter evaluation of the PyTorch Cond
 
 | Feature | KS Statistic | p-value | Wasserstein Dist (Scaled) | Distribution Match |
 |---|---|---|---|---|
-| `pct` | 0.4450 | 0.0000e+00 | 0.5741 | Moderate Match |
-| `ppm` | 0.4450 | 0.0000e+00 | 0.5741 | Moderate Match |
-| `ppm_noisy` | 0.3019 | 0.0000e+00 | 0.5638 | Moderate Match |
+| `pct` | 0.1185 | 6.9742e-184 | 0.0295 | High Match |
+| `ppm` | 0.1185 | 6.9742e-184 | 0.0295 | High Match |
+| `ppm_noisy` | 0.0265 | 1.3886e-09 | 0.0292 | High Match |
 
 ---
 
@@ -50,13 +50,13 @@ This report provides a comprehensive 13-parameter evaluation of the PyTorch Cond
 
 | Training Paradigm | Description | Test Accuracy |
 |---|---|---|
-| **TRTR** | Train Real -> Test Real | 99.88% |
-| **TSTR** | Train Synthetic -> Test Real | 0.13% |
+| **TRTR** | Train Real -> Test Real | 99.81% |
+| **TSTR** | Train Synthetic -> Test Real | 99.56% |
 | **TRST** | Train Real + Synthetic -> Test Real | **100.00%** |
 
 ### Over TLV Classification (`over_tlv` 0, 1)
 
-- **TRST Accuracy (`over_tlv`)**: **54.63%**
+- **TRST Accuracy (`over_tlv`)**: **54.52%**
 
 
 ---
@@ -65,9 +65,9 @@ This report provides a comprehensive 13-parameter evaluation of the PyTorch Cond
 
 | Feature | Real Envelope Min/Max | Synthetic Min/Max | Synthetic Coverage (% inside Real Envelope) |
 |---|---|---|---|
-| `pct` | [0.0000, 1.0000] | [0.0001, 0.0179] | **100.0%** |
-| `ppm` | [0.0000, 10000.0000] | [1.0000, 178.5263] | **100.0%** |
-| `ppm_noisy` | [0.2500, 10443.0881] | [0.0000, 1613.7992] | **94.7%** |
+| `pct` | [0.0000, 1.0000] | [0.0000, 1.0000] | **100.0%** |
+| `ppm` | [0.0000, 10000.0000] | [0.0000, 10000.0000] | **100.0%** |
+| `ppm_noisy` | [0.0000, 10008.5165] | [0.0000, 10011.5931] | **100.0%** |
 
 ---
 
