@@ -233,5 +233,224 @@
         "remarks": "Winning Deep Learning Architecture (LayerNormSwishMLP) selected via automated Architecture Search Tournament.",
         "training_time_sec": 0.0,
         "trained_at": "2026-07-22T12:48:48.130172"
+    },
+    "part1_warmup": {
+        "model_type": "PyTorch_ResNet1DMLP",
+        "file": "part1_warmup_dl_best.joblib",
+        "metrics": {
+            "accuracy": 1.0,
+            "f1_score": 1.0,
+            "roc_auc": 0.9999999999999999
+        },
+        "remarks": "Winning PyTorch architecture (ResNet1DMLP) selected via DL Tournament on balanced dataset.",
+        "trained_at": "2026-07-23T12:45:45.968074"
+    },
+    "ch4_severity": {
+        "model_type": "PyTorch_LayerNormSwishMLP",
+        "file": "ch4_severity_dl_best.joblib",
+        "metrics": {
+            "accuracy": 0.9854,
+            "f1_score": 0.9854064547963687,
+            "roc_auc": 0.9991670033333332
+        },
+        "remarks": "Winning PyTorch architecture (LayerNormSwishMLP) selected via DL Tournament on balanced dataset.",
+        "trained_at": "2026-07-23T12:45:45.968085"
+    },
+    "ch4_over_tlv": {
+        "task_type": "binary_classification",
+        "model_type": "PyTorch_DeepHazardNet",
+        "file": "ch4_over_tlv_dl_best.joblib",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\ch4_over_tlv_dl_best.joblib",
+        "features": [
+            "ppm"
+        ],
+        "targets": [
+            "over_tlv"
+        ],
+        "train_shape": [
+            45000,
+            1
+        ],
+        "test_shape": [
+            15000,
+            1
+        ],
+        "metrics": {
+            "accuracy": 0.9921333333333333,
+            "precision": 0.9845103701758992,
+            "recall": 1.0,
+            "f1_score": 0.9921947347532742,
+            "roc_auc": 1.0,
+            "train_accuracy": 0.9931777777777778,
+            "tlv_ppm": 25000.0,
+            "confusion_matrix": [
+                [
+                    7382,
+                    118
+                ],
+                [
+                    0,
+                    7500
+                ]
+            ]
+        },
+        "remarks": "Retrained leakage-safe over-TLV PyTorch hazard classifier using only the ppm feature; label, severity, level, pct, tlv_pct, tlv_ppm, over_tlv, and ppm_noisy were excluded from inputs.",
+        "trained_at": "2026-07-23T13:05:43.504485"
+    },
+    "co_severity": {
+        "model_type": "PyTorch_LayerNormSwishMLP",
+        "file": "co_severity_dl_best.joblib",
+        "metrics": {
+            "accuracy": 0.7049333333333333,
+            "f1_score": 0.7074070836915202,
+            "roc_auc": 0.87706899
+        },
+        "remarks": "Winning PyTorch architecture (LayerNormSwishMLP) selected via DL Tournament on balanced dataset.",
+        "trained_at": "2026-07-23T12:45:45.968090"
+    },
+    "co_over_tlv": {
+        "task_type": "binary_classification",
+        "model_type": "PyTorch_DeepHazardNet",
+        "file": "co_over_tlv_dl_best.joblib",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\co_over_tlv_dl_best.joblib",
+        "features": [
+            "ppm"
+        ],
+        "targets": [
+            "over_tlv"
+        ],
+        "train_shape": [
+            45000,
+            1
+        ],
+        "test_shape": [
+            15000,
+            1
+        ],
+        "metrics": {
+            "accuracy": 0.901,
+            "precision": 0.8347245409015025,
+            "recall": 1.0,
+            "f1_score": 0.9099181073703366,
+            "roc_auc": 1.0,
+            "train_accuracy": 0.9042666666666667,
+            "tlv_ppm": 50.0,
+            "confusion_matrix": [
+                [
+                    6015,
+                    1485
+                ],
+                [
+                    0,
+                    7500
+                ]
+            ]
+        },
+        "remarks": "Retrained leakage-safe over-TLV PyTorch hazard classifier using only the ppm feature; label, severity, level, pct, tlv_pct, tlv_ppm, over_tlv, and ppm_noisy were excluded from inputs.",
+        "trained_at": "2026-07-23T13:05:43.504485"
+    },
+    "co2_severity": {
+        "model_type": "PyTorch_LayerNormSwishMLP",
+        "file": "co2_severity_dl_best.joblib",
+        "metrics": {
+            "accuracy": 0.8086666666666666,
+            "f1_score": 0.802613121813939,
+            "roc_auc": 0.9459882433333334
+        },
+        "remarks": "Winning PyTorch architecture (LayerNormSwishMLP) selected via DL Tournament on balanced dataset.",
+        "trained_at": "2026-07-23T12:45:45.968093"
+    },
+    "co2_over_tlv": {
+        "task_type": "binary_classification",
+        "model_type": "PyTorch_DeepHazardNet",
+        "file": "co2_over_tlv_dl_best.joblib",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\co2_over_tlv_dl_best.joblib",
+        "features": [
+            "ppm"
+        ],
+        "targets": [
+            "over_tlv"
+        ],
+        "train_shape": [
+            45000,
+            1
+        ],
+        "test_shape": [
+            15000,
+            1
+        ],
+        "metrics": {
+            "accuracy": 0.9923333333333333,
+            "precision": 0.9848982271831911,
+            "recall": 1.0,
+            "f1_score": 0.9923916639100232,
+            "roc_auc": 1.0,
+            "train_accuracy": 0.9921777777777778,
+            "tlv_ppm": 200.0,
+            "confusion_matrix": [
+                [
+                    7385,
+                    115
+                ],
+                [
+                    0,
+                    7500
+                ]
+            ]
+        },
+        "remarks": "Retrained leakage-safe over-TLV PyTorch hazard classifier using only the ppm feature; label, severity, level, pct, tlv_pct, tlv_ppm, over_tlv, and ppm_noisy were excluded from inputs.",
+        "trained_at": "2026-07-23T13:05:43.504485"
+    },
+    "h2_severity": {
+        "model_type": "PyTorch_ResNet1DMLP",
+        "file": "h2_severity_dl_best.joblib",
+        "metrics": {
+            "accuracy": 0.7386666666666667,
+            "f1_score": 0.7311149387477113,
+            "roc_auc": 0.9060466266666666
+        },
+        "remarks": "Winning PyTorch architecture (ResNet1DMLP) selected via DL Tournament on balanced dataset.",
+        "trained_at": "2026-07-23T12:45:45.968096"
+    },
+    "h2_over_tlv": {
+        "task_type": "binary_classification",
+        "model_type": "PyTorch_DeepHazardNet",
+        "file": "h2_over_tlv_dl_best.joblib",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\h2_over_tlv_dl_best.joblib",
+        "features": [
+            "ppm"
+        ],
+        "targets": [
+            "over_tlv"
+        ],
+        "train_shape": [
+            45000,
+            1
+        ],
+        "test_shape": [
+            15000,
+            1
+        ],
+        "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0,
+            "roc_auc": 1.0,
+            "train_accuracy": 1.0,
+            "tlv_ppm": 200.0,
+            "confusion_matrix": [
+                [
+                    7500,
+                    0
+                ],
+                [
+                    0,
+                    7500
+                ]
+            ]
+        },
+        "remarks": "Retrained leakage-safe over-TLV PyTorch hazard classifier using only the ppm feature; label, severity, level, pct, tlv_pct, tlv_ppm, over_tlv, and ppm_noisy were excluded from inputs.",
+        "trained_at": "2026-07-23T13:05:43.504485"
     }
 }
