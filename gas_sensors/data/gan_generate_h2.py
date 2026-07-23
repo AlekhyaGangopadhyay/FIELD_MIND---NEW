@@ -18,7 +18,7 @@ from torch.utils.data import TensorDataset, DataLoader
 from sklearn.preprocessing import StandardScaler
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-INPUT_CSV = os.path.join(script_dir, "mine_part2_h2_realistic.csv")
+BANDS_CSV = os.path.join(script_dir, "mine_part2_bands.csv")
 OUTPUT_CSV = os.path.join(script_dir, "mine_part2_h2_balanced_cgan.csv")
 
 FEATURE_COLS = ["pct", "ppm", "ppm_noisy"]
@@ -118,20 +118,16 @@ def run():
     print("  PYTORCH CGAN: HYDROGEN (H2) PHYSICAL SEVERITY BALANCING")
     print("=" * 70)
 
-    if os.path.exists(INPUT_CSV):
-        df_real = pd.read_csv(INPUT_CSV)
-    else:
-        bands_csv = os.path.join(script_dir, "mine_part2_bands.csv")
-        df_all = pd.read_csv(bands_csv)
-        df_real = df_all[df_all["gas"] == "H2"].copy()
-        if "ppm_noisy" not in df_real.columns:
-            df_real["ppm_noisy"] = df_real["ppm"] + np.random.normal(0, 100, len(df_real))
+    df_all = pd.read_csv(BANDS_CSV)
+    df_real = df_all[df_all["gas"] == "H2"].copy()
+    if "ppm_noisy" not in df_real.columns:
+        df_real["ppm_noisy"] = df_real["ppm"] + np.random.normal(0, 50, len(df_real))
 
     df_real["tlv_pct"] = TLV_PCT_CONST
     df_real["tlv_ppm"] = TLV_PPM_CONST
     df_real["over_tlv"] = np.where(df_real["pct"] >= TLV_PCT_CONST, 1, 0)
 
-    print(f"Loaded {len(df_real):,} real rows")
+    print(f"Loaded {len(df_real):,} real rows from {BANDS_CSV}")
 
     X_train_raw = df_real[FEATURE_COLS].values.astype(float)
     y_train_sev = df_real["severity"].values.astype(int)
