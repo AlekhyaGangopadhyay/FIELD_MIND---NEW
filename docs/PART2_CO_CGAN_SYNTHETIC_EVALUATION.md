@@ -14,7 +14,7 @@ This report provides a comprehensive 13-parameter evaluation of the PyTorch Cond
 | Metric Category | Parameter Evaluated | Summary Value | Quality Assessment |
 |---|---|---|---|
 | **Correlation** | Mean Abs Corr Diff (MACD) | `0.0000` | Low Drift (< 0.15) |
-| **Distribution Distance** | Maximum Mean Discrepancy (MMD) | `0.00098` | High Fidelity Overlay |
+| **Distribution Distance** | Maximum Mean Discrepancy (MMD) | `0.00030` | High Fidelity Overlay |
 | **Distinguishability** | Classifier Discriminator ROC-AUC | `0.7657` | Excellent Real-Synthetic Balance |
 | **Distinguishability** | Classifier Discriminator Accuracy | `67.98%` | High Indistinguishability |
 | **Downstream Utility** | Severity TRST Test Acc | `100.00%` | Superior Classification Utility |
