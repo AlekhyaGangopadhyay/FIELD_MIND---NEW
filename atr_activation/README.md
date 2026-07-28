@@ -47,13 +47,15 @@ The **Anomaly-Triggered Reasoning (ATR)** module represents Layer 2A of the FIEL
 
 This module integrates all previously trained models across the workspace:
 
-* **Gas safety**:
-  * `mq4_gas_classifier.joblib`: Methane presence classifier (128 features).
-  * `smoke_fire_alarm_model.joblib`: Smoke and fire alarm predictor (36 features).
-  * `gas_hazard_lpg_cng.joblib`: LPG/CNG hazard detector (2 features).
-  * `gas_hazard_co_nox_c6h6.joblib`: Combustion gas hazard detector (3 features).
-  * `gas_hazard_smoke_env.joblib`: Smoke and environment classifier (3 features).
-  * `air_quality_regressor.joblib`: Continuous air quality score regressor (7 features).
+* **Gas Safety Production Suite (PyTorch DL & IsolationForest)**:
+  * `gas_hazard_lpg_cng.joblib`: LPG/CNG hazard detector (2 features, PyTorch `LayerNormSwishMLP`, **99.97% test acc**).
+  * `gas_hazard_co_nox_c6h6.joblib`: Combustion gas hazard detector (3 features, PyTorch `LayerNormSwishMLP`, **93.81% test acc**).
+  * `multi_gas_detector.joblib`: Multi-task presence detector (3 features, PyTorch `LayerNormSwishMLP`, **97.32% elementwise acc**).
+  * `mine_baseline_iforest.joblib`: Clean-air baseline anomaly detector (8 features, IsolationForest, **98.95% clean-air acc**).
+  * `severity_ch4.joblib`: CH4 multiclass severity head (1 feature, PyTorch Deep MLP, **99.07% test acc**).
+  * `severity_co.joblib`: CO multiclass severity head (1 feature, PyTorch Deep MLP, **91.92% test acc**).
+  * `severity_co2.joblib`: CO2 multiclass severity head (1 feature, PyTorch Deep MLP, **90.27% test acc**).
+  * `severity_h2.joblib`: H2 multiclass severity head (1 feature, PyTorch Deep MLP, **95.72% test acc**).
 * **Environmental**:
   * `isolation_forest_iot.joblib`: Microclimate anomaly detector (9 features).
   * `random_forest.joblib`: Office/Tunnel occupancy classifier (23 features).
