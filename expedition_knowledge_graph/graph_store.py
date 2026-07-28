@@ -222,24 +222,27 @@ class MineKnowledgeGraph:
 
         print(f"[EKG] Graph saved to {filepath} ({self.G.number_of_nodes()} nodes, {self.G.number_of_edges()} edges)")
 
-    def load(self, filepath: str):
+    @classmethod
+    def load(cls, filepath: str) -> "MineKnowledgeGraph":
         """Deserialise the graph from a JSON file."""
+        kg = cls()
         with open(filepath, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        self.G.clear()
-        self._label_index.clear()
+        kg.G.clear()
+        kg._label_index.clear()
 
         for node_entry in data.get("nodes", []):
             nid = node_entry["id"]
             props = node_entry["properties"]
             label = props.get("label", "Unknown")
-            self.G.add_node(nid, **props)
-            self._label_index[label].add(nid)
+            kg.G.add_node(nid, **props)
+            kg._label_index[label].add(nid)
 
         for edge_entry in data.get("edges", []):
-            self.G.add_edge(edge_entry["from"], edge_entry["to"], **edge_entry["properties"])
+            kg.G.add_edge(edge_entry["from"], edge_entry["to"], **edge_entry.get("properties", {}))
 
         meta = data.get("metadata", {})
         print(f"[EKG] Graph loaded from {filepath} (saved: {meta.get('saved_at', '?')})")
-        print(f"  Restored {self.G.number_of_nodes()} nodes, {self.G.number_of_edges()} edges")
+        print(f"  Restored {kg.G.number_of_nodes()} nodes, {kg.G.number_of_edges()} edges")
+        return kg

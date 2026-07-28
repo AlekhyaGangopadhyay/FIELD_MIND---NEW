@@ -42,23 +42,33 @@ graph TD
 
 ### Agent Cycle (per tick)
 ```
-1. OBSERVE  → reads raw sensor data (from original dataset stream)
-2. REASON   → runs domain ML models → computes hazard confidence score
-3. ACT      → if confidence ≥ 0.5 for 2+ consecutive ticks → publish ALERT
-4. LEARN ★  → dataset label stored in replay buffer (size=200)
-              When buffer is full → retrain model → swap live model atomically
+1. OBSERVE        → reads raw sensor data (from streaming dataset or hardware telemetry)
+2. REASON         → runs PyTorch/ML models → computes hazard confidence & severity scores
+3. ACT            → if confidence ≥ 0.5 for 2+ consecutive ticks → publish ALERT on AgentBus
+4. REFLECT & LEARN ★ → if prediction differs from ground truth:
+                     a) Qwen2.5-7B-Instruct formulates reflective rule → saved to FAISS RAG & EKG
+                     b) Corrected label pushed to replay buffer → retrains ML model on-the-fly
 ```
+
+---
+
+## Hardware Deployment Profile
+
+* **Target Edge Platform:** **NVIDIA Jetson Orin Nano (8GB Unified LPDDR5 RAM, 1024 CUDA Cores)**
+* **Primary LLM Engine:** **`Qwen2.5-7B-Instruct-Q4_K_M.gguf`** (7B parameter INT4 quantized model, ~4.35 GB VRAM)
+* **GPU Acceleration:** Fully offloaded CUDA execution (`n_gpu_layers=-1`) via `llama-cpp-python`
+* **RAM Allocation:** ~7.15 GB / 8.19 GB (~1,042 MB dynamic headroom for streaming telemetry bursts)
 
 ---
 
 ## Modules Overview
 
 ### 1. Gas Sensors (`gas_sensors/`)
-Processes real-time multi-gas inputs (MQ-2, MQ-3, MQ-4, MQ-7, MQ-135, MQ-136, MG811 arrays) using **8 PyTorch Deep Learning Production Core Models** optimized via an automated Architecture Search Tournament:
-- **PyTorch Deep Hazard Classifiers**: Employs `ResNet1DMLP` and `LayerNormSwishMLP` architectures for LPG/CNG hazard detection (**97.15% acc, 100% recall**) and toxic CO/NOx/Benzene combustion hazard detection (**99.61% acc, 100% precision**).
-- **PyTorch Deep Severity Heads**: Multiclass severity classifiers for CH4 (**93.03%**), CO (**95.01%**), CO2 (**90.24%**), and H2 (**92.92%**) mapping L1/L2/L3 threshold boundaries.
-- **Multi-Task Virtual Sensing**: PyTorch multi-task network tracking 5 gases simultaneously (Methane, CO, LPG, Smoke, NOx) using core MQ-2 features (**88.41% acc**).
-- **Clean-Air Hardware Baseline**: An unsupervised **IsolationForest** trained on 3.5 hours of continuous ESP32 hardware telemetry (`mine_part1_clean.csv`) to track sensor noise floor.
+Processes real-time multi-gas inputs (MQ-2, MQ-3, MQ-4, MQ-7, MQ-135, MQ-136, MG811 arrays) using **8 PyTorch Deep Learning & Baseline Core Models** optimized via an automated Architecture Search Tournament:
+- **PyTorch Deep Hazard Classifiers**: Employs `LayerNormSwishMLP` architectures with dynamic `pos_weight` loss balancing for LPG/CNG hazard detection (**99.97% test acc, 100% precision, 99.96% recall; 100.00% on real mine telemetry**) and toxic CO/NOx/Benzene combustion hazard detection (**93.81% test acc; 99.55% on real mine telemetry**).
+- **PyTorch Multi-Task Presence Sensing**: Upgraded `LayerNormSwishMLP` multi-task network tracking 5 gases simultaneously (LPG, Smoke, CO, NOx, Methane) with **97.32% elementwise multi-gas accuracy** and **87.22% exact subset accuracy**.
+- **PyTorch Deep Severity Heads**: Multiclass severity classifiers mapping L1/L2/L3 safety threshold boundaries for CH4 (**99.07% acc**), CO (**91.92% acc**), CO2 (**90.27% acc**), and H2 (**95.72% acc**).
+- **Clean-Air Hardware Baseline**: An unsupervised **IsolationForest** (`mine_baseline_iforest.joblib`) tracking sensor drift floor (**98.95% clean-air baseline recognition accuracy**).
 
 ### 2. Temperature & Humidity (`temperature_humidity/`)
 Monitors occupational safety and environmental anomaly conditions:
@@ -196,6 +206,12 @@ FIELD_MIND (Project)/
 A Python interpreter (version 3.10+) with required packages (`pandas`, `numpy`, `scikit-learn`, `joblib`, `openpyxl`, `langgraph`, `sentence-transformers`, `faiss-cpu`) is required.
 
 Ensure you run all scripts from the **project root**.
+
+### ★ Running the Autonomous Self-Learning & Reflection Demo
+To demonstrate how agents formulate reflective rules via `Qwen2.5-7B-Instruct`, store them dynamically in FAISS vector memory & EKG graph, and prevent repeat false alarms:
+```bash
+py -X utf8 reasoning_core/demo_self_learning.py
+```
 
 ### ★ Running the Interactive Safety Hub (Recommended Entry Point)
 To run the interactive CLI tool where you can input custom gas concentrations, temperature, geophone vibrations, and robot proximity values to see active alerts and interact with the AI assistant:

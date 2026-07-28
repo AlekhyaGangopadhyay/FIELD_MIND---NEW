@@ -128,8 +128,8 @@ class ATROrchestrator:
                     print(f"  Reason: {r}")
                 print("-" * 80)
                 print("[ATR STATE TRANSITION] IDLE -> ACTIVE_REASONING")
-                print("  -> Swapping device memory context...")
-                print("  -> Loading Llama-3.2-3B-Instruct quantized reasoning engine (~3.0 GB RAM)...")
+                print("  -> Swapping device memory context (NVIDIA Jetson Orin Nano 8GB)...")
+                print("  -> Loading Qwen2.5-7B-Instruct-Q4_K_M quantized reasoning engine (~4.35 GB RAM)...")
                 print("  -> Activating SciSense projection embedding layers...")
                 print("!" * 80 + "\n")
                 self.device_state = "ACTIVE_REASONING"
