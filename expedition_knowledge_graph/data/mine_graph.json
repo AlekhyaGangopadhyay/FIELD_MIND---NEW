@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "saved_at": "2026-07-13T14:48:18.620372",
-    "total_nodes": 1392,
-    "total_edges": 1697
+    "saved_at": "2026-07-28T14:11:52.387934",
+    "total_nodes": 1395,
+    "total_edges": 1700
   },
   "nodes": [
     {
@@ -30265,6 +30265,36 @@
         "segment_id": "TUNNEL_B1",
         "label": "ReasoningResolution"
       }
+    },
+    {
+      "id": "reasoning_event_1785228112183",
+      "properties": {
+        "timestamp": 1785228112.1830187,
+        "hypothesis": "CRITICAL Methane build-up detected (12500.0 ppm). Likely caused by ventilation pocket failure or sudden gas pocket release in the heading. | Environmental comfort indices deviated from normal baseline monitoring parameters.",
+        "suggestions": "IMMEDIATELY EVACUATE all personnel from the affected segment.; Activate secondary auxiliary ventilation fans to dilute combustible concentrations.; Power down all non-explosion-proof electrical equipment in the sector.",
+        "segment_id": "TUNNEL_A1",
+        "label": "ReasoningResolution"
+      }
+    },
+    {
+      "id": "reasoning_event_1785228112289",
+      "properties": {
+        "timestamp": 1785228112.2891977,
+        "hypothesis": "High peak particle velocity (15.80 mm/s) registered. Unexplained seismic vibration, indicating potential rockburst or structural shifts.",
+        "suggestions": "Inspect tunnel roof structures for damage, new cracks, or rock spalling.; Halt all subsequent blasting operations in adjacent segments until geological inspection completes.",
+        "segment_id": "TUNNEL_A3",
+        "label": "ReasoningResolution"
+      }
+    },
+    {
+      "id": "reasoning_event_1785228112387",
+      "properties": {
+        "timestamp": 1785228112.3877473,
+        "hypothesis": "Robot proximity alert (US minimum distance=0.18m). A wall or physical obstacle is blocking the path.",
+        "suggestions": "Command robotic platform to execute immediate reverse/backup maneuvers.; Recalibrate autonomous navigation steering coefficients.",
+        "segment_id": "TUNNEL_B1",
+        "label": "ReasoningResolution"
+      }
     }
   ],
   "edges": [
@@ -42145,6 +42175,27 @@
     },
     {
       "from": "reasoning_event_1783934298620",
+      "to": "TUNNEL_B1",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
+      }
+    },
+    {
+      "from": "reasoning_event_1785228112183",
+      "to": "TUNNEL_A1",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
+      }
+    },
+    {
+      "from": "reasoning_event_1785228112289",
+      "to": "TUNNEL_A3",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
+      }
+    },
+    {
+      "from": "reasoning_event_1785228112387",
       "to": "TUNNEL_B1",
       "properties": {
         "rel_type": "RESOLVED_FOR"
