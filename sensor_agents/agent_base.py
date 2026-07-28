@@ -126,6 +126,21 @@ class SensorAgentBase(ABC):
         # Register to hear CLEAR messages from orchestrator (to reset hazard counter)
         self.bus.subscribe("MineOrchestratorAgent", self._on_orchestrator_message)
 
+    def feedback_correction(
+        self,
+        features: Dict[str, Any],
+        true_label: int,
+        actual_situation: str = "Real-World Ground Truth Feedback",
+        explanation: str = "Corrected prediction mismatch via supervisor ground truth."
+    ) -> None:
+        """
+        Pushes a real-world ground truth correction into the agent's experience replay buffer.
+        Triggers online ML retraining when the buffer is full.
+        """
+        feat_vec = self._features_to_vector(features)
+        self._add_to_replay(feat_vec, true_label)
+        print(f"  [{self.agent_name}] Ground-truth feedback logged to replay buffer. (Replay Size: {len(self._replay_X)}/{self.replay_buffer_size})")
+
     # -----------------------------------------------------------------------
     # Abstract Interface — must be implemented by each sensor agent
     # -----------------------------------------------------------------------
