@@ -304,7 +304,7 @@ class ScientificReasoningCore:
         }
 
     # -----------------------------------------------------------------------
-    # Public Inference Hook
+    # Public Inference & Self-Learning Hooks
     # -----------------------------------------------------------------------
 
     def reason(self, anomalies: Dict[str, Any], segment_id: str) -> Dict[str, Any]:
@@ -324,3 +324,63 @@ class ScientificReasoningCore:
 
         # Run StateGraph workflow
         return self.workflow.invoke(initial_state)
+
+    def reflect_and_learn(
+        self,
+        anomalies: Dict[str, Any],
+        actual_situation: str,
+        explanation: str,
+        segment_id: str = "Segment_A1"
+    ) -> Dict[str, Any]:
+        """
+        Executes LLM Self-Reflection when a model misprediction/discrepancy occurs,
+        embeds the new corrective safety rule into FAISS vector memory, and logs to EKG.
+        """
+        print(f"\n  [Self-Learning Engine] Initiating LLM Reflection Loop (Qwen2.5-7B) for {segment_id} ...")
+        
+        reflection_payload = dict(anomalies)
+        reflection_payload["actual_situation"] = actual_situation
+        reflection_payload["explanation"] = explanation
+        
+        # 1. LLM Self-Reflection
+        rule_text = self.llm_runner.run_reasoning(
+            prompt=f"Formulate a self-learned safety rule for situation '{actual_situation}'. Explanation: {explanation}",
+            anomalies=reflection_payload,
+            ekg_history="",
+            rag_context="",
+            task_type="reflection"
+        )
+        print(f"  [LLM Reflection Output]: {rule_text}")
+
+        # 2. Store in FAISS Vector Memory
+        learned_chunk = {}
+        if self.rag_retriever:
+            learned_chunk = self.rag_retriever.add_learned_experience(
+                rule_text=rule_text,
+                source="llm_self_reflection"
+            )
+
+        # 3. Update EKG Graph Memory
+        if EKG_AVAILABLE and os.path.exists(self.ekg_json_path):
+            try:
+                graph = MineKnowledgeGraph.load(self.ekg_json_path)
+                node_id = f"learned_rule_{int(time.time() * 1000)}"
+                graph.add_node(node_id, label="SelfLearnedRule", properties={
+                    "timestamp": time.time(),
+                    "actual_situation": actual_situation,
+                    "explanation": explanation,
+                    "rule_text": rule_text,
+                    "segment_id": segment_id
+                })
+                if segment_id in graph.G:
+                    graph.add_edge(node_id, segment_id, rel_type="LEARNED_FOR")
+                graph.save(self.ekg_json_path)
+                print(f"  [EKG Graph] ✓ Persisted SelfLearnedRule node {node_id} into Expedition Knowledge Graph.")
+            except Exception as e:
+                print(f"  [EKG Graph Warning]: Could not save learned rule: {e}")
+
+        return {
+            "status": "SUCCESS",
+            "rule_text": rule_text,
+            "learned_chunk": learned_chunk
+        }

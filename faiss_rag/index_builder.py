@@ -118,34 +118,70 @@ class FAISSIndexBuilder:
     @classmethod
     def load(cls, index_path: str, metadata_path: str) -> "FAISSIndexBuilder":
         """
-        Load a previously saved FAISS index and metadata from disk.
+        Load a FAISS index + metadata from disk.
 
         Parameters
         ----------
-        index_path    : str   Path to the .bin FAISS index file
-        metadata_path : str   Path to the .json metadata file
+        index_path    : str   Path to faiss_index.bin
+        metadata_path : str   Path to chunks_metadata.json
 
         Returns
         -------
-        FAISSIndexBuilder instance with index and metadata loaded
+        FAISSIndexBuilder instance ready for searching
         """
-        if not os.path.exists(index_path):
-            raise FileNotFoundError(f"FAISS index not found: {index_path}")
-        if not os.path.exists(metadata_path):
-            raise FileNotFoundError(f"Metadata not found: {metadata_path}")
+        assert os.path.exists(index_path), f"Index file not found: {index_path}"
+        assert os.path.exists(metadata_path), f"Metadata file not found: {metadata_path}"
 
-        builder = cls()
-        builder._index = faiss.read_index(index_path)
-        builder.embed_dim = builder._index.d
+        print(f"  [IndexBuilder] Loading index from {index_path} ...")
+        index = faiss.read_index(index_path)
 
         with open(metadata_path, "r", encoding="utf-8") as f:
-            builder._metadata = json.load(f)
+            metadata = json.load(f)
 
-        print(
-            f"  [IndexBuilder] Loaded index: {builder._index.ntotal} vectors "
-            f"(dim={builder.embed_dim}) from {index_path}"
-        )
+        print(f"  [IndexBuilder] Loaded index: {index.ntotal} vectors (dim={index.d})")
+        builder = cls(embed_dim=index.d)
+        builder._index    = index
+        builder._metadata = metadata
+        builder._last_index_path = index_path
+        builder._last_metadata_path = metadata_path
         return builder
+
+    def add_single_experience(
+        self,
+        chunk: Dict[str, Any],
+        embedding: np.ndarray,
+        index_path: Optional[str] = None,
+        metadata_path: Optional[str] = None
+    ) -> None:
+        """
+        Dynamically appends a new self-learned experience rule chunk and its vector embedding
+        to the active FAISS index and persists to disk.
+        """
+        if self._index is None:
+            self._index = faiss.IndexFlatIP(self.embed_dim)
+
+        emb_32 = np.ascontiguousarray(embedding, dtype=np.float32)
+        if len(emb_32.shape) == 1:
+            emb_32 = emb_32.reshape(1, -1)
+
+        self._index.add(emb_32)
+
+        meta = {
+            "chunk_id"  : len(self._metadata),
+            "source"    : chunk.get("source",   "self_learned_experience"),
+            "path"      : chunk.get("path",     "dynamic_reflection"),
+            "text"      : chunk.get("text",     ""),
+            "start_char": 0,
+            "end_char"  : len(chunk.get("text", "")),
+            "length"    : len(chunk.get("text", "")),
+        }
+        self._metadata.append(meta)
+
+        idx_p = index_path or getattr(self, "_last_index_path", None)
+        meta_p = metadata_path or getattr(self, "_last_metadata_path", None)
+
+        if idx_p and meta_p:
+            self.save(idx_p, meta_p)
 
     # ------------------------------------------------------------------
     # Properties
