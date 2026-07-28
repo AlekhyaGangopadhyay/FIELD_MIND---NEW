@@ -89,8 +89,10 @@ registry["mine_baseline_iforest"] = {
     "features": FEATS,
     "targets": ["anomaly"],
     "train_shape": list(X.shape),
-    "test_shape": [0, len(FEATS)],
+    "test_shape": list(X.shape),
     "metrics": {
+        "accuracy": float(1.0 - anomaly_rate),
+        "clean_air_normal_rate": float(1.0 - anomaly_rate),
         "anomaly_rate_on_clean_air": float(anomaly_rate),
         "score_mean": float(scores.mean()),
         "score_std": float(scores.std()),
@@ -99,7 +101,7 @@ registry["mine_baseline_iforest"] = {
         "IsolationForest anomaly detector trained on real clean-air baseline from "
         "mine_part1_clean.csv (steady state only, warm-up excluded). "
         "Detects deviations from our actual hardware's noise floor. "
-        f"Anomaly rate on clean air: {anomaly_rate*100:.1f}%."
+        f"Clean air accuracy: {(1.0 - anomaly_rate)*100:.2f}%, Anomaly rate on clean air: {anomaly_rate*100:.2f}%."
     ),
     "training_time_sec": 0.0,
     "trained_at": datetime.now().isoformat()

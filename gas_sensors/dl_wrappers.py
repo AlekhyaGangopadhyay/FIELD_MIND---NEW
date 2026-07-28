@@ -123,34 +123,35 @@ class DeepHazardNet(nn.Module):
         super().__init__()
         self.binary = binary
         self.net = nn.Sequential(
-            nn.Linear(in_features, 64),
-            nn.BatchNorm1d(64),
-            nn.GELU(),
+            nn.Linear(in_features, 128),
+            nn.LayerNorm(128),
+            nn.SiLU(),
             nn.Dropout(0.1),
             
-            nn.Linear(64, 128),
-            nn.BatchNorm1d(128),
-            nn.GELU(),
+            nn.Linear(128, 256),
+            nn.LayerNorm(256),
+            nn.SiLU(),
             nn.Dropout(0.1),
             
-            nn.Linear(128, 64),
-            nn.BatchNorm1d(64),
-            nn.GELU(),
+            nn.Linear(256, 128),
+            nn.LayerNorm(128),
+            nn.SiLU(),
             
-            nn.Linear(64, out_features)
+            nn.Linear(128, out_features)
         )
         
     def forward(self, x):
         return self.net(x)
 
 class PyTorchHazardClassifier:
-    def __init__(self, in_features, out_features=1, binary=True, epochs=40, batch_size=256, lr=2e-3):
+    def __init__(self, in_features, out_features=1, binary=True, epochs=40, batch_size=256, lr=2e-3, pos_weight=None):
         self.in_features = in_features
         self.out_features = out_features
         self.binary = binary
         self.epochs = epochs
         self.batch_size = batch_size
         self.lr = lr
+        self.pos_weight = pos_weight
         self.scaler = StandardScaler()
         self.model_state = None
         self.classes_ = np.array([0, 1])
@@ -166,13 +167,15 @@ class PyTorchHazardClassifier:
         y_arr = y.values if isinstance(y, (pd.DataFrame, pd.Series)) else np.array(y)
         X_scaled = self.scaler.fit_transform(X_arr)
         
+        pos_weight_tensor = torch.tensor(self.pos_weight, dtype=torch.float32) if self.pos_weight is not None else None
+
         tensor_x = torch.tensor(X_scaled, dtype=torch.float32)
         if self.binary and self.out_features == 1:
             tensor_y = torch.tensor(y_arr, dtype=torch.float32).view(-1, 1)
-            criterion = nn.BCEWithLogitsLoss()
+            criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight_tensor)
         else:
             tensor_y = torch.tensor(y_arr, dtype=torch.float32 if self.out_features > 1 else torch.long)
-            criterion = nn.BCEWithLogitsLoss() if self.out_features > 1 else nn.CrossEntropyLoss()
+            criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight_tensor) if self.out_features > 1 else nn.CrossEntropyLoss()
             
         dataset = TensorDataset(tensor_x, tensor_y)
         loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)

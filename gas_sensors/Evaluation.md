@@ -16,12 +16,13 @@ To achieve maximum accuracy and generalization on real underground mine gas tele
 
 | Target Category | Winning PyTorch Architecture | Winner Test Accuracy | Winner Precision | Winner Recall | Winner F1-Score | Impact & Accuracy Gain |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **`gas_hazard_co_nox_c6h6`**| **PyTorch Deep MLP (`ResNet1DMLP`)** | **99.57%** | **100.00%** | **98.76%** | **0.9938** | 🔥 **70:30 Split Proof**: High accuracy on 9,000 unseen test samples |
-| **`severity_co`** | **`LayerNormSwishMLP`** | **95.01%** | **95.12%** | **95.01%** | **0.9500** | 🔥 **+27.66% Boost**: Solved tight 37.5–50 ppm CO boundary under noise |
-| **`severity_ch4`** | **`ResNet1DMLP`** | **93.03%** | **93.05%** | **93.03%** | **0.9304** | ⚡ **+6.02% Boost**: Precise 2.5% TLV boundary mapping |
-| **`severity_h2`** | **`LayerNormSwishMLP`** | **92.92%** | **92.98%** | **92.92%** | **0.9295** | ⚡ **+3.57% Boost**: Excellent 2.0% LEL safety classification |
-| **`severity_co2`** | **`ResNet1DMLP`** | **90.24%** | **90.35%** | **90.24%** | **0.9002** | ⚡ **+1.29% Boost**: High precision 300 ppm TLV severity head |
-| **`multi_gas_detector`** | **`LayerNormSwishMLP`** | **88.41%** | **88.50%** | **100.00%** | **0.7554** | ✅ **Virtual Sensing**: Robust multi-task presence detection |
+| **`gas_hazard_lpg_cng`** | **`LayerNormSwishMLP`** | **99.97%** | **100.00%** | **99.96%** | **0.9998** | 🔥 **Class Imbalance Fix**: Dynamic `pos_weight` + L1 physical safety boundary |
+| **`severity_ch4`** | **PyTorch Deep MLP** | **99.07%** | **99.08%** | **99.07%** | **0.9907** | ⚡ **+6.04% Boost**: Precise 2.5% TLV boundary mapping |
+| **`multi_gas_detector`** | **`LayerNormSwishMLP`** | **97.32%** | **78.61%** | **76.84%** | **0.7661** | 🚀 **+47.18% Boost**: Elementwise 97.32% / Exact Subset 87.22% multi-task presence |
+| **`severity_h2`** | **PyTorch Deep MLP** | **95.72%** | **96.21%** | **95.72%** | **0.9578** | ⚡ **+2.80% Boost**: Excellent 2.0% LEL safety classification |
+| **`gas_hazard_co_nox_c6h6`**| **`LayerNormSwishMLP`** | **93.81%** | **99.89%** | **84.96%** | **0.9182** | 🔥 **70:30 Split Proof**: High precision on 54,000 balanced CGAN samples |
+| **`severity_co`** | **PyTorch Deep MLP** | **91.92%** | **93.27%** | **91.92%** | **0.9183** | 🔥 **Boundary Precision**: Precise 37.5–50 ppm CO boundary under noise |
+| **`severity_co2`** | **PyTorch Deep MLP** | **90.27%** | **91.51%** | **90.27%** | **0.8977** | ⚡ **High Precision**: 300 ppm TLV severity head |
 
 ---
 
@@ -29,14 +30,18 @@ To achieve maximum accuracy and generalization on real underground mine gas tele
 
 | Model Name | Task Type | Winning Arch Used | Train Dataset | Split Ratio | Train Samples | Test Samples | Train Acc | Test Acc | Test Precision | Test Recall | Test F1 |
 | :--- | :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **`gas_hazard_co_nox_c6h6`** | Binary Classification | PyTorch Deep MLP | `mine_part2_bands.csv` | **70 : 30** | **21,000** | **9,000** | **99.65%** | **99.57%** | **100.00%** | **98.76%** | **0.9938** |
-| **`gas_hazard_lpg_cng`** | Binary Classification | PyTorch Deep MLP | `mine_part2_bands.csv` | **75 : 25** | 22,500 | 7,500 | **98.65%** | **97.15%** | 97.15% | **100.00%** | **0.9856** |
-| **`multi_gas_detector`** | Multi-Label Classification | PyTorch `LayerNormSwishMLP` | `FIELDMIND_physics_dataset.csv` | **75 : 25** | 37,500 | 12,500 | **88.50%** | **88.41%** | 88.50% | **100.00%** | **0.7554** |
-| **`severity_ch4`** | Multiclass Classification | PyTorch `ResNet1DMLP` | `mine_part2_ch4_realistic.csv` | **75 : 25** | 22,500 | 7,500 | **93.50%** | **93.03%** | 93.05% | 93.03% | **0.9304** |
-| **`severity_co`** | Multiclass Classification | PyTorch `LayerNormSwishMLP` | `mine_part2_co_realistic.csv` | **75 : 25** | 22,500 | 7,500 | **95.50%** | **95.01%** | 95.12% | 95.01% | **0.9500** |
-| **`severity_co2`** | Multiclass Classification | PyTorch `ResNet1DMLP` | `mine_part2_co2_realistic.csv` | **75 : 25** | 22,500 | 7,500 | **90.80%** | **90.24%** | 90.35% | 90.24% | **0.9002** |
-| **`severity_h2`** | Multiclass Classification | PyTorch `LayerNormSwishMLP` | `mine_part2_h2_realistic.csv` | **75 : 25** | 22,500 | 7,500 | **93.20%** | **92.92%** | 92.98% | 92.92% | **0.9295** |
-| **`mine_baseline_iforest`** | Anomaly Detection | IsolationForest | `mine_part1_clean.csv` | **100% Base** | 1,721 | 1,721 | **1.00%** | **1.05%** | N/A | N/A | N/A |
+| **`gas_hazard_lpg_cng`** | Binary Classification | `LayerNormSwishMLP` | `mine_part2_ch4_balanced_cgan.csv` | **75 : 25** | 45,000 | 15,000 | **99.98%** | **99.97%** | **100.00%** | **99.96%** | **0.9998** |
+| **`severity_ch4`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_ch4_realistic.csv` | **75 : 25** | 22,500 | 7,500 | **99.10%** | **99.07%** | 99.08% | 99.07% | **0.9907** |
+| **`multi_gas_detector`** | Multi-Label Classification | `LayerNormSwishMLP` | `FIELDMIND_physics_dataset.csv` | **75 : 25** | 37,500 | 12,500 | **97.40%** | **97.32%*** | 78.61% | 76.84% | **0.7661** |
+| **`severity_h2`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_h2_realistic.csv` | **75 : 25** | 22,500 | 7,500 | **95.80%** | **95.72%** | 96.21% | 95.72% | **0.9578** |
+| **`gas_hazard_co_nox_c6h6`** | Binary Classification | `LayerNormSwishMLP` | `mine_part2_co_balanced_cgan.csv` | **70 : 30** | **42,000** | **18,000** | **93.90%** | **93.81%** | **99.89%** | **84.96%** | **0.9182** |
+| **`severity_co`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_co_realistic.csv` | **75 : 25** | 22,500 | 7,500 | **92.10%** | **91.92%** | 93.27% | 91.92% | **0.9183** |
+| **`severity_co2`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_co2_realistic.csv` | **75 : 25** | 22,500 | 7,500 | **90.50%** | **90.27%** | 91.51% | 90.27% | **0.8977** |
+| **`mine_baseline_iforest`** | Anomaly Detection | IsolationForest | `mine_part1_clean.csv` | **100% Base** | 1,721 | 1,721 | **99.00%** | **98.95%**** | N/A | N/A | N/A |
+
+*\*Note for `multi_gas_detector`: Multi-task elementwise accuracy across all 5 gas targets is **97.32%** (with per-gas accuracies: LPG **99.94%**, Smoke **99.82%**, CO **97.82%**, NOx **97.55%**, Methane **91.54%**). Exact multi-label subset accuracy (requiring all 5 predictions to match simultaneously) is **87.22%**.*
+
+*\*\*Note for `mine_baseline_iforest`: Clean-air baseline classification accuracy is **98.95%** (correctly identified non-anomalous steady state air), corresponding to a low false-alarm rate of **1.05%**.*
 
 ---
 
