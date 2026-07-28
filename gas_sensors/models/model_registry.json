@@ -11,14 +11,14 @@
             "Hazard_Alert"
         ],
         "metrics": {
-            "accuracy": 0.9853333333333333,
-            "precision": 0.9853333333333333,
-            "recall": 1.0,
-            "f1_score": 0.9926124916051041
+            "accuracy": 0.9996666666666667,
+            "precision": 1.0,
+            "recall": 0.9996022908049634,
+            "f1_score": 0.9998011058514659
         },
         "remarks": "PyTorch Deep Neural Network trained on real multi-channel CH4/LPG distributions.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-22T13:13:17.392075"
+        "trained_at": "2026-07-28T13:57:02.651365"
     },
     "gas_hazard_co_nox_c6h6": {
         "task_type": "binary_classification",
@@ -33,18 +33,18 @@
             "Hazard_Alert"
         ],
         "metrics": {
-            "accuracy": 0.9956666666666667,
-            "precision": 1.0,
-            "recall": 0.9875993640699523,
-            "f1_score": 0.9937609982402815
+            "accuracy": 0.9380555555555555,
+            "precision": 0.9988832163369495,
+            "recall": 0.8496403853982901,
+            "f1_score": 0.9182371489330498
         },
         "remarks": "PyTorch Deep Neural Network trained on real physical combustion CO/NOx/Benzene dynamics.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-22T13:13:17.392087"
+        "trained_at": "2026-07-28T13:57:02.651373"
     },
     "multi_gas_detector": {
         "task_type": "multilabel_classification",
-        "model_type": "PyTorch_Deep_MLP",
+        "model_type": "PyTorch_LayerNormSwishMLP",
         "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\multi_gas_detector.joblib",
         "features": [
             "MQ2_CO_ppm",
@@ -59,11 +59,16 @@
             "NOx"
         ],
         "metrics": {
-            "accuracy": 0.87888
+            "accuracy": 0.973168,
+            "elementwise_accuracy": 0.973168,
+            "exact_subset_accuracy": 0.87224,
+            "precision": 0.7860888715508909,
+            "recall": 0.768366344940148,
+            "f1_score": 0.766076289748316
         },
-        "remarks": "Multi-Task PyTorch Deep Neural Network predicting multi-gas presence.",
+        "remarks": "Multi-Task PyTorch LayerNormSwishMLP predicting multi-gas presence (Methane, CO, LPG, Smoke, NOx).",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-22T13:13:17.392091"
+        "trained_at": "2026-07-28T13:57:02.651378"
     },
     "mine_baseline_iforest": {
         "task_type": "anomaly_detection",
@@ -86,21 +91,23 @@
             8
         ],
         "test_shape": [
-            0,
+            1721,
             8
         ],
         "metrics": {
+            "accuracy": 0.989540964555491,
+            "clean_air_normal_rate": 0.989540964555491,
             "anomaly_rate_on_clean_air": 0.010459035444509006,
             "score_mean": 0.22461180918786866,
             "score_std": 0.0638039789991638
         },
-        "remarks": "IsolationForest anomaly detector trained on real clean-air baseline from mine_part1_clean.csv (steady state only, warm-up excluded). Detects deviations from our actual hardware's noise floor. Anomaly rate on clean air: 1.0%.",
+        "remarks": "IsolationForest anomaly detector trained on real clean-air baseline from mine_part1_clean.csv (steady state only, warm-up excluded). Detects deviations from our actual hardware's noise floor. Clean air accuracy: 98.95%, Anomaly rate on clean air: 1.05%.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-22T11:48:25.605490"
+        "trained_at": "2026-07-28T13:51:34.338046"
     },
     "severity_ch4": {
         "task_type": "multiclass_classification",
-        "model_type": "PyTorch_ResNet1DMLP",
+        "model_type": "PyTorch_Deep_MLP",
         "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\severity_ch4.joblib",
         "features": [
             "ppm"
@@ -117,24 +124,23 @@
             1
         ],
         "metrics": {
-            "accuracy": 0.9302666666666667,
-            "macro_precision": 0.8718079972401798,
-            "macro_recall": 0.8709333333333333,
-            "macro_f1": 0.8713235050271658,
-            "learned_L1_L2_threshold_ppm": 12831.283128312833,
-            "learned_L2_L3_threshold_ppm": 18864.386438643865,
+            "accuracy": 0.9906666666666667,
+            "macro_precision": 0.9907861213561979,
+            "macro_recall": 0.9906666666666667,
+            "macro_f1": 0.9906862514448164,
+            "learned_L1_L2_threshold_ppm": 12393.739373937395,
+            "learned_L2_L3_threshold_ppm": 18764.376437643765,
             "expected_L1_L2_threshold_ppm": 12500.0,
             "expected_L2_L3_threshold_ppm": 18750.0,
-            "tlv_ppm": 25000.0,
-            "f1_score": 0.9303574183032994
+            "tlv_ppm": 25000.0
         },
-        "remarks": "Winning Deep Learning Architecture (ResNet1DMLP) selected via automated Architecture Search Tournament.",
+        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on real mine data for CH4.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-22T12:48:48.130157"
+        "trained_at": "2026-07-28T13:39:13.012677"
     },
     "severity_co": {
         "task_type": "multiclass_classification",
-        "model_type": "PyTorch_LayerNormSwishMLP",
+        "model_type": "PyTorch_Deep_MLP",
         "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\severity_co.joblib",
         "features": [
             "ppm"
@@ -151,24 +157,23 @@
             1
         ],
         "metrics": {
-            "accuracy": 0.9501333333333334,
-            "macro_precision": 0.6856501704604071,
-            "macro_recall": 0.6737333333333334,
-            "macro_f1": 0.6503813716912502,
-            "learned_L1_L2_threshold_ppm": 658.065806580658,
-            "learned_L2_L3_threshold_ppm": 854.085408540854,
+            "accuracy": 0.9192,
+            "macro_precision": 0.9326585162141848,
+            "macro_recall": 0.9192,
+            "macro_f1": 0.9183317776129399,
+            "learned_L1_L2_threshold_ppm": 29.002900290029,
+            "learned_L2_L3_threshold_ppm": 67.006700670067,
             "expected_L1_L2_threshold_ppm": 37.5,
             "expected_L2_L3_threshold_ppm": 50.0,
-            "tlv_ppm": 50.0,
-            "f1_score": 0.9500434021824203
+            "tlv_ppm": 50.0
         },
-        "remarks": "Winning Deep Learning Architecture (LayerNormSwishMLP) selected via automated Architecture Search Tournament.",
+        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on real mine data for CO.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-22T12:48:48.130167"
+        "trained_at": "2026-07-28T13:39:31.314976"
     },
     "severity_co2": {
         "task_type": "multiclass_classification",
-        "model_type": "PyTorch_ResNet1DMLP",
+        "model_type": "PyTorch_Deep_MLP",
         "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\severity_co2.joblib",
         "features": [
             "ppm"
@@ -185,24 +190,23 @@
             1
         ],
         "metrics": {
-            "accuracy": 0.9024,
-            "macro_precision": 0.8919429918856355,
-            "macro_recall": 0.8887999999999999,
-            "macro_f1": 0.8895068373627074,
-            "learned_L1_L2_threshold_ppm": 448.5448544854485,
-            "learned_L2_L3_threshold_ppm": 1121.6121612161214,
+            "accuracy": 0.9026666666666666,
+            "macro_precision": 0.9150686711662321,
+            "macro_recall": 0.9026666666666667,
+            "macro_f1": 0.8976581100012392,
+            "learned_L1_L2_threshold_ppm": 445.5445544554455,
+            "learned_L2_L3_threshold_ppm": 973.5973597359736,
             "expected_L1_L2_threshold_ppm": 400.0,
             "expected_L2_L3_threshold_ppm": 1000.0,
-            "tlv_ppm": 300.0,
-            "f1_score": 0.9001996950009241
+            "tlv_ppm": 300.0
         },
-        "remarks": "Winning Deep Learning Architecture (ResNet1DMLP) selected via automated Architecture Search Tournament.",
+        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on real mine data for CO2.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-22T12:48:48.130170"
+        "trained_at": "2026-07-28T13:39:49.190272"
     },
     "severity_h2": {
         "task_type": "multiclass_classification",
-        "model_type": "PyTorch_LayerNormSwishMLP",
+        "model_type": "PyTorch_Deep_MLP",
         "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\severity_h2.joblib",
         "features": [
             "ppm"
@@ -219,20 +223,19 @@
             1
         ],
         "metrics": {
-            "accuracy": 0.9292,
-            "macro_precision": 0.8988515522427033,
-            "macro_recall": 0.8941333333333333,
-            "macro_f1": 0.8952800018766601,
-            "learned_L1_L2_threshold_ppm": 17713.571357135712,
-            "learned_L2_L3_threshold_ppm": 26959.895989598957,
+            "accuracy": 0.9572,
+            "macro_precision": 0.9620701878766394,
+            "macro_recall": 0.9571999999999999,
+            "macro_f1": 0.957765034462768,
+            "learned_L1_L2_threshold_ppm": 17314.531453145315,
+            "learned_L2_L3_threshold_ppm": 25181.31813181318,
             "expected_L1_L2_threshold_ppm": 18000.0,
             "expected_L2_L3_threshold_ppm": 25000.0,
-            "tlv_ppm": 20000.0,
-            "f1_score": 0.9295282999980811
+            "tlv_ppm": 20000.0
         },
-        "remarks": "Winning Deep Learning Architecture (LayerNormSwishMLP) selected via automated Architecture Search Tournament.",
+        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on real mine data for H2.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-22T12:48:48.130172"
+        "trained_at": "2026-07-28T13:40:07.071910"
     },
     "part1_warmup": {
         "model_type": "PyTorch_LayerNormSwishMLP",
