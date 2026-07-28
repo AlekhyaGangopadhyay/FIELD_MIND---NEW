@@ -1,8 +1,10 @@
 # Scientific Reasoning Core — FIELD-MIND Layer 3
 
-The **Scientific Reasoning Core** is FIELD-MIND's on-device reasoning engine. It coordinates multi-step diagnostic reasoning using a **LangGraph** workflow loop. The core activates when the system enters `EMERGENCY` or `ACTIVE_REASONING` states, drawing context from the Expedition Knowledge Graph (EKG) and the FAISS RAG database to formulate root-cause hypotheses and generate prioritized, actionable safety suggestions.
+The **Scientific Reasoning Core** is FIELD-MIND's on-device diagnostic and self-learning engine. Deployed on the **NVIDIA Jetson Orin Nano (8GB LPDDR5 Unified RAM)** using the **`Qwen2.5-7B-Instruct-Q4_K_M.gguf`** 7B parameter LLM, it coordinates multi-step diagnostic reasoning using a **LangGraph** workflow loop. The core activates when the system enters `EMERGENCY` or `ACTIVE_REASONING` states, drawing context from the Expedition Knowledge Graph (EKG) and the FAISS RAG database to formulate root-cause hypotheses and generate prioritized, actionable safety suggestions.
 
-All operations run **100% offline** on local CPU hardware.
+It also features an **Autonomous Self-Learning & Real-Time Reflection Engine (`reflect_and_learn`)** that formulates corrective safety rules when real-world ground truth differs from initial model predictions, embedding them dynamically into FAISS vector memory.
+
+All operations run **100% offline** on local edge hardware with CUDA GPU acceleration (`n_gpu_layers=-1`).
 
 ---
 

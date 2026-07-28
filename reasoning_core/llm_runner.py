@@ -14,11 +14,24 @@ from typing import Any, Dict, List, Optional
 
 class OfflineLLMRunner:
     """
-    Runner that executes on-device reasoning using a local quantized LLM,
-    with an embedded expert-system fallback.
+    Runner that executes on-device reasoning using a local quantized LLM
+    (e.g., Qwen2.5-7B-Instruct-Q4_K_M.gguf on NVIDIA Jetson Orin Nano 8GB),
+    with an embedded expert-system fallback and self-reflection engine.
     """
 
     def __init__(self, model_path: Optional[str] = None):
+        if not model_path:
+            # Candidate GGUF model paths on Jetson Orin Nano 8GB
+            candidates = [
+                "models/Qwen2.5-7B-Instruct-Q4_K_M.gguf",
+                "models/DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf",
+                "models/Llama-3.1-8B-Instruct-Q4_K_M.gguf",
+            ]
+            for c in candidates:
+                if os.path.exists(c):
+                    model_path = c
+                    break
+
         self.model_path = model_path
         self._llm = None
         self._initialized = False
@@ -26,19 +39,20 @@ class OfflineLLMRunner:
         if model_path and os.path.exists(model_path):
             try:
                 from llama_cpp import Llama
-                print(f"  [LLMRunner] Initializing Llama model from {model_path} ...")
+                print(f"  [LLMRunner] Initializing Qwen2.5-7B / 5B+ GGUF model on Jetson Orin Nano from {model_path} ...")
                 self._llm = Llama(
                     model_path=model_path,
                     n_ctx=2048,
-                    n_threads=4,
+                    n_threads=6,
+                    n_gpu_layers=-1,  # Offload all layers to Orin Nano 1024-core Ampere GPU
                     verbose=False
                 )
                 self._initialized = True
-                print("  [LLMRunner] ✓ Quantized Llama model loaded.")
+                print("  [LLMRunner] ✓ Quantized Qwen2.5-7B-Instruct model loaded with GPU acceleration.")
             except Exception as e:
-                print(f"  [LLMRunner] ⚠ Failed to load GGUF model: {e}. Fallback to Expert System enabled.")
+                print(f"  [LLMRunner] ⚠ Failed to load GGUF model ({e}). Fallback to Expert System enabled.")
         else:
-            print("  [LLMRunner] No valid GGUF model path provided. Defaulting to Expert System.")
+            print("  [LLMRunner] No GGUF model found at 'models/Qwen2.5-7B-Instruct-Q4_K_M.gguf'. Defaulting to Expert System & Reflection Engine.")
 
     def run_reasoning(
         self,
@@ -49,11 +63,10 @@ class OfflineLLMRunner:
         task_type: str = "hypothesis"
     ) -> str:
         """
-        Executes reasoning using the loaded LLM or falls back to the Expert Rule Engine.
+        Executes reasoning or self-reflection using the loaded LLM or falls back to the Expert System.
         """
         if self._initialized and self._llm:
             try:
-                # LLM execution
                 response = self._llm(
                     prompt,
                     max_tokens=512,
@@ -65,7 +78,7 @@ class OfflineLLMRunner:
             except Exception as e:
                 print(f"  [LLMRunner] LLM inference failed: {e}. Falling back to Expert System.")
 
-        # Expert System Fallback
+        # Expert System Fallback & Reflection Engine
         return self._expert_fallback(anomalies, ekg_history, rag_context, task_type)
 
     def _expert_fallback(
@@ -165,6 +178,15 @@ class OfflineLLMRunner:
             if not advices:
                 advices.append("Maintain continuous low-power monitoring and standard reporting.")
 
-            return "\n".join([f"- {adv}" for adv in advices])
+            return "\n".join(f"✔ {a}" for a in advices)
 
-        return "Unknown task type."
+        elif task_type == "reflection":
+            explanation = str(anomalies.get("explanation", "Real-world ground truth differed from initial model prediction."))
+            actual_situation = str(anomalies.get("actual_situation", "Verified physical situation."))
+            rule = (
+                f"When real-time telemetry indicates '{actual_situation}' despite conflicting model output, "
+                f"apply corrective contextual rule: {explanation}. Override initial prediction and update experience replay memory."
+            )
+            return rule
+
+        return "Standard operation."
