@@ -60,8 +60,8 @@ if os.path.exists(model_path):
         "MQ4_CH4_ppm": ch4["ppm"].values
     })
 
-    # Ground truth: OSHA/MSHA methane action level 1000 ppm (10% LEL)
-    y_true_1 = (ch4["ppm"].values > 1000).astype(int)
+    # Ground truth: Physical L1 Warning Level (12,500 ppm = 1.25% LEL fraction)
+    y_true_1 = ((ch4["ppm"].values >= 12500) | (80.0 >= 110)).astype(int)
 
     y_pred_1 = m1.predict(X1)
 

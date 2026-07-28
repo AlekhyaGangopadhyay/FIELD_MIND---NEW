@@ -5,13 +5,15 @@ Wraps all 6 pre-trained gas models from Tier1Monitor into an autonomous
 agent that observes gas concentrations, reasons about hazard conditions,
 acts by publishing ALERT messages, and learns from the original gas dataset.
 
-Supported Models (from gas_sensors/models/):
-  - mq4_gas_classifier.joblib        (methane, 128 features)
-  - smoke_fire_alarm_model.joblib    (smoke/fire, 36 features)
-  - gas_hazard_lpg_cng.joblib        (LPG/CNG, 2 features)
-  - gas_hazard_co_nox_c6h6.joblib   (CO/NOx/Benzene, 3 features)
-  - gas_hazard_smoke_env.joblib      (smoke+env, 3 features)
-  - air_quality_regressor.joblib     (air quality score, 7 features)
+Supported Production Suite Models (from gas_sensors/models/):
+  - gas_hazard_lpg_cng.joblib        (LPG/CNG, 2 features, PyTorch LayerNormSwishMLP)
+  - gas_hazard_co_nox_c6h6.joblib   (CO/NOx/Benzene, 3 features, PyTorch LayerNormSwishMLP)
+  - multi_gas_detector.joblib        (Multi-Task Presence, 3 features, PyTorch LayerNormSwishMLP)
+  - mine_baseline_iforest.joblib     (Clean-Air Baseline Anomaly Detector, IsolationForest)
+  - severity_ch4.joblib              (Methane Severity Classifier, PyTorch Deep MLP)
+  - severity_co.joblib               (CO Severity Classifier, PyTorch Deep MLP)
+  - severity_co2.joblib              (CO2 Severity Classifier, PyTorch Deep MLP)
+  - severity_h2.joblib               (H2 Severity Classifier, PyTorch Deep MLP)
 
 Ground-Truth Labels:
   Derived from 'Hazard_Alert' column of FIELDMIND_physics_dataset.csv.
