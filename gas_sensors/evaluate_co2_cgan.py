@@ -272,9 +272,14 @@ def run_evaluation():
     X_bal_full = df_balanced[FEATURE_COLS].values
     y_bal_sev = df_balanced["severity"].values.astype(int)
 
-    X_r_tr, X_r_te, y_r_tr_sev, y_r_te_sev = train_test_split(
-        X_r_full, y_r_sev, test_size=0.3, random_state=42, stratify=y_r_sev
+    indices = np.arange(len(X_r_full))
+    X_r_tr_idx, X_r_te_idx = train_test_split(
+        indices, test_size=0.3, random_state=42, stratify=y_r_sev
     )
+    X_r_tr = X_r_full[X_r_tr_idx]
+    X_r_te = X_r_full[X_r_te_idx]
+    y_r_tr_sev = y_r_sev[X_r_tr_idx]
+    y_r_te_sev = y_r_sev[X_r_te_idx]
 
     # TRTR: Train Real -> Test Real
     clf_trtr = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -295,9 +300,7 @@ def run_evaluation():
 
     # Evaluation on target: over_tlv (0, 1)
     y_bal_otlv = df_balanced["over_tlv"].values.astype(int)
-    _, _, _, y_r_te_otlv = train_test_split(
-        X_r_full, df_real["over_tlv"].values.astype(int), test_size=0.3, random_state=42
-    )
+    y_r_te_otlv = df_real["over_tlv"].values.astype(int)[X_r_te_idx]
 
     clf_otlv = RandomForestClassifier(n_estimators=100, random_state=42)
     clf_otlv.fit(X_bal_full, y_bal_otlv)

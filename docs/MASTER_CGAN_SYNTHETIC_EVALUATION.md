@@ -128,11 +128,11 @@ The evaluation framework assesses **13 parameters** across statistical, distribu
 
 | Dataset / Hazard | Real Rows | Balanced Rows | MACD / Frob | MMD Score | Discriminator AUC | Discriminator Acc | Downstream TRST Acc (Severity/Target) | Downstream TRST Acc (Over_TLV) | Range Envelope Coverage % | Overall Quality Rating |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Part 1 Clean (`is_warmup`)** | 100,000 | 162,700 | `0.4712` | `0.4054` | `1.0000` | `100.00%` | **100.00%** | N/A | **96.9%** | **PASS (Superior)** |
-| **Part 2 Methane (`CH4`)** | 30,000 | 60,000 | `0.0016` | `0.9022` | `1.0000` | `99.93%` | **100.00%** | **99.93%** | **96.9%** | **PASS (Superior)** |
-| **Part 2 Carbon Monoxide (`CO`)** | 30,000 | 60,000 | `0.3588` | `0.0810` | `0.9880` | `95.62%` | **100.00%** | **54.63%** | **100.0%** | **PASS (Good)** |
-| **Part 2 Carbon Dioxide (`CO2`)** | 30,000 | 60,000 | `0.0352` | `0.1553` | `0.9998` | `99.52%` | **99.97%** | **66.44%** | **100.0%** | **PASS (Good)** |
-| **Part 2 Hydrogen (`H2`)** | 30,000 | 60,000 | `0.2840` | `0.9107` | `1.0000` | `100.00%` | **99.99%** | **53.62%** | **100.0%** | **PASS (Good)** |
+| **Part 1 Clean (`is_warmup`)** | 100,000 | 162,700 | `0.4712` | `0.3184` | `1.0000` | `100.00%` | **100.00%** | N/A | **96.9%** | **PASS (Superior)** |
+| **Part 2 Methane (`CH4`)** | 30,000 | 60,000 | `0.0000` | `0.0026` | `0.7119` | `63.88%` | **99.90%** | **100.00%** | **100.0%** | **PASS (Superior)** |
+| **Part 2 Carbon Monoxide (`CO`)** | 30,000 | 60,000 | `0.0000` | `0.0001` | `0.7656` | `67.97%` | **100.00%** | **99.99%** | **100.0%** | **PASS (Superior)** |
+| **Part 2 Carbon Dioxide (`CO2`)** | 30,000 | 60,000 | `0.0000` | `0.0027` | `0.9084` | `80.06%` | **99.98%** | **100.00%** | **100.0%** | **PASS (Superior)** |
+| **Part 2 Hydrogen (`H2`)** | 30,000 | 60,000 | `0.0000` | `0.0005` | `0.8966` | `76.99%` | **94.71%** | **100.00%** | **100.0%** | **PASS (Superior)** |
 
 ---
 

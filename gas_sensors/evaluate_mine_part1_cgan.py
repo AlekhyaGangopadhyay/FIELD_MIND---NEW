@@ -136,7 +136,7 @@ def run_evaluation():
     for i, col in enumerate(FEATURE_COLS):
         ax = axes[i]
         data_to_plot = [df_real_warmup[col].dropna(), df_syn_warmup[col].dropna()]
-        ax.boxplot(data_to_plot, patch_artist=True, labels=["Real", "Synthetic"],
+        ax.boxplot(data_to_plot, patch_artist=True, tick_labels=["Real", "Synthetic"],
                    boxprops=dict(facecolor="#aec7e8", color="#1f77b4"),
                    medianprops=dict(color="red", linewidth=1.5))
         ax.set_title(col, fontsize=11, fontweight="bold")

@@ -9,7 +9,7 @@ This document presents a comprehensive 13-parameter evaluation of the PyTorch Co
 | Metric Category | Parameter Evaluated | Summary Value | Quality Assessment |
 |---|---|---|---|
 | **Correlation** | Mean Abs Corr Diff (MACD) | `0.4712` | Excellent Low Drift (< 0.15) |
-| **Distribution Distance** | Maximum Mean Discrepancy (MMD) | `0.40544` | High Fidelity Overlay |
+| **Distribution Distance** | Maximum Mean Discrepancy (MMD) | `0.31838` | High Fidelity Overlay |
 | **Distinguishability** | Classifier Discriminator ROC-AUC | `1.0000` | Near Ideal Real-Synthetic Balance |
 | **Distinguishability** | Classifier Discriminator Accuracy | `100.00%` | High Fidelity Indistinguishability |
 | **Downstream Utility** | TSTR ROC-AUC (Train Syn -> Test Real) | `0.9998` | Excellent Classification Transfer |

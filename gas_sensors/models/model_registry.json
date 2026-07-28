@@ -243,18 +243,18 @@
             "roc_auc": 1.0
         },
         "remarks": "Winning PyTorch architecture (LayerNormSwishMLP) selected via DL Tournament on balanced dataset.",
-        "trained_at": "2026-07-23T15:11:21.087714"
+        "trained_at": "2026-07-28T11:14:39.763631"
     },
     "ch4_severity": {
         "model_type": "PyTorch_LayerNormSwishMLP",
         "file": "ch4_severity_dl_best.joblib",
         "metrics": {
-            "accuracy": 0.9851333333333333,
-            "f1_score": 0.9851390741929364,
-            "roc_auc": 0.9991530533333335
+            "accuracy": 0.9970666666666667,
+            "f1_score": 0.9970666471217421,
+            "roc_auc": 0.9999798866666666
         },
         "remarks": "Winning PyTorch architecture (LayerNormSwishMLP) selected via DL Tournament on balanced dataset.",
-        "trained_at": "2026-07-23T15:11:21.087714"
+        "trained_at": "2026-07-28T11:14:39.763641"
     },
     "ch4_over_tlv": {
         "model_type": "PyTorch_ResNet1DMLP",
@@ -265,7 +265,7 @@
             "roc_auc": 1.0
         },
         "remarks": "Winning PyTorch architecture (ResNet1DMLP) selected via DL Tournament on balanced dataset.",
-        "trained_at": "2026-07-23T15:11:21.087714"
+        "trained_at": "2026-07-28T11:14:39.763645"
     },
     "co_severity": {
         "model_type": "PyTorch_LayerNormSwishMLP",
@@ -273,10 +273,10 @@
         "metrics": {
             "accuracy": 0.9764,
             "f1_score": 0.9763728727728295,
-            "roc_auc": 0.9981810466666667
+            "roc_auc": 0.9981813733333333
         },
         "remarks": "Winning PyTorch architecture (LayerNormSwishMLP) selected via DL Tournament on balanced dataset.",
-        "trained_at": "2026-07-23T15:11:21.087714"
+        "trained_at": "2026-07-28T11:14:39.763647"
     },
     "co_over_tlv": {
         "model_type": "PyTorch_ResNet1DMLP",
@@ -287,29 +287,29 @@
             "roc_auc": 0.9997148363285664
         },
         "remarks": "Winning PyTorch architecture (ResNet1DMLP) selected via DL Tournament on balanced dataset.",
-        "trained_at": "2026-07-23T15:11:21.087714"
+        "trained_at": "2026-07-28T11:14:39.763650"
     },
     "co2_severity": {
         "model_type": "PyTorch_LayerNormSwishMLP",
         "file": "co2_severity_dl_best.joblib",
         "metrics": {
-            "accuracy": 0.95,
-            "f1_score": 0.948876802336077,
-            "roc_auc": 0.9951075266666667
+            "accuracy": 0.9501333333333334,
+            "f1_score": 0.9490167193910674,
+            "roc_auc": 0.9953736133333333
         },
         "remarks": "Winning PyTorch architecture (LayerNormSwishMLP) selected via DL Tournament on balanced dataset.",
-        "trained_at": "2026-07-23T15:11:21.087714"
+        "trained_at": "2026-07-28T11:14:39.763652"
     },
     "co2_over_tlv": {
         "model_type": "PyTorch_LayerNormSwishMLP",
         "file": "co2_over_tlv_dl_best.joblib",
         "metrics": {
-            "accuracy": 0.9996666666666667,
-            "f1_score": 0.9997879109225875,
+            "accuracy": 0.9997333333333334,
+            "f1_score": 0.9998303215406804,
             "roc_auc": 1.0
         },
         "remarks": "Winning PyTorch architecture (LayerNormSwishMLP) selected via DL Tournament on balanced dataset.",
-        "trained_at": "2026-07-23T15:11:21.087714"
+        "trained_at": "2026-07-28T11:14:39.763654"
     },
     "h2_severity": {
         "model_type": "PyTorch_LayerNormSwishMLP",
@@ -320,7 +320,7 @@
             "roc_auc": 0.9988389533333333
         },
         "remarks": "Winning PyTorch architecture (LayerNormSwishMLP) selected via DL Tournament on balanced dataset.",
-        "trained_at": "2026-07-23T15:11:21.087714"
+        "trained_at": "2026-07-28T11:14:39.763657"
     },
     "h2_over_tlv": {
         "model_type": "PyTorch_LayerNormSwishMLP",
@@ -331,6 +331,6 @@
             "roc_auc": 1.0
         },
         "remarks": "Winning PyTorch architecture (LayerNormSwishMLP) selected via DL Tournament on balanced dataset.",
-        "trained_at": "2026-07-23T15:11:21.087714"
+        "trained_at": "2026-07-28T11:14:39.763658"
     }
 }

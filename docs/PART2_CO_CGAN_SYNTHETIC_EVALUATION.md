@@ -14,11 +14,11 @@ This report provides a comprehensive 13-parameter evaluation of the PyTorch Cond
 | Metric Category | Parameter Evaluated | Summary Value | Quality Assessment |
 |---|---|---|---|
 | **Correlation** | Mean Abs Corr Diff (MACD) | `0.0000` | Low Drift (< 0.15) |
-| **Distribution Distance** | Maximum Mean Discrepancy (MMD) | `0.00030` | High Fidelity Overlay |
-| **Distinguishability** | Classifier Discriminator ROC-AUC | `0.7657` | Excellent Real-Synthetic Balance |
-| **Distinguishability** | Classifier Discriminator Accuracy | `67.98%` | High Indistinguishability |
+| **Distribution Distance** | Maximum Mean Discrepancy (MMD) | `0.00014` | High Fidelity Overlay |
+| **Distinguishability** | Classifier Discriminator ROC-AUC | `0.7656` | Excellent Real-Synthetic Balance |
+| **Distinguishability** | Classifier Discriminator Accuracy | `67.97%` | High Indistinguishability |
 | **Downstream Utility** | Severity TRST Test Acc | `100.00%` | Superior Classification Utility |
-| **Downstream Utility** | Over_TLV TRST Test Acc | `54.52%` | Perfect Classification Utility |
+| **Downstream Utility** | Over_TLV TRST Test Acc | `99.99%` | Perfect Classification Utility |
 
 ---
 
@@ -56,7 +56,7 @@ This report provides a comprehensive 13-parameter evaluation of the PyTorch Cond
 
 ### Over TLV Classification (`over_tlv` 0, 1)
 
-- **TRST Accuracy (`over_tlv`)**: **54.52%**
+- **TRST Accuracy (`over_tlv`)**: **99.99%**
 
 
 ---
