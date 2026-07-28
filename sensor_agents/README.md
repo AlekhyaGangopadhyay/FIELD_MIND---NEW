@@ -16,6 +16,50 @@ All agents inherit from a unified base class implementing the **Observe-Reason-A
 
 ---
 
+## 🔄 Autonomous Self-Learning & Reflection Architecture
+
+The flowchart below illustrates how sensor agents handle real-time ground-truth feedback and prediction discrepancies:
+
+```mermaid
+flowchart TD
+    A["🔌 Streaming Telemetry Arrives"] --> B["🤖 Sensor Agent Perception & Inference"]
+    B --> C{"Prediction Mismatch or Ground-Truth Feedback?"}
+    
+    C -- "No (Nominal Match)" --> D["Continue Background Monitoring"]
+    C -- "Yes (Misprediction / Discrepancy)" --> E["feedback_correction() Triggered"]
+    
+    E --> F["🧠 Path 1: LLM Reflection Engine (Qwen2.5-7B)"]
+    E --> G["⚡ Path 2: Experience Replay Buffer (Capacity=200)"]
+    
+    F --> H["Formulate Reflective Correction Rule"]
+    H --> I["Embed via SentenceTransformer & Save to FAISS RAG"]
+    H --> J["Persist SelfLearnedRule Node to EKG Graph"]
+    
+    G --> K["Store Corrected (Features, True_Label) Vector"]
+    K --> L{"Replay Buffer Full (200 Samples)?"}
+    L -- "No" --> M["Accumulate Samples"]
+    L -- "Yes" --> N["Train Fresh Model in Background Thread"]
+    N --> O["Atomically Hot-Swap Live ML Model"]
+    
+    I --> P["🎯 Zero Repeat Mistakes: Future Queries Use Learned Vector Memory & Updated Model"]
+    O --> P
+```
+
+### **Dual-Path Self-Learning Mechanics**
+
+1. **Path A: Semantic Vector Memory & LLM Reflection (`reflect_and_learn`)**:
+   * **Trigger**: When real-world ground truth differs from initial model output (e.g., high humidity water spray causing sensor drift).
+   * **LLM Reasoning**: `Qwen2.5-7B-Instruct-Q4_K_M.gguf` formulates a contextual safety rule (e.g. *"When MQ-7 reads >40 ppm CO at humidity >85%, classify as Water Spray Moisture Drift"*).
+   * **FAISS Vector Storage**: The rule is embedded via `SentenceEmbedder` (`all-MiniLM-L6-v2`) and saved to disk (`faiss_index.bin` & `chunks_metadata.json`).
+   * **EKG Memory**: A `SelfLearnedRule` node is saved to `mine_graph.json` and linked to the active tunnel segment.
+
+2. **Path B: On-Line Experience Replay & Model Hot-Swapping**:
+   * **Buffer Push**: `agent.feedback_correction()` converts features into a vector and appends `(feat_vec, true_label)` to `self._replay_X` and `self._replay_y`.
+   * **Buffer Refit**: When the replay buffer reaches 200 samples, background thread training refits the estimator (`model.fit(X_replay, y_replay)`).
+   * **Atomic Hot-Swap**: The newly fitted estimator replaces `self.primary_model` atomically, ensuring zero downtime for streaming telemetry.
+
+---
+
 ## Agent Directory & Responsibilities
 
 | File | Agent Class | Primary Responsibility | Underlying Models | Dataset for Learning |
