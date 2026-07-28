@@ -5722,5 +5722,32 @@
     "start_char": 4243,
     "end_char": 4323,
     "length": 80
+  },
+  {
+    "chunk_id": 636,
+    "source": "llm_self_reflection",
+    "path": "self_learned_memory",
+    "text": "[SELF-LEARNED RULE] When real-time telemetry indicates 'Tunnel High-Pressure Water Spraying Operation' despite conflicting model output, apply corrective contextual rule: MQ-7 electrochemical sensor experienced moisture condensation drift at 88.5% humidity; actual ambient CO is safe (12.0 ppm).. Override initial prediction and update experience replay memory.",
+    "start_char": 0,
+    "end_char": 361,
+    "length": 361
+  },
+  {
+    "chunk_id": 637,
+    "source": "llm_self_reflection",
+    "path": "self_learned_memory",
+    "text": "[SELF-LEARNED RULE] When real-time telemetry indicates 'Tunnel High-Pressure Water Spraying Operation' despite conflicting model output, apply corrective contextual rule: MQ-7 electrochemical sensor experienced moisture condensation drift at 88.5% humidity; actual ambient CO is safe (12.0 ppm).. Override initial prediction and update experience replay memory.",
+    "start_char": 0,
+    "end_char": 361,
+    "length": 361
+  },
+  {
+    "chunk_id": 638,
+    "source": "llm_self_reflection",
+    "path": "self_learned_memory",
+    "text": "[SELF-LEARNED RULE] When real-time telemetry indicates 'Tunnel High-Pressure Water Spraying Operation' despite conflicting model output, apply corrective contextual rule: MQ-7 electrochemical sensor experienced moisture condensation drift at 88.5% humidity; actual ambient CO is safe (12.0 ppm).. Override initial prediction and update experience replay memory.",
+    "start_char": 0,
+    "end_char": 361,
+    "length": 361
   }
 ]

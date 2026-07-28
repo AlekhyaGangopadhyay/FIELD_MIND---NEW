@@ -164,6 +164,29 @@ class RAGRetriever:
 
         return {query: output[query] for query in unique_queries}
 
+    def clear_cache(self) -> None:
+        """Clears the query cache after dynamic index updates."""
+        self._query_cache.clear()
+
+    def add_learned_experience(self, rule_text: str, source: str = "llm_self_reflection") -> Dict[str, Any]:
+        """
+        Embeds a self-learned correction rule text using SentenceEmbedder, appends it to the FAISS index,
+        clears the query cache, and saves to disk.
+        """
+        emb = self._embedder.embed(rule_text)
+        chunk = {
+            "source": source,
+            "path": "self_learned_memory",
+            "text": f"[SELF-LEARNED RULE] {rule_text}"
+        }
+        self._builder.add_single_experience(
+            chunk=chunk,
+            embedding=emb
+        )
+        self.clear_cache()
+        print(f"  [RAGRetriever] ✓ Self-learned rule embedded & saved to FAISS: '{rule_text[:60]}...'")
+        return chunk
+
     @staticmethod
     def _validate_query_args(query: str, top_k: int, min_score: float) -> None:
         if not isinstance(query, str) or not query.strip():
