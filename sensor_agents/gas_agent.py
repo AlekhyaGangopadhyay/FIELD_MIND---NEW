@@ -48,6 +48,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 from .agent_base import SensorAgentBase
 from .agent_bus import AgentBus
+from .input_validator import validate_sensor, SensorHealthReport
 
 
 # Feature keys for the 2-feature LPG/CNG primary learnable model
@@ -68,6 +69,8 @@ class GasSensorAgent(SensorAgentBase):
     def __init__(self, workspace_root: str, bus: AgentBus, verbose: bool = True,
                  dataset_name: str = "FIELDMIND_physics_dataset.csv"):
         self.workspace_root = workspace_root
+        self._sensor_histories: Dict[str, List[float]] = {}
+        self._sensor_faults: Dict[str, SensorHealthReport] = {}
 
         # ── Load all gas models ──────────────────────────────────────────
         gas_model_dir = os.path.join(workspace_root, "gas_sensors", "models")
@@ -117,6 +120,7 @@ class GasSensorAgent(SensorAgentBase):
             "nh3_hazard"      : "nh3_hazard.joblib",
             "co2_hazard"      : "co2_hazard.joblib",
             "smoke_env"       : "smoke_env_hazard.joblib",
+            "mq4_classifier"  : "mq4_gas_classifier.joblib",
         }
         for key, fname in model_map.items():
             path = os.path.join(model_dir, fname)
@@ -157,8 +161,8 @@ class GasSensorAgent(SensorAgentBase):
     # -----------------------------------------------------------------------
 
     def perceive(self, raw_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Normalize and extract gas features from raw sensor reading."""
-        features = {
+        """Normalize, validate, and extract gas features from raw sensor reading."""
+        raw_features = {
             "MQ2_LPG_ppm"     : float(raw_data.get("MQ2_LPG_ppm", 0.0)),
             "MQ4_CH4_ppm"     : float(raw_data.get("MQ4_CH4_ppm", 0.0)),
             "MQ7_CO_ppm"      : float(raw_data.get("MQ7_CO_ppm", 0.0)),
@@ -174,7 +178,30 @@ class GasSensorAgent(SensorAgentBase):
             "MQ136_H2S_ppm"   : float(raw_data.get("MQ136_H2S_ppm", raw_data.get("Sensor3[ppm]", 0.0))),
             "MQ135_NH3_ppm"   : float(raw_data.get("MQ135_NH3_ppm", raw_data.get("NH3", 0.0))),
         }
-        return features
+
+        validated_features: Dict[str, Any] = {}
+        for sensor_name, val in raw_features.items():
+            hist = self._sensor_histories.setdefault(sensor_name, [])
+            report = validate_sensor(sensor_name, val, hist)
+            self._sensor_faults[sensor_name] = report
+            # Maintain rolling memory buffer (up to 50 entries)
+            hist.append(val)
+            if len(hist) > 50:
+                hist.pop(0)
+            # Use clamped value for feature array to protect downstream models
+            validated_features[sensor_name] = report.clamped_value
+
+        # Check for 128-dimensional MQ-4 features
+        mq4_feats = None
+        if "mq4_features" in raw_data and isinstance(raw_data["mq4_features"], (list, tuple, np.ndarray)):
+            mq4_feats = list(raw_data["mq4_features"])
+        elif all(f"feature_{i}" in raw_data for i in range(1, 129)):
+            mq4_feats = [float(raw_data[f"feature_{i}"]) for i in range(1, 129)]
+
+        if mq4_feats is not None and len(mq4_feats) == 128:
+            validated_features["mq4_features"] = mq4_feats
+
+        return validated_features
 
     def infer(self, features: Dict[str, Any]) -> Dict[str, Any]:
         """Run all production gas ML & Deep Learning models and return a combined result dict."""
@@ -266,12 +293,23 @@ class GasSensorAgent(SensorAgentBase):
         else:
             result["smoke_env_hazard"] = 0
 
+        # 8. MQ-4 128-dimensional Methane Gas Classifier (Hybrid Voting Ensemble)
+        if "mq4_classifier" in self._models and "mq4_features" in features:
+            try:
+                mq4_vec = np.array(features["mq4_features"]).reshape(1, -1)
+                result["mq4_class"] = int(self._models["mq4_classifier"].predict(mq4_vec)[0])
+            except Exception:
+                result["mq4_class"] = 0
+
         return result
 
     def compute_confidence(self, inference_result: Dict[str, Any]) -> float:
         """
-        Confidence = weighted sum of hazard & severity flags.
+        Confidence = weighted sum of hazard, severity, & sensor fault flags.
         """
+        has_fault = any(not r.is_valid for r in self._sensor_faults.values())
+        inference_result["sensor_fault"] = 1.0 if has_fault else 0.0
+
         weights = {
             "lpg_hazard"       : 0.15,
             "co_nox_hazard"    : 0.10,
@@ -280,6 +318,7 @@ class GasSensorAgent(SensorAgentBase):
             "co2_hazard"       : 0.10,
             "smoke_env_hazard" : 0.15,
             "hardware_anomaly" : 0.10,
+            "sensor_fault"     : 0.09,
             "ch4_severity"     : 0.025,
             "co_severity"      : 0.025,
         }
@@ -380,9 +419,20 @@ class GasSensorAgent(SensorAgentBase):
             reasons.append("CO2 toxic gas hazard")
         if inference.get("smoke_env_hazard") == 1:
             reasons.append("Smoke+Env hazard")
+        if inference.get("mq4_class", 0) > 0:
+            reasons.append(f"MQ-4 Methane multiclass hazard detected (class={inference.get('mq4_class')})")
+        
+        fault_msgs = []
+        for sname, r in self._sensor_faults.items():
+            if not r.is_valid:
+                fault_msgs.append(f"{sname}:{r.status}")
+        if fault_msgs:
+            reasons.append("SENSOR FAULT DETECTED (" + ", ".join(fault_msgs) + ")")
+
         aq = inference.get("air_quality_score", 100.0)
         if aq < 50.0:
             reasons.append(f"Poor air quality score: {aq:.1f}")
         reasons.append(f"confidence={confidence:.2f}")
         return " | ".join(reasons) if reasons else f"Gas hazard (conf={confidence:.2f})"
+
 
