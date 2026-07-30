@@ -420,7 +420,7 @@
     },
     "mq4_gas_classification": {
         "task_type": "multiclass_classification",
-        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\mq4_gas_classifier.joblib",
+        "model_path": "D:\\Users\\SUPRATIK\\FieldMind\\FIELD_MIND---NEW\\gas_sensors\\models\\mq4_gas_classifier.joblib",
         "features": [
             "feature_1",
             "feature_2",
@@ -563,10 +563,10 @@
             128
         ],
         "metrics": {
-            "accuracy": 0.7800982800982801,
-            "precision_macro": 0.8035648205415497,
-            "recall_macro": 0.7795490764415778,
-            "f1_score_macro": 0.7844725700871668,
+            "accuracy": 0.7737100737100737,
+            "precision_macro": 0.8047375690315995,
+            "recall_macro": 0.7728684073192079,
+            "f1_score_macro": 0.778890277595068,
             "best_cv_params": {
                 "svm10_C": 10.0,
                 "svm20_C": 20.0,
@@ -581,10 +581,10 @@
                     64
                 ]
             },
-            "best_cv_score": 0.9948170731707318
+            "best_cv_score": 0.9947154471544715
         },
         "remarks": "Optimized Hybrid Soft Voting 5-model ensemble combining 2x RBF SVM, 1x Linear SVM, and 2x MLP Classifiers, evaluated using 8-fold cross-validation.",
-        "training_time_sec": 79.55,
-        "trained_at": "2026-07-30T14:59:27.372700"
+        "training_time_sec": 186.18,
+        "trained_at": "2026-07-30T16:52:37.710850"
     }
 }
