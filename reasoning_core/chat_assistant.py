@@ -23,7 +23,7 @@ if EKG_DIR not in sys.path:
 
 try:
     from graph_store import MineKnowledgeGraph
-    from query_api import get_segment_risk_profile, get_blast_history
+    from query_api import get_segment_risk_profile, get_blast_history, get_self_learned_rules
     EKG_AVAILABLE = True
 except ImportError:
     EKG_AVAILABLE = False
@@ -84,6 +84,10 @@ class MineSafetyChatAssistant:
                 blasts = get_blast_history(graph, segment_id)
                 if blasts:
                     ekg_context += f" Recent blasting events ({len(blasts)}) registered in history."
+
+                learned_rules = get_self_learned_rules(graph, segment_id)
+                if learned_rules:
+                    ekg_context += f" EKG Self-Learned Rules ({len(learned_rules)}): " + " | ".join(r.get("rule_text", "") for r in learned_rules[:2])
             except Exception as e:
                 ekg_context = f"EKG lookup context: {e}"
         else:
@@ -137,8 +141,8 @@ class MineSafetyChatAssistant:
             task_type="chat"
         )
 
-        if response == "Unknown task type.":
-            # If the fallback doesn't support task_type="chat", build conversational response locally
+        if response in {"FIELD-MIND active. Safety regulations and model predictions evaluated.", "Unknown task type."}:
+            # If GGUF is absent or fallback returns standard header, build rich conversational response locally
             response = self._build_conversational_response(
                 user_message,
                 segment_id,

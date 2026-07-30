@@ -113,6 +113,10 @@ class GasSensorAgent(SensorAgentBase):
             "severity_co"     : "severity_co.joblib",
             "severity_co2"    : "severity_co2.joblib",
             "severity_h2"     : "severity_h2.joblib",
+            "severity_h2s"    : "severity_h2s.joblib",
+            "nh3_hazard"      : "nh3_hazard.joblib",
+            "co2_hazard"      : "co2_hazard.joblib",
+            "smoke_env"       : "smoke_env_hazard.joblib",
         }
         for key, fname in model_map.items():
             path = os.path.join(model_dir, fname)
@@ -166,6 +170,9 @@ class GasSensorAgent(SensorAgentBase):
             # Air quality composite features
             "MQ2_Smoke_ppm"   : float(raw_data.get("MQ2_Smoke_ppm", 0.0)),
             "MG811_CO2_ppm"   : float(raw_data.get("MG811_CO2_ppm", 400.0)),
+            # New gas sensor features
+            "MQ136_H2S_ppm"   : float(raw_data.get("MQ136_H2S_ppm", raw_data.get("Sensor3[ppm]", 0.0))),
+            "MQ135_NH3_ppm"   : float(raw_data.get("MQ135_NH3_ppm", raw_data.get("NH3", 0.0))),
         }
         return features
 
@@ -192,8 +199,8 @@ class GasSensorAgent(SensorAgentBase):
             except Exception:
                 result["co_nox_hazard"] = 0
 
-        # 3. PyTorch Deep Severity Levels (CH4, CO, CO2, H2)
-        for gas_key, feat_name in [("ch4", "MQ4_CH4_ppm"), ("co", "MQ7_CO_ppm"), ("co2", "MG811_CO2_ppm"), ("h2", "MQ2_LPG_ppm")]:
+        # 3. PyTorch Deep Severity Levels (CH4, CO, CO2, H2, H2S)
+        for gas_key, feat_name in [("ch4", "MQ4_CH4_ppm"), ("co", "MQ7_CO_ppm"), ("co2", "MG811_CO2_ppm"), ("h2", "MQ2_LPG_ppm"), ("h2s", "MQ136_H2S_ppm")]:
             model_key = f"severity_{gas_key}"
             if model_key in self._models:
                 try:
@@ -201,6 +208,9 @@ class GasSensorAgent(SensorAgentBase):
                     result[f"{gas_key}_severity"] = int(self._models[model_key].predict(val_vec)[0])
                 except Exception:
                     result[f"{gas_key}_severity"] = 0
+
+        # Map H2S hazard alert: active if H2S severity is Warning or Critical (>= 1)
+        result["h2s_hazard"] = 1 if result.get("h2s_severity", 0) >= 1 else 0
 
         # 4. Clean-air hardware baseline anomaly detection
         if "baseline_iforest" in self._models:
@@ -222,6 +232,40 @@ class GasSensorAgent(SensorAgentBase):
             except Exception:
                 result["hardware_anomaly"] = 0
 
+        # 5. NH3 Hazard model (MQ-135)
+        if "nh3_hazard" in self._models:
+            try:
+                nh3_vec = np.array([features.get("MQ135_NH3_ppm", 0.0)]).reshape(1, -1)
+                result["nh3_hazard"] = int(self._models["nh3_hazard"].predict(nh3_vec)[0])
+            except Exception:
+                result["nh3_hazard"] = 0
+        else:
+            result["nh3_hazard"] = 0
+
+        # 6. CO2 Hazard model (MG811)
+        if "co2_hazard" in self._models:
+            try:
+                co2_vec = np.array([features.get("MG811_CO2_ppm", 400.0)]).reshape(1, -1)
+                result["co2_hazard"] = int(self._models["co2_hazard"].predict(co2_vec)[0])
+            except Exception:
+                result["co2_hazard"] = 0
+        else:
+            result["co2_hazard"] = 0
+
+        # 7. Smoke/Dust Env Hazard model (PM2.5, Temp, Humidity)
+        if "smoke_env" in self._models:
+            try:
+                smoke_vec = np.array([
+                    features.get("PM25_Dust_ugm3", 0.0),
+                    features.get("Temp_C", 25.0),
+                    features.get("Humidity_pct", 50.0)
+                ]).reshape(1, -1)
+                result["smoke_env_hazard"] = int(self._models["smoke_env"].predict(smoke_vec)[0])
+            except Exception:
+                result["smoke_env_hazard"] = 0
+        else:
+            result["smoke_env_hazard"] = 0
+
         return result
 
     def compute_confidence(self, inference_result: Dict[str, Any]) -> float:
@@ -229,11 +273,15 @@ class GasSensorAgent(SensorAgentBase):
         Confidence = weighted sum of hazard & severity flags.
         """
         weights = {
-            "lpg_hazard"       : 0.35,
-            "co_nox_hazard"    : 0.25,
-            "hardware_anomaly" : 0.20,
-            "ch4_severity"     : 0.10,
-            "co_severity"      : 0.10,
+            "lpg_hazard"       : 0.15,
+            "co_nox_hazard"    : 0.10,
+            "nh3_hazard"       : 0.15,
+            "h2s_hazard"       : 0.20,
+            "co2_hazard"       : 0.10,
+            "smoke_env_hazard" : 0.15,
+            "hardware_anomaly" : 0.10,
+            "ch4_severity"     : 0.025,
+            "co_severity"      : 0.025,
         }
         conf = 0.0
         for key, w in weights.items():
@@ -242,7 +290,14 @@ class GasSensorAgent(SensorAgentBase):
 
         # Trend boost: if last 3 memory entries were also hazardous
         recent = list(self._memory)[-3:]
-        if len(recent) == 3 and all(e.get("lpg_hazard", 0) == 1 for e in recent):
+        if len(recent) == 3 and any(
+            e.get("lpg_hazard", 0) == 1 or 
+            e.get("nh3_hazard", 0) == 1 or 
+            e.get("h2s_hazard", 0) == 1 or
+            e.get("co2_hazard", 0) == 1 or
+            e.get("smoke_env_hazard", 0) == 1
+            for e in recent
+        ):
             conf = min(1.0, conf + 0.15)
 
         return min(1.0, conf)
@@ -281,12 +336,48 @@ class GasSensorAgent(SensorAgentBase):
             features["MQ4_CH4_ppm"],
         ])
 
+    def feedback_correction(
+        self,
+        features: Dict[str, Any],
+        true_label: int,
+        actual_situation: str,
+        explanation: str
+    ) -> None:
+        """
+        Pushes a verified ground-truth feature vector and true label into the experience replay buffer.
+        When buffer reaches capacity, triggers on-the-fly model refit.
+        """
+        capacity = getattr(self, "_replay_capacity", getattr(self, "_replay_buffer_size", 200))
+        feat_vec = self._features_to_vector(features)
+        self._replay_X.append(feat_vec)
+        self._replay_y.append(true_label)
+        print(f"  [GasSensorAgent] Ground-truth feedback logged to replay buffer. (Replay Size: {len(self._replay_X)}/{capacity})")
+
+        # Refit learnable model when buffer reaches capacity
+        if len(self._replay_X) >= capacity:
+            print("  [GasSensorAgent] Replay buffer full. Refitting learnable model on updated ground truth...")
+            X_mat = np.array(self._replay_X)
+            y_vec = np.array(self._replay_y)
+            try:
+                new_model = self._build_fresh_model()
+                new_model.fit(X_mat, y_vec)
+                self.model = new_model
+                print("  [GasSensorAgent] [+] Learnable model refit complete with updated ground-truth experience.")
+            except Exception as e:
+                print(f"  [GasSensorAgent] Model refit failed: {e}")
+
     def _build_reason(self, inference: Dict[str, Any], confidence: float) -> str:
         reasons = []
         if inference.get("lpg_hazard") == 1:
             reasons.append("LPG/CNG concentration hazard")
         if inference.get("co_nox_hazard") == 1:
             reasons.append("CO/NOx toxic gas spike")
+        if inference.get("nh3_hazard") == 1:
+            reasons.append("NH3 toxic gas hazard")
+        if inference.get("h2s_hazard") == 1:
+            reasons.append(f"H2S toxic gas hazard (severity={inference.get('h2s_severity')})")
+        if inference.get("co2_hazard") == 1:
+            reasons.append("CO2 toxic gas hazard")
         if inference.get("smoke_env_hazard") == 1:
             reasons.append("Smoke+Env hazard")
         aq = inference.get("air_quality_score", 100.0)
@@ -294,3 +385,4 @@ class GasSensorAgent(SensorAgentBase):
             reasons.append(f"Poor air quality score: {aq:.1f}")
         reasons.append(f"confidence={confidence:.2f}")
         return " | ".join(reasons) if reasons else f"Gas hazard (conf={confidence:.2f})"
+

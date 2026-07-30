@@ -157,6 +157,24 @@ class MineKnowledgeGraph:
     # Summary
     # ------------------------------------------------------------------
 
+    def get_learned_rules(self, segment_id: str = None, max_count: int = 20) -> list[dict]:
+        '''Return persisted self-learned and reasoning memory for a segment.'''
+        rules = []
+        for node_id, data in self.G.nodes(data=True):
+            if data.get('label') not in {'SelfLearnedRule', 'ReasoningResolution'}:
+                continue
+            if segment_id and data.get('segment_id') != segment_id:
+                linked = any(
+                    self.G.edges[node_id, other].get('rel_type') in {'LEARNED_FOR', 'RESOLVED_FOR'}
+                    and other == segment_id
+                    for other in self.G.successors(node_id)
+                )
+                if not linked:
+                    continue
+            rules.append({'node_id': node_id, **dict(data)})
+        rules.sort(key=lambda item: item.get('timestamp', 0.0), reverse=True)
+        return rules[:max_count]
+
     def summary(self) -> dict:
         """Return node and edge counts by type."""
         node_counts = defaultdict(int)
@@ -222,27 +240,25 @@ class MineKnowledgeGraph:
 
         print(f"[EKG] Graph saved to {filepath} ({self.G.number_of_nodes()} nodes, {self.G.number_of_edges()} edges)")
 
-    @classmethod
-    def load(cls, filepath: str) -> "MineKnowledgeGraph":
-        """Deserialise the graph from a JSON file."""
-        kg = cls()
+    def load(self, filepath: str) -> "MineKnowledgeGraph":
+        """Deserialise the graph from a JSON file into this instance."""
         with open(filepath, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        kg.G.clear()
-        kg._label_index.clear()
+        self.G.clear()
+        self._label_index.clear()
 
         for node_entry in data.get("nodes", []):
             nid = node_entry["id"]
             props = node_entry["properties"]
             label = props.get("label", "Unknown")
-            kg.G.add_node(nid, **props)
-            kg._label_index[label].add(nid)
+            self.G.add_node(nid, **props)
+            self._label_index[label].add(nid)
 
         for edge_entry in data.get("edges", []):
-            kg.G.add_edge(edge_entry["from"], edge_entry["to"], **edge_entry.get("properties", {}))
+            self.G.add_edge(edge_entry["from"], edge_entry["to"], **edge_entry.get("properties", {}))
 
         meta = data.get("metadata", {})
         print(f"[EKG] Graph loaded from {filepath} (saved: {meta.get('saved_at', '?')})")
-        print(f"  Restored {kg.G.number_of_nodes()} nodes, {kg.G.number_of_edges()} edges")
-        return kg
+        print(f"  Restored {self.G.number_of_nodes()} nodes, {self.G.number_of_edges()} edges")
+        return self

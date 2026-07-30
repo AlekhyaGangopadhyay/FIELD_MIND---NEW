@@ -1,6 +1,6 @@
 [
   {
-    "timestamp": "2026-07-21T10:48:15.509021+00:00",
+    "timestamp": "2026-07-30T08:30:14.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_1",
     "readings": {
@@ -19,12 +19,13 @@
       "predicted_ppv": 6.587343775153391
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
       "smoke_env_hazard": 1,
-      "air_quality_score": 0.6781221801940401,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -35,7 +36,7 @@
     "status": "REVIEW_MODEL_DISAGREEMENT"
   },
   {
-    "timestamp": "2026-07-21T10:48:15.509021+00:00",
+    "timestamp": "2026-07-30T08:30:14.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_2",
     "readings": {
@@ -54,12 +55,13 @@
       "predicted_ppv": 6.587343775153391
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
+      "smoke_env_hazard": 0,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -70,7 +72,7 @@
     "status": "WARNING"
   },
   {
-    "timestamp": "2026-07-21T10:48:15.509021+00:00",
+    "timestamp": "2026-07-30T08:30:14.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_3",
     "readings": {
@@ -89,12 +91,13 @@
       "predicted_ppv": 6.587343775153391
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
       "smoke_env_hazard": 1,
-      "air_quality_score": 0.6781221801940401,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -105,7 +108,7 @@
     "status": "REVIEW_MODEL_DISAGREEMENT"
   },
   {
-    "timestamp": "2026-07-21T10:48:17.509021+00:00",
+    "timestamp": "2026-07-30T08:30:16.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_1",
     "readings": {
@@ -124,12 +127,13 @@
       "predicted_ppv": 6.587343775153391
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
+      "smoke_env_hazard": 0,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -140,7 +144,7 @@
     "status": "REVIEW_MODEL_DISAGREEMENT"
   },
   {
-    "timestamp": "2026-07-21T10:48:17.509021+00:00",
+    "timestamp": "2026-07-30T08:30:16.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_2",
     "readings": {
@@ -159,12 +163,13 @@
       "predicted_ppv": 6.001124934507444
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.6781221801940401,
+      "smoke_env_hazard": 0,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -175,7 +180,7 @@
     "status": "WARNING"
   },
   {
-    "timestamp": "2026-07-21T10:48:17.509021+00:00",
+    "timestamp": "2026-07-30T08:30:16.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_3",
     "readings": {
@@ -194,12 +199,13 @@
       "predicted_ppv": 6.587343775153391
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.6781221801940401,
+      "smoke_env_hazard": 0,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -210,7 +216,7 @@
     "status": "REVIEW_MODEL_DISAGREEMENT"
   },
   {
-    "timestamp": "2026-07-21T10:48:19.509021+00:00",
+    "timestamp": "2026-07-30T08:30:18.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_1",
     "readings": {
@@ -229,12 +235,13 @@
       "predicted_ppv": 6.587343775153391
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 1,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
       "smoke_env_hazard": 1,
-      "air_quality_score": 0.6781221801940401,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -245,7 +252,7 @@
     "status": "REVIEW_MODEL_DISAGREEMENT"
   },
   {
-    "timestamp": "2026-07-21T10:48:19.509021+00:00",
+    "timestamp": "2026-07-30T08:30:18.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_2",
     "readings": {
@@ -264,12 +271,13 @@
       "predicted_ppv": 6.001124934507444
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
+      "smoke_env_hazard": 0,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -280,7 +288,7 @@
     "status": "WARNING"
   },
   {
-    "timestamp": "2026-07-21T10:48:19.509021+00:00",
+    "timestamp": "2026-07-30T08:30:18.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_3",
     "readings": {
@@ -299,12 +307,13 @@
       "predicted_ppv": 6.587343775153391
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
+      "smoke_env_hazard": 0,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -315,7 +324,7 @@
     "status": "REVIEW_MODEL_DISAGREEMENT"
   },
   {
-    "timestamp": "2026-07-21T10:48:21.509021+00:00",
+    "timestamp": "2026-07-30T08:30:20.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_1",
     "readings": {
@@ -334,12 +343,13 @@
       "predicted_ppv": 6.587343775153391
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 1.3145437246140494,
+      "smoke_env_hazard": 0,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -350,7 +360,7 @@
     "status": "REVIEW_MODEL_DISAGREEMENT"
   },
   {
-    "timestamp": "2026-07-21T10:48:21.509021+00:00",
+    "timestamp": "2026-07-30T08:30:20.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_2",
     "readings": {
@@ -369,12 +379,13 @@
       "predicted_ppv": 5.794788752990341
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.6781221801940401,
+      "smoke_env_hazard": 0,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -385,7 +396,7 @@
     "status": "WARNING"
   },
   {
-    "timestamp": "2026-07-21T10:48:21.509021+00:00",
+    "timestamp": "2026-07-30T08:30:20.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_3",
     "readings": {
@@ -404,12 +415,13 @@
       "predicted_ppv": 6.00272273955026
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.6781221801940402,
+      "smoke_env_hazard": 0,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -420,7 +432,7 @@
     "status": "REVIEW_MODEL_DISAGREEMENT"
   },
   {
-    "timestamp": "2026-07-21T10:48:23.509021+00:00",
+    "timestamp": "2026-07-30T08:30:22.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_1",
     "readings": {
@@ -439,12 +451,13 @@
       "predicted_ppv": 6.587343775153391
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 1,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
       "smoke_env_hazard": 1,
-      "air_quality_score": 1.794892301456115,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -455,7 +468,7 @@
     "status": "WARNING"
   },
   {
-    "timestamp": "2026-07-21T10:48:23.509021+00:00",
+    "timestamp": "2026-07-30T08:30:22.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_2",
     "readings": {
@@ -474,12 +487,13 @@
       "predicted_ppv": 6.587343775153391
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
       "smoke_env_hazard": 1,
-      "air_quality_score": 0.6781221801940401,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
@@ -490,7 +504,7 @@
     "status": "WARNING"
   },
   {
-    "timestamp": "2026-07-21T10:48:23.509021+00:00",
+    "timestamp": "2026-07-30T08:30:22.770083+00:00",
     "tunnel_id": "TUNNEL_SIM_01",
     "node_id": "TUNNEL_SIM_01_NODE_3",
     "readings": {
@@ -509,541 +523,17 @@
       "predicted_ppv": 6.001124934507444
     },
     "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
       "lpg_hazard": 0,
       "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.6781221801940401,
+      "smoke_env_hazard": 0,
+      "h2s_severity": 0,
+      "h2s_hazard": 0,
+      "nh3_hazard": 0,
+      "co2_hazard": 0,
       "anomaly_detected": 1,
       "occupancy_state": 1,
       "vibration_hazard": 1,
       "predicted_ppv": 6.001124934507444,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "REVIEW_MODEL_DISAGREEMENT"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:25.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_1",
-    "readings": {
-      "MQ4_CH4_ppm": 661.588,
-      "MQ7_CO_ppm": 29.626,
-      "MQ2_LPG_ppm": 47.803,
-      "MQ135_NOx_ppm": 1.117,
-      "MQ3_Benzene_ppm": 0.206,
-      "PM25_Dust_ugm3": 21.31,
-      "temp": 22.224,
-      "humidity": 48.094,
-      "max_charge": 24.325,
-      "num_holes": 12.064,
-      "distance": 508.631,
-      "min_distance": 3.025,
-      "predicted_ppv": 6.587343775153391
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 3.0712531097647804,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.587343775153391,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "WARNING"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:25.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_2",
-    "readings": {
-      "MQ4_CH4_ppm": 253.956,
-      "MQ7_CO_ppm": 29.593,
-      "MQ2_LPG_ppm": 47.33,
-      "MQ135_NOx_ppm": 1.01,
-      "MQ3_Benzene_ppm": 0.161,
-      "PM25_Dust_ugm3": 16.928,
-      "temp": 21.829,
-      "humidity": 48.878,
-      "max_charge": 21.645,
-      "num_holes": 13.173,
-      "distance": 504.002,
-      "min_distance": 3.028,
-      "predicted_ppv": 6.858767468882908
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.858767468882908,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "WARNING"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:25.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_3",
-    "readings": {
-      "MQ4_CH4_ppm": 245.958,
-      "MQ7_CO_ppm": 4.578,
-      "MQ2_LPG_ppm": 47.151,
-      "MQ135_NOx_ppm": 1.548,
-      "MQ3_Benzene_ppm": 0.21,
-      "PM25_Dust_ugm3": 16.284,
-      "temp": 23.796,
-      "humidity": 48.861,
-      "max_charge": 27.411,
-      "num_holes": 13.054,
-      "distance": 501.204,
-      "min_distance": 2.096,
-      "predicted_ppv": 6.313109322783974
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.6781221801940398,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.313109322783974,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "REVIEW_MODEL_DISAGREEMENT"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:27.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_1",
-    "readings": {
-      "MQ4_CH4_ppm": 740.249,
-      "MQ7_CO_ppm": 36.182,
-      "MQ2_LPG_ppm": 49.501,
-      "MQ135_NOx_ppm": 1.364,
-      "MQ3_Benzene_ppm": 0.212,
-      "PM25_Dust_ugm3": 22.794,
-      "temp": 22.248,
-      "humidity": 49.044,
-      "max_charge": 26.575,
-      "num_holes": 12.293,
-      "distance": 497.858,
-      "min_distance": 3.016,
-      "predicted_ppv": 6.587343775153391
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 1,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 4.5831587083461525,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.587343775153391,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "WARNING"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:27.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_2",
-    "readings": {
-      "MQ4_CH4_ppm": 238.722,
-      "MQ7_CO_ppm": 27.614,
-      "MQ2_LPG_ppm": 51.872,
-      "MQ135_NOx_ppm": 1.227,
-      "MQ3_Benzene_ppm": 0.192,
-      "PM25_Dust_ugm3": 13.654,
-      "temp": 21.905,
-      "humidity": 47.789,
-      "max_charge": 23.997,
-      "num_holes": 11.601,
-      "distance": 502.613,
-      "min_distance": 3.052,
-      "predicted_ppv": 6.587343775153391
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.587343775153391,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "WARNING"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:27.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_3",
-    "readings": {
-      "MQ4_CH4_ppm": 238.946,
-      "MQ7_CO_ppm": 6.137,
-      "MQ2_LPG_ppm": 55.2,
-      "MQ135_NOx_ppm": 1.166,
-      "MQ3_Benzene_ppm": 0.19,
-      "PM25_Dust_ugm3": 20.472,
-      "temp": 24.071,
-      "humidity": 50.761,
-      "max_charge": 28.007,
-      "num_holes": 12.095,
-      "distance": 512.039,
-      "min_distance": 1.804,
-      "predicted_ppv": 6.587343775153391
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.587343775153391,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "REVIEW_MODEL_DISAGREEMENT"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:29.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_1",
-    "readings": {
-      "MQ4_CH4_ppm": 813.766,
-      "MQ7_CO_ppm": 44.333,
-      "MQ2_LPG_ppm": 53.579,
-      "MQ135_NOx_ppm": 1.086,
-      "MQ3_Benzene_ppm": 0.21,
-      "PM25_Dust_ugm3": 23.676,
-      "temp": 22.146,
-      "humidity": 48.588,
-      "max_charge": 22.956,
-      "num_holes": 12.407,
-      "distance": 495.387,
-      "min_distance": 2.989,
-      "predicted_ppv": 6.587343775153391
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 1,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 6.019560991380971,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.587343775153391,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "WARNING"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:29.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_2",
-    "readings": {
-      "MQ4_CH4_ppm": 231.079,
-      "MQ7_CO_ppm": 31.217,
-      "MQ2_LPG_ppm": 56.571,
-      "MQ135_NOx_ppm": 1.14,
-      "MQ3_Benzene_ppm": 0.174,
-      "PM25_Dust_ugm3": 20.089,
-      "temp": 21.928,
-      "humidity": 46.418,
-      "max_charge": 28.977,
-      "num_holes": 11.874,
-      "distance": 500.354,
-      "min_distance": 2.939,
-      "predicted_ppv": 6.001124934507444
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.001124934507444,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "WARNING"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:29.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_3",
-    "readings": {
-      "MQ4_CH4_ppm": 280.247,
-      "MQ7_CO_ppm": 5.663,
-      "MQ2_LPG_ppm": 52.609,
-      "MQ135_NOx_ppm": 0.946,
-      "MQ3_Benzene_ppm": 0.193,
-      "PM25_Dust_ugm3": 18.586,
-      "temp": 24.545,
-      "humidity": 50.987,
-      "max_charge": 25.82,
-      "num_holes": 11.413,
-      "distance": 497.291,
-      "min_distance": 1.546,
-      "predicted_ppv": 6.00272273955026
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.6781221801940402,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.00272273955026,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "REVIEW_MODEL_DISAGREEMENT"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:31.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_1",
-    "readings": {
-      "MQ4_CH4_ppm": 5892.863,
-      "MQ7_CO_ppm": 48.968,
-      "MQ2_LPG_ppm": 38.56,
-      "MQ135_NOx_ppm": 1.44,
-      "MQ3_Benzene_ppm": 0.206,
-      "PM25_Dust_ugm3": 29.256,
-      "temp": 22.036,
-      "humidity": 48.611,
-      "max_charge": 27.106,
-      "num_holes": 12.935,
-      "distance": 492.34,
-      "min_distance": 2.991,
-      "predicted_ppv": 6.313109322783974
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 1,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 55.57603060996835,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.313109322783974,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "CRITICAL"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:31.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_2",
-    "readings": {
-      "MQ4_CH4_ppm": 212.127,
-      "MQ7_CO_ppm": 32.073,
-      "MQ2_LPG_ppm": 52.098,
-      "MQ135_NOx_ppm": 1.262,
-      "MQ3_Benzene_ppm": 0.147,
-      "PM25_Dust_ugm3": 14.578,
-      "temp": 21.914,
-      "humidity": 49.653,
-      "max_charge": 23.293,
-      "num_holes": 11.692,
-      "distance": 492.525,
-      "min_distance": 3.094,
-      "predicted_ppv": 6.587343775153391
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.587343775153391,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "WARNING"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:31.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_3",
-    "readings": {
-      "MQ4_CH4_ppm": 247.272,
-      "MQ7_CO_ppm": 3.639,
-      "MQ2_LPG_ppm": 43.201,
-      "MQ135_NOx_ppm": 1.069,
-      "MQ3_Benzene_ppm": 0.181,
-      "PM25_Dust_ugm3": 17.992,
-      "temp": 24.641,
-      "humidity": 49.62,
-      "max_charge": 25.676,
-      "num_holes": 11.889,
-      "distance": 494.969,
-      "min_distance": 1.165,
-      "predicted_ppv": 6.587343775153391
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.587343775153391,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "REVIEW_MODEL_DISAGREEMENT"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:33.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_1",
-    "readings": {
-      "MQ4_CH4_ppm": 10992.769,
-      "MQ7_CO_ppm": 54.293,
-      "MQ2_LPG_ppm": 50.45,
-      "MQ135_NOx_ppm": 1.249,
-      "MQ3_Benzene_ppm": 0.228,
-      "PM25_Dust_ugm3": 22.825,
-      "temp": 22.031,
-      "humidity": 46.053,
-      "max_charge": 26.471,
-      "num_holes": 12.253,
-      "distance": 492.834,
-      "min_distance": 2.928,
-      "predicted_ppv": 6.587343775153391
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 1,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 55.576030609968356,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.587343775153391,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "CRITICAL"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:33.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_2",
-    "readings": {
-      "MQ4_CH4_ppm": 231.119,
-      "MQ7_CO_ppm": 30.447,
-      "MQ2_LPG_ppm": 54.365,
-      "MQ135_NOx_ppm": 1.272,
-      "MQ3_Benzene_ppm": 0.175,
-      "PM25_Dust_ugm3": 18.373,
-      "temp": 22.009,
-      "humidity": 48.812,
-      "max_charge": 26.25,
-      "num_holes": 11.482,
-      "distance": 498.824,
-      "min_distance": 2.936,
-      "predicted_ppv": 6.00272273955026
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.00272273955026,
-      "steering_decision": "Slight-Left-Turn",
-      "sharp_turn_required": 0
-    },
-    "status": "WARNING"
-  },
-  {
-    "timestamp": "2026-07-21T10:48:33.509021+00:00",
-    "tunnel_id": "TUNNEL_SIM_01",
-    "node_id": "TUNNEL_SIM_01_NODE_3",
-    "readings": {
-      "MQ4_CH4_ppm": 201.125,
-      "MQ7_CO_ppm": 4.616,
-      "MQ2_LPG_ppm": 48.581,
-      "MQ135_NOx_ppm": 1.324,
-      "MQ3_Benzene_ppm": 0.188,
-      "PM25_Dust_ugm3": 15.396,
-      "temp": 24.879,
-      "humidity": 49.863,
-      "max_charge": 28.413,
-      "num_holes": 12.845,
-      "distance": 490.52,
-      "min_distance": 0.855,
-      "predicted_ppv": 6.313109322783974
-    },
-    "predictions": {
-      "methane_hazard": 0,
-      "smoke_alarm": 0,
-      "lpg_hazard": 0,
-      "co_nox_hazard": 1,
-      "smoke_env_hazard": 1,
-      "air_quality_score": 0.67812218019404,
-      "anomaly_detected": 1,
-      "occupancy_state": 1,
-      "vibration_hazard": 1,
-      "predicted_ppv": 6.313109322783974,
       "steering_decision": "Slight-Left-Turn",
       "sharp_turn_required": 0
     },

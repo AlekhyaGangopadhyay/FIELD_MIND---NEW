@@ -30,6 +30,8 @@ if WORKSPACE_ROOT not in sys.path:
 
 from atr_activation.detector_wrappers import Tier1Monitor
 from reasoning_core.chat_assistant import MineSafetyChatAssistant
+from sensor_agents.agent_bus import AgentBus
+from sensor_agents.gas_agent import GasSensorAgent
 
 
 def get_float_input(prompt: str, default: float) -> float:
@@ -46,15 +48,17 @@ def get_float_input(prompt: str, default: float) -> float:
 
 def main():
     print("\n" + "█" * 80)
-    print("  FIELD-MIND — Unified Interactive ML Model Safety Hub")
-    print("  Actual ML Inference + FAISS RAG Grounding + EKG Graph Memory")
+    print("  FIELD-MIND — Unified Interactive ML Model Safety Hub & LLM Agent")
+    print("  Actual ML Inference + Real-Time Prediction Verification + FAISS RAG + EKG Graph")
     print("█" * 80 + "\n")
 
     # 1. Initialize resources
-    print("[Setup] Loading pre-trained ML models via Tier1Monitor...")
+    print("[Setup] Loading pre-trained ML models via Tier1Monitor & GasSensorAgent...")
     try:
         monitor = Tier1Monitor(root_dir=WORKSPACE_ROOT)
-        print("  ✓ ML models loaded successfully.")
+        bus = AgentBus()
+        gas_agent = GasSensorAgent(workspace_root=WORKSPACE_ROOT, bus=bus, verbose=False)
+        print("  ✓ ML models & GasSensorAgent loaded successfully.")
     except Exception as e:
         print(f"  ✗ Failed to load ML models: {e}")
         sys.exit(1)
@@ -63,7 +67,7 @@ def main():
     try:
         assistant = MineSafetyChatAssistant(workspace_root=WORKSPACE_ROOT)
         if assistant.rag_retriever:
-            print("[Setup] Loading the local FAISS embedding model (first run may take several seconds)...")
+            print("[Setup] Loading local FAISS embedding model...")
             try:
                 warmup_ms = assistant.rag_retriever.warmup()
                 print(f"[Setup] FAISS embedder ready in {warmup_ms:.0f} ms.")
@@ -113,11 +117,10 @@ def main():
     # Feature Construction & ML Model Evaluation
     # ───────────────────────────────────────────────────────────────────────
     print("\n" + "─" * 80)
-    print("⚙️ STEP 2: Running Pre-trained ML Models (Tier 1 Inference)")
+    print("⚙️ STEP 2: Running Pre-trained ML Models & Generating Situation Explanation")
     print("─" * 80)
 
     # Gas feature engineering
-    # Methane: 128 features (MQ4 reading replicated with slight variations)
     mq4_feats = [ch4 * (1.0 + 0.01 * np.sin(i)) for i in range(128)]
     # Smoke: 36 features
     smoke_feats = [dust * (1.0 + 0.02 * np.cos(i)) for i in range(36)]
@@ -158,10 +161,8 @@ def main():
         "occupancy_features": [temp, humidity, temp_hum_product, temp_hum_ratio, humidex] + [0.0] * 18  # RF Occupancy
     }
 
-    # Vibration feature engineering: 14 classifier features & 17 regressor features
-    # USBM scaled distance: distance / sqrt(max_charge)
+    # Vibration feature engineering
     sd_usbm = distance / np.sqrt(max(1.0, max_charge))
-    # Langefors scaled distance: distance / max_charge^(2/3)
     sd_lk = distance / (max_charge ** (2.0 / 3.0))
 
     vib_inputs = {
@@ -184,9 +185,8 @@ def main():
         "elevation_diff": 2.0
     }
 
-    # Ultrasonic navigation: 24 sensors populated with default and minimum
+    # Ultrasonic navigation
     ultra_inputs = {f"US{i}": 3.0 for i in range(1, 25)}
-    # Replicate minimum on front sectors
     for i in (1, 2, 12, 13, 24):
         ultra_inputs[f"US{i}"] = min_dist
 
@@ -216,14 +216,6 @@ def main():
     print(f"  • Predicted Steering command: {ultra_results.get('steering_decision', 'Move-Forward')}")
     print(f"  • Collision Risk Warning    : {ultra_results.get('sharp_turn_required', 0)}")
 
-    # ───────────────────────────────────────────────────────────────────────
-    # Run Chat Assistant Conversational Reasoning
-    # ───────────────────────────────────────────────────────────────────────
-    print("\n" + "─" * 80)
-    print("💬 STEP 3: Chat Assistant Safety Analysis & Advice (Layer 3)")
-    print("─" * 80)
-
-    # Assemble anomalies based on model outputs
     active_anomalies = {}
     if gas_results.get("methane_hazard") == 1 or ch4 > 5000:
         active_anomalies["MQ4_CH4_ppm"] = ch4
@@ -243,16 +235,6 @@ def main():
     if ultra_results.get("sharp_turn_required") == 1 or min_dist < 0.5:
         active_anomalies["min_distance"] = min_dist
 
-    default_query = "Summarize the safety conditions of this tunnel segment and suggest what safety measures apply."
-    if active_anomalies:
-        default_query = f"Explain the hazard cause of the alerts at {segment_id} and provide an emergency evacuation or response action plan."
-
-    user_query = input(f"Enter your question for FIELD-MIND\n[default: \"{default_query}\"]:\n").strip()
-    if not user_query:
-        user_query = default_query
-
-    print("\n  🔍 Analyzing data inputs, EKG records, and FAISS safety regulations...")
-    t0 = time.time()
     all_readings = {
         "MQ4_CH4_ppm": ch4,
         "MQ7_CO_ppm": co,
@@ -269,22 +251,115 @@ def main():
         **vib_results,
         **ultra_results,
     }
-    response = assistant.chat(
-        user_query,
+
+    # ───────────────────────────────────────────────────────────────────────
+    # Initial LLM Situation Explanation & Safety Recommendations
+    # ───────────────────────────────────────────────────────────────────────
+    print("\n  🔍 Analyzing data inputs, EKG records, and FAISS safety regulations...")
+    initial_summary = assistant.chat(
+        "Summarize the safety conditions of this tunnel segment and provide prioritized safety recommendations.",
         segment_id,
         active_anomalies,
         model_predictions=model_predictions,
         sensor_readings=all_readings,
     )
-    elapsed = time.time() - t0
 
     print("\n" + "=" * 80)
-    print("🤖 FIELD-MIND RESPONSE")
+    print("🤖 FIELD-MIND SITUATION EXPLANATION & RECOMMENDATIONS")
     print("=" * 80)
-    print(response)
+    print(initial_summary)
     print("=" * 80)
-    print(f"  ⏱  Inference time: {elapsed:.1f} seconds")
-    print("=" * 80 + "\n")
+
+    # ───────────────────────────────────────────────────────────────────────
+    # STEP 3: Real-Time Prediction Verification & Training Update Loop
+    # ───────────────────────────────────────────────────────────────────────
+    print("\n" + "─" * 80)
+    print("🔄 STEP 3: Verify Model Predictions vs. Real-Time Situation & Update Training")
+    print("─" * 80)
+
+    feasibility_res = assistant.core.evaluate_feasibility_and_learn(
+        anomalies=active_anomalies or all_readings,
+        model_predictions=model_predictions,
+        segment_id=segment_id
+    )
+
+    print(f"\n[Feasibility Report Output]:\n{feasibility_res.get('feasibility_report')}")
+
+    print("\nDo the model predictions match the actual real-time physical situation? (y/n) [default: y]: ", end="")
+    match_input = input().strip().lower()
+    if not match_input:
+        match_input = "y"
+
+    if match_input.startswith("y"):
+        print("\n  [OK] Model predictions verified against real-time ground truth. Continuing continuous monitoring.")
+    else:
+        print("\n  [Discrepancy Detected] Taking real-time ground-truth feedback to update AI training...")
+        actual_sit = input("  Enter verified actual physical situation [e.g. Tunnel Water Spraying Operation]: ").strip()
+        if not actual_sit:
+            actual_sit = "Tunnel Water Spraying Operation"
+        expl_text = input("  Enter root-cause explanation [e.g. Sensor humidity condensation drift]: ").strip()
+        if not expl_text:
+            expl_text = "MQ-7 electrochemical sensor experienced moisture condensation drift at high humidity."
+        
+        true_label_str = input("  Enter true ground-truth hazard label (0=Safe/Normal, 1=Hazard) [default: 0]: ").strip()
+        true_label = int(true_label_str) if true_label_str.isdigit() else 0
+
+        # 1. LLM Reflection -> FAISS RAG Embedding + EKG Persistence
+        self_learn_res = assistant.core.reflect_and_learn(
+            anomalies=active_anomalies or all_readings,
+            actual_situation=actual_sit,
+            explanation=expl_text,
+            segment_id=segment_id
+        )
+        print(f"  [+] Self-learned rule embedded in FAISS RAG & EKG: {self_learn_res.get('rule_text')}")
+
+        # 2. Update ML Model Experience Replay Buffer for Online Retraining
+        features_dict = gas_agent.perceive(all_readings)
+        gas_agent.feedback_correction(
+            features=features_dict,
+            true_label=true_label,
+            actual_situation=actual_sit,
+            explanation=expl_text
+        )
+        print("  [+] Experience Replay Buffer updated with verified ground truth for online ML model retraining.")
+
+    # ───────────────────────────────────────────────────────────────────────
+    # STEP 4: Multi-Turn Interactive Conversation Loop with LLM
+    # ───────────────────────────────────────────────────────────────────────
+    print("\n" + "─" * 80)
+    print("💬 STEP 4: Interactive Qwen LLM Chat Assistant")
+    print("  Type your questions below. Type 'exit' to quit or 'new' to test new inputs.")
+    print("─" * 80)
+
+    while True:
+        try:
+            user_query = input(f"\n💬 Question for FIELD-MIND [{segment_id}] (or 'exit'): ").strip()
+            if not user_query:
+                continue
+            if user_query.lower() in ["exit", "quit", "q"]:
+                print("Exiting interactive safety hub. Stay safe!")
+                break
+
+            print("  🔍 Consulting EKG memory, FAISS safety rules, and LLM reasoning...")
+            t0 = time.time()
+            response = assistant.chat(
+                user_query,
+                segment_id,
+                active_anomalies,
+                model_predictions=model_predictions,
+                sensor_readings=all_readings,
+            )
+            elapsed = time.time() - t0
+
+            print("\n" + "=" * 80)
+            print("🤖 FIELD-MIND RESPONSE")
+            print("=" * 80)
+            print(response)
+            print("=" * 80)
+            print(f"  ⏱  Inference time: {elapsed:.1f} seconds")
+        except KeyboardInterrupt:
+            print("\nExiting interactive safety hub.")
+            break
 
 
 if __name__ == "__main__":

@@ -167,3 +167,17 @@ def get_navigation_events(graph: MineKnowledgeGraph, collision_only: bool = Fals
 
     events.sort(key=lambda x: x.get("timestamp", 0.0), reverse=True)
     return events[:max_count]
+
+
+def get_self_learned_rules(graph: MineKnowledgeGraph, segment_id: str = None) -> list[dict]:
+    """
+    Return all self-learned rules stored in the EKG, optionally filtered to a tunnel segment.
+    """
+    if segment_id:
+        rules = graph.query_by_label("SelfLearnedRule", filters={"segment_id": segment_id})
+    else:
+        rules = graph.query_by_label("SelfLearnedRule")
+
+    rules.sort(key=lambda x: x.get("timestamp", 0.0), reverse=True)
+    return rules
+

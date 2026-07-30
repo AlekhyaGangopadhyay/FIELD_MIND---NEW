@@ -3,30 +3,34 @@
 **Project**: FIELD-MIND — Offline Multimodal Agentic AI for Underground Mining  
 **Target Edge Platform**: NVIDIA Jetson Orin Nano (8GB Unified LPDDR5 Memory, 1024 CUDA Cores)  
 **Primary LLM Reasoning Engine**: `Qwen2.5-7B-Instruct-Q4_K_M.gguf` (Mining QLoRA Fine-Tuned 7B GGUF Model)  
-**Primary Storage Media**: 512 GB MicroSD Card (UHS-I U3 / A2 rated)  
+**Primary Storage Media**: 128 GB MicroSD Card (UHS-I U3 / A2 rated)
 
 ---
 
 ## 1. Hardware & Deployment Overview
 
-FIELD-MIND is designed to execute **100% offline** on resource-constrained edge hardware deployed inside underground mine headings. The system operates on an **NVIDIA Jetson Orin Nano (8GB)** equipped with a **512 GB MicroSD card**, providing unified memory management across PyTorch deep learning monitors, vector RAG databases, graph stores, and quantized LLM engines.
+FIELD-MIND is designed to execute **100% offline** on resource-constrained edge hardware deployed inside underground mine headings. The system operates on an **NVIDIA Jetson Orin Nano (8GB)** equipped with a **128 GB MicroSD card**, providing unified memory management across PyTorch deep learning monitors, vector RAG databases, graph stores, and quantized LLM engines.
 
 ---
 
-## 2. 512 GB MicroSD Storage Footprint Breakdown
+## 2. 128 GB MicroSD Storage Footprint Breakdown
 
-The entire FIELD-MIND software suite, including operating system binaries, CUDA runtimes, Python virtual environments, fine-tuned LLM GGUF models, and multi-modal datasets, consumes **~52 GB of disk space**, leaving **~460 GB (89% free space)** on a 512 GB card.
+The entire FIELD-MIND software suite, including operating system binaries, CUDA runtimes, Python virtual environments, fine-tuned LLM GGUF models, and multi-modal datasets, consumes **~56.32 GB of disk space** in production deployment mode, leaving **~71.68 GB (56% free space)** on a 128 GB card.
 
-| Software / System Component | Disk Storage Required | Percent of 512 GB Card |
+### Detailed Storage Breakdown (128 GB Card)
+
+| Software / System Component | Disk Storage Required | Percent of 128 GB Card |
 | :--- | :---: | :---: |
-| **Ubuntu 22.04 LTS + JetPack 6.x OS & CUDA Toolkit** | ~30.0 GB | 5.8% |
-| **Python Virtual Environment (`PyTorch`, `faiss`, `llama-cpp-python`)** | ~12.0 GB | 2.3% |
-| **`Qwen2.5-7B-Instruct-Q4_K_M.gguf` Fine-Tuned Model File** | **~4.35 GB** | **0.8%** |
-| **8 PyTorch Production Core Models + SciSense Encoders** | ~0.5 GB | 0.1% |
-| **FAISS Vector Index & RAG Safety Knowledge Base** | ~0.2 GB | 0.04% |
-| **Expedition Knowledge Graph & Mine Telemetry Datasets** | ~5.0 GB | 1.0% |
-| **TOTAL SOFTWARE STORAGE FOOTPRINT** | **~52.05 GB** | **10.1%** |
-| **FREE STORAGE REMAINING ON 512 GB CARD** | **~459.95 GB** | **89.9% (Available)** |
+| **Ubuntu 22.04 LTS + JetPack 6.x OS & CUDA Toolkit** | ~28.00 GB | 21.9% |
+| **Python Virtual Environment (`PyTorch`, `faiss`, `llama-cpp-python`)** | ~11.50 GB | 9.0% |
+| **`Qwen2.5-7B-Instruct-Q4_K_M.gguf` Fine-Tuned Model File** | **~4.35 GB** | **3.4%** |
+| **18+ PyTorch Production Core Models + SciSense Encoders** | ~0.45 GB | 0.3% |
+| **FAISS Vector Index & RAG Safety Knowledge Base** | ~0.40 GB | 0.3% |
+| **Expedition Knowledge Graph & Mine Telemetry Datasets** | ~5.30 GB | 4.1% |
+| **Offline Whisper Speech ASR Model** | ~0.25 GB | 0.2% |
+| **System Swap Allocation (Virtual Memory)** | ~6.00 GB | 4.7% |
+| **TOTAL SOFTWARE STORAGE FOOTPRINT (Deployed)** | **~56.32 GB** | **44.0%** |
+| **FREE STORAGE REMAINING ON 128 GB CARD** | **~71.68 GB** | **56.0% (Available)** |
 
 > [!TIP]
 > **Performance Recommendation:** Using a **UHS-I U3 / A2** rated MicroSD card (e.g. *SanDisk Extreme* or *Samsung EVO Select*) enables read speeds up to 160 MB/s, loading the 4.35 GB GGUF model into Jetson RAM in **2 to 3 seconds** upon system boot up.

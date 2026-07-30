@@ -335,5 +335,256 @@
         },
         "remarks": "Winning PyTorch architecture (LayerNormSwishMLP) selected via DL Tournament on balanced dataset.",
         "trained_at": "2026-07-28T11:14:39.763658"
+    },
+    "severity_h2s": {
+        "task_type": "multiclass_classification",
+        "model_type": "PyTorch_Deep_MLP",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\severity_h2s.joblib",
+        "features": [
+            "ppm"
+        ],
+        "targets": [
+            "severity"
+        ],
+        "metrics": {
+            "accuracy": 0.9977,
+            "precision": 0.9977049902666618,
+            "recall": 0.9977,
+            "f1_score": 0.9977000363867856
+        },
+        "remarks": "PyTorch Deep Neural Network trained on 60,000 balanced CGAN H2S samples.",
+        "training_time_sec": 0.0,
+        "trained_at": "2026-07-30T13:38:24.230739"
+    },
+    "nh3_hazard": {
+        "task_type": "binary_classification",
+        "model_type": "PyTorch_Deep_MLP",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\nh3_hazard.joblib",
+        "features": [
+            "MQ135_NH3_ppm"
+        ],
+        "targets": [
+            "Hazard_Alert"
+        ],
+        "metrics": {
+            "accuracy": 0.9886333333333334,
+            "precision": 0.9906942491798889,
+            "recall": 0.9865333333333334,
+            "f1_score": 0.9886094131008452
+        },
+        "remarks": "PyTorch Deep Neural Network trained on 60,000 balanced CGAN NH3 samples.",
+        "training_time_sec": 0.0,
+        "trained_at": "2026-07-30T13:38:45.579227"
+    },
+    "co2_hazard": {
+        "task_type": "binary_classification",
+        "model_type": "PyTorch_Deep_MLP",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\co2_hazard.joblib",
+        "features": [
+            "ppm"
+        ],
+        "targets": [
+            "over_tlv"
+        ],
+        "metrics": {
+            "accuracy": 0.9973666666666666,
+            "precision": 0.9981367616918204,
+            "recall": 0.9945233454005383,
+            "f1_score": 0.9963267773283118
+        },
+        "remarks": "PyTorch Deep Neural Network trained on 60,000 balanced CGAN CO2 samples with 5% uncertainty noise around 1000 ppm threshold.",
+        "training_time_sec": 0.0,
+        "trained_at": "2026-07-30T13:39:07.087483"
+    },
+    "smoke_env_hazard": {
+        "task_type": "binary_classification",
+        "model_type": "PyTorch_Deep_MLP",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\smoke_env_hazard.joblib",
+        "features": [
+            "PM25_Dust_ugm3",
+            "Temp_C",
+            "Humidity_pct"
+        ],
+        "targets": [
+            "Hazard_Alert"
+        ],
+        "metrics": {
+            "accuracy": 0.9985923423423423,
+            "precision": 0.9977515458122541,
+            "recall": 0.9994369369369369,
+            "f1_score": 0.9985935302390999
+        },
+        "remarks": "PyTorch Deep Neural Network trained on balanced physical dataset.csv with 5% uncertainty noise.",
+        "training_time_sec": 0.0,
+        "trained_at": "2026-07-30T13:39:09.636670"
+    },
+    "mq4_gas_classification": {
+        "task_type": "multiclass_classification",
+        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\mq4_gas_classifier.joblib",
+        "features": [
+            "feature_1",
+            "feature_2",
+            "feature_3",
+            "feature_4",
+            "feature_5",
+            "feature_6",
+            "feature_7",
+            "feature_8",
+            "feature_9",
+            "feature_10",
+            "feature_11",
+            "feature_12",
+            "feature_13",
+            "feature_14",
+            "feature_15",
+            "feature_16",
+            "feature_17",
+            "feature_18",
+            "feature_19",
+            "feature_20",
+            "feature_21",
+            "feature_22",
+            "feature_23",
+            "feature_24",
+            "feature_25",
+            "feature_26",
+            "feature_27",
+            "feature_28",
+            "feature_29",
+            "feature_30",
+            "feature_31",
+            "feature_32",
+            "feature_33",
+            "feature_34",
+            "feature_35",
+            "feature_36",
+            "feature_37",
+            "feature_38",
+            "feature_39",
+            "feature_40",
+            "feature_41",
+            "feature_42",
+            "feature_43",
+            "feature_44",
+            "feature_45",
+            "feature_46",
+            "feature_47",
+            "feature_48",
+            "feature_49",
+            "feature_50",
+            "feature_51",
+            "feature_52",
+            "feature_53",
+            "feature_54",
+            "feature_55",
+            "feature_56",
+            "feature_57",
+            "feature_58",
+            "feature_59",
+            "feature_60",
+            "feature_61",
+            "feature_62",
+            "feature_63",
+            "feature_64",
+            "feature_65",
+            "feature_66",
+            "feature_67",
+            "feature_68",
+            "feature_69",
+            "feature_70",
+            "feature_71",
+            "feature_72",
+            "feature_73",
+            "feature_74",
+            "feature_75",
+            "feature_76",
+            "feature_77",
+            "feature_78",
+            "feature_79",
+            "feature_80",
+            "feature_81",
+            "feature_82",
+            "feature_83",
+            "feature_84",
+            "feature_85",
+            "feature_86",
+            "feature_87",
+            "feature_88",
+            "feature_89",
+            "feature_90",
+            "feature_91",
+            "feature_92",
+            "feature_93",
+            "feature_94",
+            "feature_95",
+            "feature_96",
+            "feature_97",
+            "feature_98",
+            "feature_99",
+            "feature_100",
+            "feature_101",
+            "feature_102",
+            "feature_103",
+            "feature_104",
+            "feature_105",
+            "feature_106",
+            "feature_107",
+            "feature_108",
+            "feature_109",
+            "feature_110",
+            "feature_111",
+            "feature_112",
+            "feature_113",
+            "feature_114",
+            "feature_115",
+            "feature_116",
+            "feature_117",
+            "feature_118",
+            "feature_119",
+            "feature_120",
+            "feature_121",
+            "feature_122",
+            "feature_123",
+            "feature_124",
+            "feature_125",
+            "feature_126",
+            "feature_127",
+            "feature_128"
+        ],
+        "targets": [
+            "label"
+        ],
+        "train_shape": [
+            9840,
+            128
+        ],
+        "test_shape": [
+            4070,
+            128
+        ],
+        "metrics": {
+            "accuracy": 0.7800982800982801,
+            "precision_macro": 0.8035648205415497,
+            "recall_macro": 0.7795490764415778,
+            "f1_score_macro": 0.7844725700871668,
+            "best_cv_params": {
+                "svm10_C": 10.0,
+                "svm20_C": 20.0,
+                "svm_lin_C": 1.0,
+                "mlp_alpha": 0.01,
+                "mlp256_hidden": [
+                    256,
+                    128
+                ],
+                "mlp128_hidden": [
+                    128,
+                    64
+                ]
+            },
+            "best_cv_score": 0.9948170731707318
+        },
+        "remarks": "Optimized Hybrid Soft Voting 5-model ensemble combining 2x RBF SVM, 1x Linear SVM, and 2x MLP Classifiers, evaluated using 8-fold cross-validation.",
+        "training_time_sec": 79.55,
+        "trained_at": "2026-07-30T14:59:27.372700"
     }
 }

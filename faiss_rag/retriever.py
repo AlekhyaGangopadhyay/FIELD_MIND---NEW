@@ -184,7 +184,7 @@ class RAGRetriever:
             embedding=emb
         )
         self.clear_cache()
-        print(f"  [RAGRetriever] ✓ Self-learned rule embedded & saved to FAISS: '{rule_text[:60]}...'")
+        print(f"  [RAGRetriever] [+] Self-learned rule embedded & saved to FAISS: '{rule_text[:60]}...'")
         return chunk
 
     @staticmethod

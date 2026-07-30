@@ -18,6 +18,12 @@ from .llm_runner import OfflineLLMRunner
 # Safe imports for EKG and RAG
 from faiss_rag.retriever import RAGRetriever
 
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 # Add EKG path to import safely
 EKG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "expedition_knowledge_graph")
 if EKG_DIR not in sys.path:
@@ -25,7 +31,7 @@ if EKG_DIR not in sys.path:
 
 try:
     from graph_store import MineKnowledgeGraph
-    from query_api import get_segment_risk_profile, get_blast_history
+    from query_api import get_segment_risk_profile, get_blast_history, get_self_learned_rules
     EKG_AVAILABLE = True
 except ImportError:
     EKG_AVAILABLE = False
@@ -44,7 +50,7 @@ class ScientificReasoningCore:
         ekg_json_path: Optional[str] = None
     ):
         self.workspace_root = workspace_root
-        self.llm_runner = OfflineLLMRunner(model_path)
+        self.llm_runner = OfflineLLMRunner(model_path, workspace_root=workspace_root, lazy_load=True)
         self.ekg_json_path = ekg_json_path or os.path.join(workspace_root, "expedition_knowledge_graph", "data", "mine_graph.json")
         
         # Load FAISS Retriever
@@ -54,7 +60,7 @@ class ScientificReasoningCore:
         
         if os.path.exists(index_path) and os.path.exists(meta_path):
             self.rag_retriever = RAGRetriever(index_path, meta_path)
-            print("  [ReasoningCore] ✓ FAISS RAG Retriever loaded.")
+            print("  [ReasoningCore] [+] FAISS RAG Retriever loaded.")
         else:
             self.rag_retriever = None
             print("  [ReasoningCore] ⚠ FAISS index files not found. RAG retriever runs in fallback mode.")
@@ -139,9 +145,14 @@ class ScientificReasoningCore:
                 blasts = get_blast_history(graph, segment_id)
                 if blasts:
                     history_lines.append(f"Recent blast records: {len(blasts)} blasts recorded in this sector.")
+                
+                # Check for self-learned reflection rules stored in EKG
+                learned_rules = get_self_learned_rules(graph, segment_id)
+                if learned_rules:
+                    history_lines.append(f"EKG Self-Learned Rules ({len(learned_rules)}): " + " | ".join(r.get("rule_text", "") for r in learned_rules[:2]))
                     
                 ekg_history = "\n".join(history_lines)
-                trace.append("Retrieved historical events from EKG successfully.")
+                trace.append("Retrieved historical events and self-learned rules from EKG successfully.")
             except Exception as e:
                 ekg_history = f"Error reading EKG: {e}"
                 trace.append(f"Warning: EKG lookup encountered an error: {e}")
@@ -253,7 +264,7 @@ class ScientificReasoningCore:
         )
 
         # Parse suggestions into list
-        suggestions = [s.strip("- *").strip() for s in raw_suggestions.split("\n") if s.strip()]
+        suggestions = [s.strip("- *✔").strip() for s in raw_suggestions.split("\n") if s.strip()]
         
         trace.append(f"Generated {len(suggestions)} safety recommendations.")
         return {
@@ -363,7 +374,9 @@ class ScientificReasoningCore:
         # 3. Update EKG Graph Memory
         if EKG_AVAILABLE and os.path.exists(self.ekg_json_path):
             try:
-                graph = MineKnowledgeGraph.load(self.ekg_json_path)
+                graph = MineKnowledgeGraph()
+                graph.load(self.ekg_json_path)
+                self._ensure_tunnel_segment(graph, segment_id)
                 node_id = f"learned_rule_{int(time.time() * 1000)}"
                 graph.add_node(node_id, label="SelfLearnedRule", properties={
                     "timestamp": time.time(),
@@ -384,3 +397,77 @@ class ScientificReasoningCore:
             "rule_text": rule_text,
             "learned_chunk": learned_chunk
         }
+
+    def evaluate_feasibility_and_learn(
+        self,
+        anomalies: Dict[str, Any],
+        model_predictions: Dict[str, Any],
+        actual_situation: Optional[str] = None,
+        explanation: Optional[str] = None,
+        segment_id: str = "TUNNEL_A1"
+    ) -> Dict[str, Any]:
+        """
+        Evaluates whether active ML model predictions and environmental explanations are physically feasible
+        given real-time telemetry, EKG historical context, and FAISS safety rules.
+        If an unfeasible condition, false alarm, or physical discrepancy is identified (or supplied via ground truth),
+        triggers the Qwen LLM Reflection Engine, embeds the self-learned rule into FAISS RAG, and logs to EKG.
+        """
+        print(f"\n  [Feasibility Assessor] Evaluating physical feasibility of predictions for {segment_id} ...")
+
+        # 1. Fetch EKG context
+        ekg_history = ""
+        if EKG_AVAILABLE and os.path.exists(self.ekg_json_path):
+            try:
+                graph = MineKnowledgeGraph()
+                graph.load(self.ekg_json_path)
+                self._ensure_tunnel_segment(graph, segment_id)
+                profile = get_segment_risk_profile(graph, segment_id)
+                blasts = get_blast_history(graph, segment_id)
+                ekg_history = f"EKG segment {segment_id}: hazards={profile.get('hazard_count', 0)}, gas_anomalies={profile.get('gas_anomalies_count', 0)}, blasts={len(blasts)}."
+            except Exception as e:
+                ekg_history = f"EKG context error: {e}"
+
+        # 2. Fetch FAISS RAG context
+        rag_context = ""
+        if self.rag_retriever:
+            try:
+                chunks = self.rag_retriever.retrieve("physical feasibility sensor drift false alarm", top_k=2)
+                rag_context = self.rag_retriever.format_context(chunks)
+            except Exception:
+                rag_context = "FAISS retriever active."
+
+        # Merge anomalies, predictions, and physical telemetry
+        merged_payload = dict(anomalies)
+        merged_payload.update(model_predictions)
+
+        # 3. Execute LLM Feasibility Check
+        feasibility_report = self.llm_runner.run_reasoning(
+            prompt=f"Evaluate physical feasibility of model predictions: {model_predictions} with anomalies: {anomalies}",
+            anomalies=merged_payload,
+            ekg_history=ekg_history,
+            rag_context=rag_context,
+            task_type="feasibility"
+        )
+        print(f"  [Feasibility Report]: {feasibility_report}")
+
+        # Check if physical discrepancy detected or explicit ground truth provided
+        has_discrepancy = "DISCREPANCY" in feasibility_report or actual_situation is not None
+
+        reflection_result = {}
+        if has_discrepancy:
+            actual = actual_situation or "Moisture condensation / baseline environment drift"
+            expl = explanation or "Real-world environmental telemetry indicates sensor drift; model alert is physically unfeasible."
+            reflection_result = self.reflect_and_learn(
+                anomalies=merged_payload,
+                actual_situation=actual,
+                explanation=expl,
+                segment_id=segment_id
+            )
+
+        return {
+            "status": "SUCCESS",
+            "feasibility_report": feasibility_report,
+            "is_feasible": not has_discrepancy,
+            "reflection_result": reflection_result
+        }
+

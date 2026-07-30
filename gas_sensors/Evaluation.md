@@ -23,10 +23,14 @@ To achieve maximum accuracy and generalization on real underground mine gas tele
 | **`gas_hazard_co_nox_c6h6`**| **`LayerNormSwishMLP`** | **93.81%** | **99.89%** | **84.96%** | **0.9182** | 🔥 **70:30 Split Proof**: High precision on 54,000 balanced CGAN samples |
 | **`severity_co`** | **PyTorch Deep MLP** | **91.92%** | **93.27%** | **91.92%** | **0.9183** | 🔥 **Boundary Precision**: Precise 37.5–50 ppm CO boundary under noise |
 | **`severity_co2`** | **PyTorch Deep MLP** | **90.27%** | **91.51%** | **90.27%** | **0.8977** | ⚡ **High Precision**: 300 ppm TLV severity head |
+| **`severity_h2s`** | **PyTorch Deep MLP** | **99.77%** | **99.77%** | **99.77%** | **0.9977** | ⚡ **H2S Severity**: Precise safety boundary mapping (10/20 ppm) |
+| **`nh3_hazard`** | **PyTorch Deep MLP** | **98.86%** | **99.07%** | **98.65%** | **0.9886** | 🔥 **NH3 Hazard**: Accurate 25 ppm NIOSH REL threshold detection |
+| **`co2_hazard`** | **PyTorch Deep MLP** | **99.74%** | **99.81%** | **99.45%** | **0.9963** | ⚡ **CO2 Hazard**: Asphyxiation early warning at 1000 ppm |
+| **`smoke_env_hazard`**| **PyTorch Deep MLP** | **99.86%** | **99.78%** | **99.94%** | **0.9986** | 🔥 **Dust/Smoke**: High-sensitivity physical PM2.5+temp hazard |
 
 ---
 
-## 3. Production Suite Benchmark Table (8 Active Core Models)
+## 3. Production Suite Benchmark Table (12 Active Core Models)
 
 | Model Name | Task Type | Winning Arch Used | Train Dataset | Split Ratio | Train Samples | Test Samples | Train Acc | Test Acc | Test Precision | Test Recall | Test F1 |
 | :--- | :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -38,6 +42,10 @@ To achieve maximum accuracy and generalization on real underground mine gas tele
 | **`severity_co`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_co_realistic.csv` | **75 : 25** | 22,500 | 7,500 | **92.10%** | **91.92%** | 93.27% | 91.92% | **0.9183** |
 | **`severity_co2`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_co2_realistic.csv` | **75 : 25** | 22,500 | 7,500 | **90.50%** | **90.27%** | 91.51% | 90.27% | **0.8977** |
 | **`mine_baseline_iforest`** | Anomaly Detection | IsolationForest | `mine_part1_clean.csv` | **100% Base** | 1,721 | 1,721 | **99.00%** | **98.95%**** | N/A | N/A | N/A |
+| **`severity_h2s`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_h2s_balanced_cgan.csv` | **50 : 50** | 30,000 | 30,000 | **99.72%** | **99.77%** | **99.77%** | **99.77%** | **0.9977** |
+| **`nh3_hazard`** | Binary Classification | PyTorch Deep MLP | `nh3_hazard_balanced_cgan.csv` | **50 : 50** | 30,000 | 30,000 | **98.86%** | **98.86%** | **99.07%** | **98.65%** | **0.9886** |
+| **`co2_hazard`** | Binary Classification | PyTorch Deep MLP | `mine_part2_co2_balanced_cgan.csv` | **50 : 50** | 30,000 | 30,000 | **99.74%** | **99.74%** | **99.81%** | **99.45%** | **0.9963** |
+| **`smoke_env_hazard`**| Binary Classification | PyTorch Deep MLP | `FIELDMIND_physics_dataset.csv` | **50 : 50** | 3,552 | 3,552 | **99.86%** | **99.86%** | **99.78%** | **99.94%** | **0.9986** |
 
 *\*Note for `multi_gas_detector`: Multi-task elementwise accuracy across all 5 gas targets is **97.32%** (with per-gas accuracies: LPG **99.94%**, Smoke **99.82%**, CO **97.82%**, NOx **97.55%**, Methane **91.54%**). Exact multi-label subset accuracy (requiring all 5 predictions to match simultaneously) is **87.22%**.*
 

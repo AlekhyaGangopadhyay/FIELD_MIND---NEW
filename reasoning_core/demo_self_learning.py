@@ -12,6 +12,12 @@ Demonstrates FIELD-MIND's autonomous self-learning loop on NVIDIA Jetson Orin Na
 import os
 import sys
 
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 # Ensure workspace root is in sys.path
 WORKSPACE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if WORKSPACE_ROOT not in sys.path:
@@ -53,7 +59,7 @@ def run_self_learning_demo():
     print(f"  [GasSensorAgent Initial Prediction]: {initial_inference}")
 
     print("\n" + "-" * 80)
-    print("STEP 2: Real-Time Ground Truth Discrepancy & Supervisor Feedback")
+    print("STEP 2: Prediction Feasibility Evaluation & Ground Truth Discrepancy")
     print("-" * 80)
     
     actual_situation = "Tunnel High-Pressure Water Spraying Operation"
@@ -64,17 +70,20 @@ def run_self_learning_demo():
     print(f"  [Root Cause Explanation]: {explanation}")
     print(f"  [True Ground-Truth Label]: 0 (Normal / Clean Air)")
 
-    print("\n" + "-" * 80)
-    print("STEP 3: Triggering LLM Self-Reflection & Vector Memory Update")
-    print("-" * 80)
-
-    # 1. Trigger LLM Reflection & FAISS Memory Persistence
-    reflection_result = reasoning_core.reflect_and_learn(
+    # Evaluate physical feasibility of prediction with Qwen LLM
+    feasibility_res = reasoning_core.evaluate_feasibility_and_learn(
         anomalies=telemetry_tick_1,
+        model_predictions=initial_inference,
         actual_situation=actual_situation,
         explanation=explanation,
         segment_id="Heading_A1"
     )
+
+    print("\n" + "-" * 80)
+    print("STEP 3: Triggering LLM Self-Reflection & Vector Memory Update")
+    print("-" * 80)
+
+    reflection_result = feasibility_res.get("reflection_result", {})
 
     # 2. Update Experience Replay Buffer for Online Retraining
     gas_agent.feedback_correction(
@@ -110,6 +119,7 @@ def run_self_learning_demo():
     print("\n" + "=" * 80)
     print("  AUTONOMOUS SELF-LEARNING RESULT SUMMARY")
     print("=" * 80)
+    print(f"  [Feasibility Assessment]: {feasibility_res.get('feasibility_report')}")
     print(f"  [Retrieved Learned Rule]: {reflection_result.get('rule_text')}")
     print(f"  [Updated Reasoning Hypothesis]: {reasoning_output.get('hypothesis')}")
     print(f"  [Status]: SUCCESS — Agent learned on-the-fly and prevented repeat false alarm!")

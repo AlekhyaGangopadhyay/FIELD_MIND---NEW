@@ -1,0 +1,8 @@
+# Install on a CUDA workstation only; these are intentionally excluded from
+# the Jetson runtime requirements.txt.
+transformers>=4.45
+datasets>=2.20
+peft>=0.12
+trl>=0.10
+bitsandbytes>=0.43
+accelerate>=0.34

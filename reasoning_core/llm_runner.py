@@ -7,8 +7,10 @@ high-quality, domain-informed Expert Rule Engine that matches anomalies,
 EKG history, and RAG context to formulate reasoning hypotheses and safety advices.
 """
 
+import gc
 import os
 import re
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
@@ -19,7 +21,8 @@ class OfflineLLMRunner:
     with an embedded expert-system fallback and self-reflection engine.
     """
 
-    def __init__(self, model_path: Optional[str] = None):
+    def __init__(self, model_path: Optional[str] = None, workspace_root: Optional[str] = None, lazy_load: bool = True):
+        self.workspace_root = Path(workspace_root).resolve() if workspace_root else Path(__file__).resolve().parents[1]
         if not model_path:
             # Candidate GGUF model paths on Jetson Orin Nano 8GB
             candidates = [
@@ -32,27 +35,70 @@ class OfflineLLMRunner:
                     model_path = c
                     break
 
+        if model_path:
+            candidate = Path(model_path).expanduser()
+            if not candidate.is_absolute():
+                candidate = self.workspace_root / candidate
+            model_path = str(candidate.resolve())
+        else:
+            candidates = [
+                self.workspace_root / 'gas_sensors' / 'models' / 'Qwen2.5-7B-Instruct-Q4_K_M.gguf',
+                self.workspace_root / 'models' / 'Qwen2.5-7B-Instruct-Q4_K_M.gguf',
+                self.workspace_root / 'reasoning_core' / 'models' / 'Qwen2.5-7B-Instruct-Q4_K_M.gguf',
+            ]
+            model_path = next((str(c) for c in candidates if c.is_file()), None)
         self.model_path = model_path
+        self._load_error = None
+        self.n_ctx = max(256, int(os.getenv('FIELDMIND_LLM_CONTEXT', '1024')))
+        self.n_threads = max(1, int(os.getenv('FIELDMIND_LLM_THREADS', '6')))
+        self.n_gpu_layers = int(os.getenv('FIELDMIND_LLM_GPU_LAYERS', '-1'))
+        self.lazy_load = lazy_load
         self._llm = None
         self._initialized = False
 
-        if model_path and os.path.exists(model_path):
+        if self.model_path and os.path.isfile(self.model_path) and not lazy_load:
             try:
                 from llama_cpp import Llama
                 print(f"  [LLMRunner] Initializing Qwen2.5-7B / 5B+ GGUF model on Jetson Orin Nano from {model_path} ...")
                 self._llm = Llama(
                     model_path=model_path,
-                    n_ctx=2048,
-                    n_threads=6,
-                    n_gpu_layers=-1,  # Offload all layers to Orin Nano 1024-core Ampere GPU
+                    n_ctx=self.n_ctx,
+                    n_threads=self.n_threads,
+                    n_gpu_layers=self.n_gpu_layers,
                     verbose=False
                 )
                 self._initialized = True
                 print("  [LLMRunner] ✓ Quantized Qwen2.5-7B-Instruct model loaded with GPU acceleration.")
             except Exception as e:
                 print(f"  [LLMRunner] ⚠ Failed to load GGUF model ({e}). Fallback to Expert System enabled.")
-        else:
-            print("  [LLMRunner] No GGUF model found at 'models/Qwen2.5-7B-Instruct-Q4_K_M.gguf'. Defaulting to Expert System & Reflection Engine.")
+        elif not self.model_path:
+            print("  [LLMRunner] No GGUF model found at 'gas_sensors/models/Qwen2.5-7B-Instruct-Q4_K_M.gguf'. Defaulting to Expert System & Reflection Engine.")
+
+    def ensure_loaded(self) -> bool:
+        if self._initialized and self._llm:
+            return True
+        if not self.model_path or not os.path.isfile(self.model_path):
+            return False
+        try:
+            from llama_cpp import Llama
+            print(f'  [LLMRunner] Loading local GGUF from {self.model_path} (ctx={self.n_ctx}, gpu_layers={self.n_gpu_layers}) ...')
+            self._llm = Llama(model_path=self.model_path, n_ctx=self.n_ctx, n_threads=self.n_threads, n_gpu_layers=self.n_gpu_layers, n_batch=min(256, self.n_ctx), verbose=False)
+            self._initialized = True
+            self._load_error = None
+        except Exception as exc:
+            self._load_error = str(exc)
+            self._llm = None
+            self._initialized = False
+            print(f'  [LLMRunner] GGUF load failed ({exc}); Expert System fallback remains active.')
+        return self._initialized
+
+    def unload(self) -> None:
+        self._llm = None
+        self._initialized = False
+        gc.collect()
+
+    def health(self) -> Dict[str, Any]:
+        return {'model_path': self.model_path, 'available': bool(self.model_path and os.path.isfile(self.model_path)), 'loaded': self._initialized, 'load_error': self._load_error, 'n_ctx': self.n_ctx, 'n_gpu_layers': self.n_gpu_layers}
 
     def run_reasoning(
         self,
@@ -63,13 +109,13 @@ class OfflineLLMRunner:
         task_type: str = "hypothesis"
     ) -> str:
         """
-        Executes reasoning or self-reflection using the loaded LLM or falls back to the Expert System.
+        Executes reasoning, self-reflection, or feasibility evaluation using the loaded LLM or falls back to the Expert System.
         """
-        if self._initialized and self._llm:
+        if self.ensure_loaded():
             try:
                 response = self._llm(
                     prompt,
-                    max_tokens=512,
+                    max_tokens=min(512, self.n_ctx // 2),
                     temperature=0.2,
                     stop=["\n\n\n", "User:", "System:"],
                 )
@@ -89,7 +135,8 @@ class OfflineLLMRunner:
         task_type: str
     ) -> str:
         """
-        An offline expert system ruleset that generates mining hypotheses and safety suggestions.
+        An offline expert system ruleset that generates mining hypotheses, safety suggestions,
+        feasibility checks, and conversational safety answers.
         """
         # Parse active anomalies
         gas_alert = any(k for k, v in anomalies.items() if "gas" in k.lower() or "ppm" in k.lower())
@@ -100,6 +147,7 @@ class OfflineLLMRunner:
         # Check thresholds
         max_methane = float(anomalies.get("MQ4_CH4_ppm", 0))
         max_co = float(anomalies.get("MQ7_CO_ppm", 0))
+        humidity = float(anomalies.get("humidity", 50.0))
         max_ppv = float(anomalies.get("predicted_ppv", 0.0) or anomalies.get("ppv", 0.0))
         min_dist = float(anomalies.get("min_distance", 5.0))
         temp = float(anomalies.get("temp", 20.0))
@@ -107,7 +155,43 @@ class OfflineLLMRunner:
         # Check blast correlation in EKG history
         blast_correlated = "blast" in ekg_history.lower() or "caused_by" in ekg_history.lower()
 
-        if task_type == "hypothesis":
+        if task_type == "feasibility":
+            evaluations = []
+            is_feasible = True
+            
+            # Check humidity condensation drift on gas sensors
+            if max_co > 25.0 and humidity > 80.0 and not blast_correlated:
+                evaluations.append(
+                    f"UNFEASIBLE / DRIFT DISCREPANCY: Elevated CO reading ({max_co:.1f} ppm) detected at high humidity ({humidity:.1f}%). "
+                    "In the absence of blasting in EKG history, this is physically unfeasible as a true combustion event and indicates moisture condensation drift on the MQ-7 sensor."
+                )
+                is_feasible = False
+            elif max_co > 25.0 and blast_correlated:
+                evaluations.append(
+                    f"FEASIBLE: Elevated CO ({max_co:.1f} ppm) directly correlates with recorded blasting operations in EKG history."
+                )
+            
+            if max_ppv > 5.0 and not blast_correlated:
+                evaluations.append(
+                    f"UNFEASIBLE / SEISMIC DISCREPANCY: High predicted PPV ({max_ppv:.2f} mm/s) registered without corresponding blast event in EKG history. "
+                    "May indicate sensor calibration offset or local machinery vibration."
+                )
+                is_feasible = False
+            elif max_ppv > 5.0 and blast_correlated:
+                evaluations.append(
+                    f"FEASIBLE: PPV vibration prediction ({max_ppv:.2f} mm/s) aligns with active detonator charges in this sector."
+                )
+
+            if min_dist < 0.5:
+                evaluations.append(f"FEASIBLE: Ultrasonic wall clearance ({min_dist:.2f}m) indicates physical obstacle proximity.")
+
+            if not evaluations:
+                evaluations.append("FEASIBLE: Sensor inputs and model predictions match physical environmental baseline parameters.")
+
+            status_prefix = "FEASIBILITY VERIFIED" if is_feasible else "PHYSICAL DISCREPANCY DETECTED"
+            return f"[{status_prefix}]\n" + "\n".join(f"• {e}" for e in evaluations)
+
+        elif task_type == "hypothesis":
             hypotheses = []
             if gas_alert:
                 if max_methane > 10000:
@@ -189,4 +273,8 @@ class OfflineLLMRunner:
             )
             return rule
 
+        elif task_type == "chat":
+            return "FIELD-MIND active. Safety regulations and model predictions evaluated."
+
         return "Standard operation."
+

@@ -44,6 +44,10 @@ class Tier1Monitor:
             'severity_co'     : 'severity_co.joblib',
             'severity_co2'    : 'severity_co2.joblib',
             'severity_h2'     : 'severity_h2.joblib',
+            'severity_h2s'    : 'severity_h2s.joblib',
+            'nh3_hazard'      : 'nh3_hazard.joblib',
+            'co2_hazard'      : 'co2_hazard.joblib',
+            'smoke_env'       : 'smoke_env_hazard.joblib',
         }
         for key, name in gas_files.items():
             path = os.path.join(gas_dir, name)
@@ -166,6 +170,50 @@ class Tier1Monitor:
             aq_score = self.models['gas_air_quality'].predict(X)[0]
             hazards['air_quality_score'] = float(aq_score)
             
+        # G. H2S Severity (1 feature: MQ136_H2S_ppm)
+        if 'gas_severity_h2s' in self.models:
+            if isinstance(gas_features, dict) and 'MQ136_H2S_ppm' in gas_features:
+                X = np.array([gas_features['MQ136_H2S_ppm']]).reshape(1, -1)
+            elif not isinstance(gas_features, dict) and len(gas_features) == 1:
+                X = np.array(gas_features).reshape(1, -1)
+            else:
+                X = np.zeros((1, 1))
+            try:
+                h2s_sev = self.models['gas_severity_h2s'].predict(X)[0]
+                hazards['h2s_severity'] = int(h2s_sev)
+                hazards['h2s_hazard'] = int(h2s_sev >= 1)
+            except Exception:
+                hazards['h2s_severity'] = 0
+                hazards['h2s_hazard'] = 0
+
+        # H. NH3 Hazard (1 feature: MQ135_NH3_ppm)
+        if 'gas_nh3_hazard' in self.models:
+            if isinstance(gas_features, dict) and 'MQ135_NH3_ppm' in gas_features:
+                X = np.array([gas_features['MQ135_NH3_ppm']]).reshape(1, -1)
+            elif not isinstance(gas_features, dict) and len(gas_features) == 1:
+                X = np.array(gas_features).reshape(1, -1)
+            else:
+                X = np.zeros((1, 1))
+            try:
+                nh3_pred = self.models['gas_nh3_hazard'].predict(X)[0]
+                hazards['nh3_hazard'] = int(nh3_pred == 1)
+            except Exception:
+                hazards['nh3_hazard'] = 0
+            
+        # I. CO2 Hazard (1 feature: MG811_CO2_ppm)
+        if 'gas_co2_hazard' in self.models:
+            if isinstance(gas_features, dict) and 'MG811_CO2_ppm' in gas_features:
+                X = np.array([gas_features['MG811_CO2_ppm']]).reshape(1, -1)
+            elif not isinstance(gas_features, dict) and len(gas_features) == 1:
+                X = np.array(gas_features).reshape(1, -1)
+            else:
+                X = np.zeros((1, 1))
+            try:
+                co2_pred = self.models['gas_co2_hazard'].predict(X)[0]
+                hazards['co2_hazard'] = int(co2_pred == 1)
+            except Exception:
+                hazards['co2_hazard'] = 0
+
         return hazards
 
     def evaluate_env(self, env_features):
