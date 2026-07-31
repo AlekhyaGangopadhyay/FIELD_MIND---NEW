@@ -5,7 +5,10 @@ import joblib
 import pandas as pd
 import numpy as np
 
-# Ensure gas_sensors directory is in sys.path for PyTorch DL wrappers unpickling
+# Ensure gas_sensors and root directories are in sys.path
+workspace_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if workspace_root not in sys.path:
+    sys.path.insert(0, workspace_root)
 gas_sensors_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "gas_sensors"))
 if gas_sensors_dir not in sys.path:
     sys.path.insert(0, gas_sensors_dir)
@@ -14,6 +17,8 @@ try:
     import dl_wrappers
 except ImportError:
     pass
+
+from vibration.structural_monitor import SW420VibrationMonitor, UltrasonicDisplacementModel
 
 # Suppress scikit-learn feature name validation UserWarnings
 warnings.simplefilter("ignore", category=UserWarning)
@@ -27,6 +32,8 @@ class Tier1Monitor:
     def __init__(self, root_dir):
         self.root_dir = root_dir
         self.models = {}
+        self.vibration_monitor = SW420VibrationMonitor()
+        self.displacement_model = UltrasonicDisplacementModel()
         self.load_all_models()
         
     def load_all_models(self):
@@ -262,11 +269,31 @@ class Tier1Monitor:
 
     def evaluate_vibration(self, vibration_features):
         """
-        Evaluates seismic/blast vibration sensor metrics.
+        Evaluates seismic/blast vibration sensor metrics, SW-420 pulses, and ultrasonic displacement.
         """
         res = {}
         
-        # A. RF PPV Hazard Classifier (14 features)
+        # 1. SW-420 shock evaluation
+        vibration_pulses = float(vibration_features.get('vibration_pulses', 0.0)) if isinstance(vibration_features, dict) else 0.0
+        shock_res = self.vibration_monitor.evaluate(vibration_pulses)
+        res['shock_level'] = shock_res['shock_level']
+        res['shock_alert'] = int(shock_res['shock_alert'])
+        res['vibration_pulses'] = vibration_pulses
+        
+        # 2. Ultrasonic geomechanical displacement rate evaluation
+        node_id = vibration_features.get('node_id', 'default') if isinstance(vibration_features, dict) else 'default'
+        distance = float(vibration_features.get('ultrasonic_distance', 2.0)) if isinstance(vibration_features, dict) else 2.0
+        timestamp = float(vibration_features.get('timestamp', 0.0)) if isinstance(vibration_features, dict) else 0.0
+        self.displacement_model.add_reading(distance, timestamp, node_id)
+        disp_res = self.displacement_model.evaluate(node_id)
+        
+        res['velocity'] = disp_res.get('velocity', 0.0)
+        res['acceleration'] = disp_res.get('acceleration', 0.0)
+        res['blockage_detected'] = int(disp_res.get('blockage_detected', False))
+        res['collapse_imminent'] = int(disp_res.get('collapse_imminent', False))
+        res['ultrasonic_distance'] = distance
+
+        # 3. Legacy RF PPV Hazard Classifier (14 features) fallback
         if 'vib_classifier' in self.models:
             if isinstance(vibration_features, dict) and 'offset' in vibration_features:
                 f_list = [
@@ -294,7 +321,7 @@ class Tier1Monitor:
             vib_pred = self.models['vib_classifier'].predict(X)[0]
             res['vibration_hazard'] = int(vib_pred == 1)
             
-        # B. Gradient Boosting PPV Regressor (17 features)
+        # 4. Legacy Gradient Boosting PPV Regressor (17 features) fallback
         if 'vib_regressor' in self.models:
             if isinstance(vibration_features, dict) and 'offset' in vibration_features:
                 f_list = [

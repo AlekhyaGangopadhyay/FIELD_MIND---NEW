@@ -98,7 +98,13 @@ class ATROrchestrator:
             is_triggered = True
             trigger_reasons.append("Environmental temperature/humidity anomaly detected (Isolation Forest)!")
             
-        # Vibration hazard
+        # Vibration & Structural Stability hazard
+        if vib_res.get('collapse_imminent') == 1:
+            is_triggered = True
+            trigger_reasons.append("CRITICAL: Structural collapse imminent (Wall displacement accelerating)!")
+        if vib_res.get('shock_alert') == 1:
+            is_triggered = True
+            trigger_reasons.append(f"Vibration shock detected! SW-420 pulse count: {vib_res.get('vibration_pulses', 0):.0f} (Level {vib_res.get('shock_level')})")
         if vib_res.get('vibration_hazard') == 1:
             is_triggered = True
             trigger_reasons.append(f"High-amplitude blast vibration hazard! PPV: {vib_res.get('predicted_ppv', 0.0):.2f} mm/s")
