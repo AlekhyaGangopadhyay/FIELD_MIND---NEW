@@ -335,6 +335,63 @@ class SafetyProtocolEvaluator:
             )
 
     def _evaluate_vibration(self, r, p, checks, actions, queries):
+        # 1. Evaluate Wall Displacement (Ultrasonic sensor Choice B)
+        dist = self._value(r, "ultrasonic_distance")
+        if dist is not None:
+            collapse_imminent = self._signal(p, "collapse_imminent")
+            velocity = self._value(p, "velocity")
+            blockage = self._signal(p, "blockage_detected")
+            
+            if collapse_imminent:
+                checks.append(ProtocolCheck(
+                    domain="vibration", metric="wall displacement", reading=dist,
+                    unit="m", protocol_limit="Velocity < -0.05 m/s & accelerating",
+                    source="Geomechanical Rate Model", severity="CRITICAL", status="ALARM_CONFIRMED",
+                    model_signal=1, message="CRITICAL: Uncontrolled wall displacement detected! Collapse is imminent.",
+                    action="IMMEDIATELY EVACUATE ALL PERSONNEL from the affected tunnel segment!"
+                ))
+                actions.append("IMMEDIATELY EVACUATE ALL PERSONNEL from the affected tunnel segment!")
+                queries.append("underground mine roof fall rockburst structural collapse evacuation protocol")
+            elif velocity is not None and velocity < -0.01:
+                checks.append(ProtocolCheck(
+                    domain="vibration", metric="wall displacement", reading=dist,
+                    unit="m", protocol_limit="Stable wall position",
+                    source="Geomechanical Rate Model", severity="WARNING", status="ALARM_CONFIRMED",
+                    model_signal=1, message="WARNING: Slow geomechanical wall displacement detected.",
+                    action="Monitor displacement velocity closely and inspect structural support pillars."
+                ))
+                actions.append("Monitor displacement velocity closely and inspect structural support pillars.")
+                queries.append("underground mine geomechanical monitoring wall shifting safety protocol")
+            elif blockage:
+                checks.append(ProtocolCheck(
+                    domain="vibration", metric="wall displacement", reading=dist,
+                    unit="m", protocol_limit="Stable wall position",
+                    source="Geomechanical Rate Model", severity="SAFE", status="SAFE",
+                    model_signal=0, message="Normal: Instantaneous distance drop filtered out as a temporary obstacle.",
+                    action="No action required; temporary obstruction cleared."
+                ))
+
+        # 2. Evaluate SW-420 Shock Monitor
+        pulses = self._value(r, "vibration_pulses")
+        if pulses is not None:
+            shock_level = self._value(p, "shock_level")
+            shock_alert = self._signal(p, "shock_alert")
+            
+            if shock_alert:
+                severity = "CRITICAL" if shock_level == 2 else "WARNING"
+                action_msg = "IMMEDIATELY EVACUATE and de-energize equipment." if shock_level == 2 else "Inspect area for micro-fractures and loose rock."
+                message_msg = f"SW-420 shock alarm triggered (Level {shock_level} shock, pulses={pulses:g})."
+                
+                checks.append(ProtocolCheck(
+                    domain="vibration", metric="SW-420 vibration pulses", reading=pulses,
+                    unit="pulses/s", protocol_limit="< 5 pulses/s",
+                    source="SW-420 Shock Monitor", severity=severity, status="ALARM_CONFIRMED",
+                    model_signal=1, message=message_msg, action=action_msg
+                ))
+                actions.append(action_msg)
+                queries.append("underground mine blasting shock wave peak ground acceleration safety protocol")
+
+        # 3. Legacy PPV check fallback
         ppv = self._value(r, "predicted_ppv", "ppv", "PPV")
         if ppv is not None:
             self._check(checks, actions, domain="vibration", metric="PPV", reading=ppv,
