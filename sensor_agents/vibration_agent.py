@@ -25,6 +25,14 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingRegressor
 from .agent_base import SensorAgentBase
 from .agent_bus import AgentBus
 
+# Ensure the root path is available for import
+import sys
+workspace_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if workspace_dir not in sys.path:
+    sys.path.append(workspace_dir)
+
+from vibration.structural_monitor import SW420VibrationMonitor, UltrasonicDisplacementModel
+
 
 # 14-feature set used by the classifier model
 _CLASSIFIER_FEATURES = [
@@ -43,7 +51,7 @@ _PPV_HAZARD_THRESHOLD = 1.0   # mm/s (same as training script)
 
 class VibrationSensorAgent(SensorAgentBase):
     """
-    Autonomous Vibration Sensor AI Agent (Blast PPV).
+    Autonomous Vibration Sensor AI Agent (Blast PPV & Structural Collapse).
 
     Parameters
     ----------
@@ -54,6 +62,10 @@ class VibrationSensorAgent(SensorAgentBase):
 
     def __init__(self, workspace_root: str, bus: AgentBus, verbose: bool = True):
         self.workspace_root = workspace_root
+
+        # Load structural stability monitors
+        self.vibration_monitor = SW420VibrationMonitor()
+        self.displacement_model = UltrasonicDisplacementModel()
 
         vib_model_dir = os.path.join(workspace_root, "vibration", "models")
         self._clf_model = self._load_model(
@@ -143,21 +155,41 @@ class VibrationSensorAgent(SensorAgentBase):
 
     def perceive(self, raw_data: Dict[str, Any]) -> Dict[str, Any]:
         features = {f: float(raw_data.get(f, 0.0)) for f in _REGRESSOR_FEATURES}
+        features["vibration_pulses"] = float(raw_data.get("vibration_pulses", 0.0))
+        features["ultrasonic_distance"] = float(raw_data.get("ultrasonic_distance", 2.0))
+        features["timestamp"] = float(raw_data.get("timestamp", 0.0))
         return features
 
     def infer(self, features: Dict[str, Any]) -> Dict[str, Any]:
         result: Dict[str, Any] = {}
 
+        # 1. Execute SW-420 Shock Monitor
+        pulse_count = int(features.get("vibration_pulses", 0.0))
+        shock_res = self.vibration_monitor.evaluate(pulse_count)
+        result["shock_level"] = shock_res["shock_level"]
+        result["shock_alert"] = int(shock_res["shock_alert"])
+        result["vibration_pulses"] = pulse_count
+
+        # 2. Execute Geomechanical Displacement Rate Model
+        distance = features.get("ultrasonic_distance", 2.0)
+        timestamp = features.get("timestamp", 0.0)
+        self.displacement_model.add_reading(distance, timestamp)
+        disp_res = self.displacement_model.evaluate()
+        
+        result["velocity"] = disp_res.get("velocity", 0.0)
+        result["acceleration"] = disp_res.get("acceleration", 0.0)
+        result["blockage_detected"] = int(disp_res.get("blockage_detected", False))
+        result["collapse_imminent"] = int(disp_res.get("collapse_imminent", False))
+        result["ultrasonic_distance"] = distance
+
+        # 3. Run legacy PPV models for backwards compatibility (fallback)
         clf_vec = np.array([features[f] for f in _CLASSIFIER_FEATURES]).reshape(1, -1)
         reg_vec = np.array([features[f] for f in _REGRESSOR_FEATURES]).reshape(1, -1)
-
-        # 1. Hazard classification (primary learnable model)
         try:
             result["vibration_hazard"] = int(self.model.predict(clf_vec)[0])
         except Exception:
             result["vibration_hazard"] = 0
 
-        # 2. PPV regression (frozen GB model)
         if self._reg_model is not None:
             try:
                 n_feat = self._reg_model.n_features_in_ if hasattr(self._reg_model, "n_features_in_") else 17
@@ -172,7 +204,6 @@ class VibrationSensorAgent(SensorAgentBase):
         else:
             result["predicted_ppv"] = 0.0
 
-        # 3. Rule-based check
         ppv = result["predicted_ppv"]
         result["ppv_exceeds_threshold"] = int(ppv > _PPV_HAZARD_THRESHOLD)
 
@@ -181,21 +212,25 @@ class VibrationSensorAgent(SensorAgentBase):
     def compute_confidence(self, inference_result: Dict[str, Any]) -> float:
         conf = 0.0
 
-        if inference_result.get("vibration_hazard") == 1:
+        # Collapse imminent overrides other confidence markers
+        if inference_result.get("collapse_imminent") == 1:
+            return 1.0
+
+        if inference_result.get("vibration_hazard") == 1 or inference_result.get("shock_alert") == 1:
             conf += 0.55
         if inference_result.get("ppv_exceeds_threshold") == 1:
             conf += 0.30
 
         # Severity scaling by PPV magnitude
         ppv = inference_result.get("predicted_ppv", 0.0)
-        if ppv > 10.0:
+        if ppv > 10.0 or inference_result.get("shock_level", 0) == 2:
             conf = min(1.0, conf + 0.20)
-        elif ppv > 5.0:
+        elif ppv > 5.0 or inference_result.get("shock_level", 0) == 1:
             conf = min(1.0, conf + 0.10)
 
         # Trend check
         recent = list(self._memory)[-3:]
-        if len(recent) == 3 and all(e.get("vibration_hazard", 0) == 1 for e in recent):
+        if len(recent) == 3 and all(e.get("vibration_hazard", 0) == 1 or e.get("shock_alert", 0) == 1 for e in recent):
             conf = min(1.0, conf + 0.15)
 
         return min(1.0, conf)
@@ -224,11 +259,13 @@ class VibrationSensorAgent(SensorAgentBase):
         return np.array([features[f] for f in _CLASSIFIER_FEATURES])
 
     def _build_reason(self, inference: Dict[str, Any], confidence: float) -> str:
-        ppv = inference.get("predicted_ppv", 0.0)
         parts = []
+        if inference.get("collapse_imminent") == 1:
+            parts.append("CRITICAL: Structural collapse imminent (Wall displacement accelerating)!")
+        if inference.get("shock_alert") == 1:
+            parts.append(f"Vibration shock detected (Level {inference.get('shock_level')}, pulses={inference.get('vibration_pulses', 0)})")
         if inference.get("vibration_hazard") == 1:
-            parts.append(f"Blast vibration hazard detected (PPV={ppv:.2f} mm/s)")
-        if ppv > _PPV_HAZARD_THRESHOLD:
-            parts.append(f"PPV exceeds threshold ({_PPV_HAZARD_THRESHOLD} mm/s)")
+            ppv = inference.get("predicted_ppv", 0.0)
+            parts.append(f"Legacy blast vibration hazard (PPV={ppv:.2f} mm/s)")
         parts.append(f"confidence={confidence:.2f}")
         return " | ".join(parts)

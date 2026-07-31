@@ -82,6 +82,10 @@ def generate_readings(rng: random.Random, node_index: int, tick: int) -> Dict[st
     distance    = rng.gauss(500, 8)  # far from blast face
     min_distance = rng.gauss(3.0, 0.06)  # comfortable clearance
 
+    # New structural monitoring parameters
+    vibration_pulses = 0.0
+    ultrasonic_distance = 2.0 + rng.uniform(-0.01, 0.01)
+
     # ================================================================
     # Node 0 — GAS LEAK
     #   CH4/CO ramp; CO crosses 25 ppm around tick 4 (so co_nox_hazard
@@ -94,25 +98,21 @@ def generate_readings(rng: random.Random, node_index: int, tick: int) -> Dict[st
         dust += 0.8 * tick                    # slight correlated dust rise
 
     # ================================================================
-    # Node 1 — MODERATE CO EXPOSURE (e.g. downstream diesel fumes)
-    #   CO steady around 28 ppm → above the 25 ppm warning threshold so
-    #   that the co_nox_hazard model alarm AGREES with the protocol
-    #   check.  This avoids MODEL_ALERT and produces a clean WARNING
-    #   status.  All other sensors remain safely within limits.
+    # Node 1 — MODERATE CO EXPOSURE & SW-420 SHOCK SPIKES
+    #   CO steady around 28 ppm. Vibration shocks spike on ticks 5 to 7.
     # ================================================================
     elif node_index == 1:
         co  = rng.gauss(28 + 0.3 * tick, 0.8)  # 28→31 ppm, always >25
         ch4 += 8 * np.sin(tick * 0.7)           # tiny sine wobble
         temp += 0.1 * np.cos(tick * 0.4)
         humidity += 0.3 * np.sin(tick * 0.6)
+        if tick in (5, 6, 7):
+            vibration_pulses = 60.0  # Spike above critical threshold
 
     # ================================================================
-    # Node 2 — STRUCTURAL / NAV CONCERN (far from gas source)
-    #   All gas values stay low.  Clearance drifts from ~3 m toward
-    #   ~0.5 m (enters WARNING <1.0 m, never reaches CRITICAL <0.3 m).
-    #   Temperature creeps toward the 28 °C caution line.
-    #   co_nox_hazard model fires at safe CO (inherent model behaviour)
-    #   → REVIEW_MODEL_DISAGREEMENT.
+    # Node 2 — STRUCTURAL WALL DISPLACEMENT & COLLAPSE
+    #   Test case: Instantly drops to 0.5m at tick 4 (Blockage).
+    #   Then, starting at tick 6, accelerates downwards (Collapse).
     # ================================================================
     else:
         min_distance -= 0.18 * tick + max(0, tick - 5) * 0.12
@@ -120,6 +120,19 @@ def generate_readings(rng: random.Random, node_index: int, tick: int) -> Dict[st
         temp += 0.35 * tick                     # reaches ~25–26 °C late
         humidity += 0.25 * tick                 # mild correlated rise
         max_charge += 0.3 * tick                # slight charge increase
+        
+        if tick == 4:
+            ultrasonic_distance = 0.5  # Temporary human blocker passing by
+        elif tick == 6:
+            ultrasonic_distance = 1.92
+        elif tick == 7:
+            ultrasonic_distance = 1.78
+        elif tick == 8:
+            ultrasonic_distance = 1.55
+        elif tick == 9:
+            ultrasonic_distance = 1.20
+        elif tick == 10:
+            ultrasonic_distance = 0.70
 
     return {
         "MQ4_CH4_ppm":    round(max(0.0, ch4), 3),
@@ -134,6 +147,9 @@ def generate_readings(rng: random.Random, node_index: int, tick: int) -> Dict[st
         "num_holes":      round(max(1.0, num_holes), 3),
         "distance":       round(max(30.0, distance), 3),
         "min_distance":   round(_clamp(min_distance, 0.18, 5.0), 3),
+        "vibration_pulses": vibration_pulses,
+        "ultrasonic_distance": ultrasonic_distance,
+        "timestamp":      float(tick * 2.0),
     }
 
 
@@ -205,6 +221,10 @@ def build_model_inputs(readings: Dict[str, float]) -> Dict[str, Dict[str, Any]]:
         "scaled_distance_usbm": scaled_distance_usbm,
         "scaled_distance_langefors": scaled_distance_langefors,
         "elevation_diff": 2.0,
+        "vibration_pulses": readings.get("vibration_pulses", 0.0),
+        "ultrasonic_distance": readings.get("ultrasonic_distance", 2.0),
+        "timestamp": readings.get("timestamp", 0.0),
+        "node_id": readings.get("node_id", "default"),
     }
     ultrasonic_inputs = {f"US{i}": 3.0 for i in range(1, 25)}
     for i in (1, 2, 12, 13, 24):
@@ -280,7 +300,7 @@ def build_trend_summary(history: List[Dict[str, Any]]) -> str:
         lines.append(
             f"  Nav:   Clearance {fmt('min_distance','m',2)}")
         alarms = [
-            key for key in ("methane_hazard", "co_nox_hazard", "smoke_alarm", "anomaly_detected", "vibration_hazard", "sharp_turn_required")
+            key for key in ("methane_hazard", "co_nox_hazard", "smoke_alarm", "anomaly_detected", "vibration_hazard", "sharp_turn_required", "shock_alert", "collapse_imminent")
             if sum(int(bool(row["predictions"].get(key, 0))) for row in rows) > 0
         ]
         lines.append(f"  Alarms: {', '.join(alarms) if alarms else 'none'}.")
@@ -373,8 +393,8 @@ def aggregate_latest(history: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]
         "predicted_ppv": max(row["readings"]["predicted_ppv"] for row in rows),
         "min_distance": min(row["readings"]["min_distance"] for row in rows),
     }
-    predictions: Dict[str, Any] = {}
-    flag_keys = ("methane_hazard", "lpg_hazard", "smoke_alarm", "co_nox_hazard", "anomaly_detected", "vibration_hazard", "sharp_turn_required")
+    predictions = {}
+    flag_keys = ("methane_hazard", "lpg_hazard", "smoke_alarm", "co_nox_hazard", "anomaly_detected", "vibration_hazard", "sharp_turn_required", "shock_alert", "collapse_imminent")
     for key in flag_keys:
         predictions[key] = int(any(bool(row["predictions"].get(key, 0)) for row in rows))
     predictions["occupancy_state"] = int(any(bool(row["predictions"].get("occupancy_state", 0)) for row in rows))
@@ -407,6 +427,10 @@ def active_anomalies(readings: Dict[str, Any], predictions: Dict[str, Any]) -> D
         active["environment_model_anomaly"] = int(bool(predictions.get("anomaly_detected")))
     if predictions.get("vibration_hazard") or readings.get("predicted_ppv", 0) > 1:
         active["predicted_ppv"] = readings["predicted_ppv"]
+    if predictions.get("shock_alert") or readings.get("vibration_pulses", 0) > 0:
+        active["vibration_pulses"] = readings.get("vibration_pulses", 0)
+    if predictions.get("collapse_imminent") or readings.get("ultrasonic_distance", 2.0) < 2.0:
+        active["ultrasonic_distance"] = readings.get("ultrasonic_distance", 2.0)
     if predictions.get("sharp_turn_required") or readings.get("min_distance", 5) < 1:
         active["min_distance"] = readings["min_distance"]
     return active
@@ -441,6 +465,7 @@ def run_simulation(args: argparse.Namespace) -> None:
         for node_index in range(args.nodes):
             node_id = f"{tunnel_id}_NODE_{node_index + 1}"
             readings = generate_readings(rng, node_index, tick)
+            readings["node_id"] = node_id
             result = evaluate_sample(monitor, readings)
             check_readings = result["readings"]
             check = evaluator.assess(check_readings, result["predictions"])
@@ -458,8 +483,8 @@ def run_simulation(args: argparse.Namespace) -> None:
                   f"LPG={r['MQ2_LPG_ppm']:>6.1f}  NOx={r['MQ135_NOx_ppm']:>4.2f}  "
                   f"C6H6={r['MQ3_Benzene_ppm']:>4.2f}  PM2.5={r['PM25_Dust_ugm3']:>5.1f}")
             print(f"    Env:   T={r['temp']:>5.1f}C  RH={r['humidity']:>5.1f}%  "
-                  f"Blast: Chg={r['max_charge']:>5.1f}kg  #{r['num_holes']:>2.0f}holes  "
-                  f"D={r['distance']:>5.0f}m -> PPV={r['predicted_ppv']:>6.2f}mm/s")
+                  f"SW-420 Pulse={r['vibration_pulses']:>4.0f}/s  "
+                  f"Wall Dist={r['ultrasonic_distance']:>4.2f}m")
             print(f"    Nav:   Clr={r['min_distance']:>4.2f}m  "
                   f">> {check.overall_status}")
 
