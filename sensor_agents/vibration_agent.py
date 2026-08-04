@@ -116,7 +116,7 @@ class VibrationSensorAgent(SensorAgentBase):
 
     def _preprocess_dataset(self) -> None:
         """One-hot encode trid column in loaded dataset (matching training script)."""
-        if self._dataset_df is None:
+        if not hasattr(self, "_dataset_df") or self._dataset_df is None:
             return
         try:
             df = self._dataset_df
@@ -131,7 +131,7 @@ class VibrationSensorAgent(SensorAgentBase):
             print(f"  [VibrationSensorAgent] Dataset preprocessing error: {e}")
 
     def _seed_replay_from_dataset(self, n_seed: int = 100) -> None:
-        if self._dataset_df is None:
+        if not hasattr(self, "_dataset_df") or self._dataset_df is None:
             return
         seeded = 0
         for _ in range(min(n_seed, len(self._dataset_df))):
