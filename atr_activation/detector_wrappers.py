@@ -221,6 +221,32 @@ class Tier1Monitor:
             except Exception:
                 hazards['co2_hazard'] = 0
 
+        # J. Multi-Gas presence detector (8 features: CH4_ppm, CO_ppm, CO2_ppm, H2_ppm, H2S_ppm, NH3_ppm, LPG_ppm, CNG_ppm)
+        if 'gas_multi_gas' in self.models:
+            if isinstance(gas_features, dict):
+                ch4_val = float(gas_features.get('CH4_ppm', gas_features.get('MQ4_CH4_ppm', 0.0)))
+                co_val = float(gas_features.get('CO_ppm', gas_features.get('MQ7_CO_ppm', 0.0)))
+                co2_val = float(gas_features.get('CO2_ppm', gas_features.get('MG811_CO2_ppm', 400.0)))
+                h2_val = float(gas_features.get('H2_ppm', gas_features.get('MQ2_LPG_ppm', 0.0)))
+                h2s_val = float(gas_features.get('H2S_ppm', gas_features.get('MQ136_H2S_ppm', 0.0)))
+                nh3_val = float(gas_features.get('NH3_ppm', gas_features.get('MQ135_NH3_ppm', 0.0)))
+                lpg_val = float(gas_features.get('LPG_ppm', gas_features.get('MQ2_LPG_ppm', 0.0)))
+                cng_val = float(gas_features.get('CNG_ppm', ch4_val * 0.2))
+                
+                X_multigas = np.array([[ch4_val, co_val, co2_val, h2_val, h2s_val, nh3_val, lpg_val, cng_val]])
+            elif not isinstance(gas_features, dict) and len(gas_features) == 8:
+                X_multigas = np.array(gas_features).reshape(1, -1)
+            else:
+                X_multigas = np.zeros((1, 8))
+                
+            try:
+                preds = self.models['gas_multi_gas'].predict(X_multigas)[0]
+                gas_names = ["Methane", "CO", "CO2", "H2", "H2S", "NH3", "LPG", "CNG"]
+                for name, pred in zip(gas_names, preds):
+                    hazards[f'multigas_{name}'] = int(pred)
+            except Exception:
+                pass
+
         return hazards
 
     def evaluate_env(self, env_features):

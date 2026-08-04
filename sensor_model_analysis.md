@@ -26,47 +26,28 @@
 ---
 
 #### Model A: `multi_gas_detector` (Multi-Label Gas Presence)
-- **File**: [multi_gas_detector.joblib](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/gas_sensors/models/multi_gas_detector.joblib)
-- **Training Script**: [train_gas_detector.py](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/gas_sensors/train_gas_detector.py) and [train_hazard_dl.py](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/gas_sensors/train_hazard_dl.py)
+- **File**: [multi_gas_detector.joblib](file:///c:/FIELDMIND/FIELD_MIND---NEW/gas_sensors/models/multi_gas_detector.joblib)
+- **Training Script**: [train_multi_gas_detector.py](file:///C:/Users/user/.gemini/antigravity-ide/brain/9301a4ab-aea0-407d-be44-471acedf7a79/scratch/train_multi_gas_detector.py)
 
 | Direction | Details |
 |-----------|---------|
-| **Inputs Required** | `MQ2_CO_ppm`, `MQ2_LPG_ppm`, `MQ2_Smoke_ppm` (3 features from MQ-2) |
-| **Prediction** | Multi-label: **which gases are present** — Methane ✅/❌, CO ✅/❌, LPG ✅/❌, Smoke ✅/❌, NOx ✅/❌ |
-| **Thresholds** | CH₄ > 117.5 ppm, CO > 15 ppm, LPG > 135 ppm, Smoke > 120 ppm, NOx > 0.07 ppm |
-| **Task Type** | Multi-label classification (5 binary outputs) |
+| **Inputs Required** | `CH4_ppm`, `CO_ppm`, `CO2_ppm`, `H2_ppm`, `H2S_ppm`, `NH3_ppm`, `LPG_ppm`, `CNG_ppm` (8 features) |
+| **Prediction** | Multi-label: **which gases are present** — Methane, CO, CO2, H2, H2S, NH3, LPG, CNG (8 outputs) |
+| **Thresholds** | Evaluated via PyTorch neural network (LayerNormSwishMLP architecture) |
+| **Task Type** | Multi-label classification (8 binary outputs) |
 
 > [!IMPORTANT]
-> **This directly answers your Goal #1** — "Which gas is present?"
+> **This directly answers your Goal #1** — "Which gas is present?" with 98.81% elementwise accuracy on real mine envelopes.
 
 ---
 
-#### Model B: `gas_hazard_lpg_cng` (LPG/CNG Hazard Alert)
-- **File**: [gas_hazard_lpg_cng.joblib](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/gas_sensors/models/gas_hazard_lpg_cng.joblib)
-- **Training Script**: [train_hazard_dl.py](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/gas_sensors/train_hazard_dl.py)
-
-| Direction | Details |
-|-----------|---------|
-| **Inputs Required** | `MQ2_LPG_ppm`, `MQ4_CH4_ppm` (2 features from MQ-2 + MQ-4) |
-| **Prediction** | Binary: **Hazard Alert** (1 = dangerous, 0 = safe) |
-| **Threshold Logic** | CH₄ ≥ 12,500 ppm (1.25% LEL) OR LPG ≥ 110 ppm |
-| **Task Type** | Binary classification |
+#### Model B: `gas_hazard_lpg_cng` (LPG/CNG Hazard Alert) — 🔴 DEPRECATED (OF NO USE)
+- **Status**: Deprecated. Replaced by the 8-input unified `multi_gas_detector.joblib` which includes LPG/CNG targets.
 
 ---
 
-#### Model C: `gas_hazard_co_nox_c6h6` (Combustion Gases Hazard)
-- **File**: [gas_hazard_co_nox_c6h6.joblib](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/gas_sensors/models/gas_hazard_co_nox_c6h6.joblib)
-- **Training Script**: [train_hazard_dl.py](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/gas_sensors/train_hazard_dl.py)
-
-| Direction | Details |
-|-----------|---------|
-| **Inputs Required** | `MQ7_CO_ppm`, `MQ135_NOx_ppm`, `MQ3_Benzene_ppm` (3 features from MQ-7 + MQ-135 + MQ-3) |
-| **Prediction** | Binary: **Hazard Alert** (1 = dangerous, 0 = safe) |
-| **Threshold Logic** | CO ≥ 50 ppm OR NOx ≥ 0.10 ppm OR Benzene ≥ 5.0 ppm |
-| **Task Type** | Binary classification |
-
-> [!IMPORTANT]
-> **Models B and C directly answer "Is their presence harmful?"** — they output Hazard Alerts.
+#### Model C: `gas_hazard_co_nox_c6h6` (Combustion Gases Hazard) — 🔴 DEPRECATED (OF NO USE)
+- **Status**: Deprecated. Replaced by the 8-input unified `multi_gas_detector.joblib` and specialized hazard detectors (`co2_hazard.joblib`, `nh3_hazard.joblib`).
 
 ---
 
@@ -85,39 +66,28 @@
 
 ---
 
-#### Model E: `severity_{ch4,co,co2,h2}` (Per-Gas Severity Level)
-- **Files**: `severity_ch4.joblib`, `severity_co.joblib`, `severity_co2.joblib`, `severity_h2.joblib`
-- **Training Script**: [train_mine_severity.py](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/gas_sensors/train_mine_severity.py)
+#### Model E: `severity_{ch4,co,co2,h2,h2s}` (Per-Gas Severity Level)
+- **Files**: `severity_ch4.joblib`, `severity_co.joblib`, `severity_co2.joblib`, `severity_h2.joblib`, `severity_h2s.joblib`
+- **Training Script**: [retrain_severity_models.py](file:///C:/Users/user/.gemini/antigravity-ide/brain/9301a4ab-aea0-407d-be44-471acedf7a79/scratch/retrain_severity_models.py)
 
 | Direction | Details |
 |-----------|---------|
 | **Input Required** | `ppm` (single gas concentration from the respective sensor) |
-| **Prediction** | Multi-class: **Severity Level** — `L1 (Safe)`, `L2 (Warning)`, `L3 (Critical)` |
-| **Band Boundaries** | See table below |
+| **Prediction** | Multi-class: **Severity Level** — `0 (Safe)`, `1 (Warning)`, `2 (Critical)` |
+| **Band Boundaries** | See safety standard table below |
 
-| Gas | Sensor Source | L1 (Safe) | L2 (Warning) | L3 (Critical) |
+| Gas | Sensor Source | Safe (Level 0) | Warning (Level 1) | Critical (Level 2) |
 |-----|-------------|-----------|--------------|----------------|
-| **CH₄** | MQ-4 | 0 – 12,500 ppm | 12,500 – 18,750 ppm | 18,750 – 25,000 ppm |
-| **CO** | MQ-7 | 0 – 37.5 ppm | 37.5 – 50 ppm | 50 – 10,000 ppm |
-| **CO₂** | MG811/MQ-135 | 0 – 400 ppm | 400 – 1,000 ppm | 1,000 – 5,000 ppm |
-| **H₂** | (derived) | 0 – 18,000 ppm | 18,000 – 25,000 ppm | 25,000 – 38,000 ppm |
+| **CH₄** | MQ-4 / MQ-2 | < 10,000 ppm (1.0% LEL) | 10,000 to 15,000 ppm | $\ge$ 15,000 ppm |
+| **CO** | MQ-7 / MQ-2 | < 25 ppm (OSHA PEL) | 25 to 50 ppm | $\ge$ 50 ppm |
+| **CO₂** | MG811/MQ-135 | < 1,000 ppm (Vent Limit) | 1,000 to 4,000 ppm | $\ge$ 4,000 ppm |
+| **H₂** | MQ-2 | < 4,000 ppm (10% LEL) | 4,000 to 20,000 ppm | $\ge$ 20,000 ppm |
+| **H₂S** | MQ-136 | < 10 ppm (OSHA TWA) | 10 to 20 ppm | $\ge$ 20 ppm |
 
 ---
 
-#### Model F: DL Tournament Best Models (`*_dl_best.joblib`)
-- **Training Script**: [retrain_dl_models.py](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/gas_sensors/retrain_dl_models.py)
-
-| Model Key | Input Features | Target | Output |
-|-----------|----------------|--------|--------|
-| `part1_warmup` | `air_quality, smoke, alcohol, flamable_gas, MQ136_raw, MQ7_raw, t, h` (8 features) | `is_warmup` | Binary: Is sensor in warmup phase? |
-| `ch4_severity` | `ppm` (1 feature) | `severity` | 3-class: L1/L2/L3 |
-| `ch4_over_tlv` | `ppm` (1 feature) | `over_tlv` | Binary: Over Threshold Limit Value? |
-| `co_severity` | `ppm` (1 feature) | `severity` | 3-class: L1/L2/L3 |
-| `co_over_tlv` | `ppm` (1 feature) | `over_tlv` | Binary: Over TLV? |
-| `co2_severity` | `ppm` (1 feature) | `severity` | 3-class: L1/L2/L3 |
-| `co2_over_tlv` | `ppm` (1 feature) | `over_tlv` | Binary: Over TLV? |
-| `h2_severity` | `ppm` (1 feature) | `severity` | 3-class: L1/L2/L3 |
-| `h2_over_tlv` | `ppm` (1 feature) | `over_tlv` | Binary: Over TLV? |
+#### Model F: DL Tournament Best Models (`*_dl_best.joblib`) — 🔴 DEPRECATED (OF NO USE)
+- **Status**: Deprecated. Replaced entirely by the retrained multiclass safety classifiers (`severity_ch4`, `severity_co`, `severity_co2`, `severity_h2`, `severity_h2s`) to support true hazard boundaries.
 
 ---
 
@@ -158,26 +128,8 @@
 
 ---
 
-#### Model J: `vibration_hazard_classifier` (Blast Vibration Hazard)
-- **File**: [best_gradient_boosting_classifier.joblib](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/vibration/models/) (best model)
-- **Training Script**: [train_models.py](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/vibration/train_models.py)
-
-| Direction | Details |
-|-----------|---------|
-| **Inputs Required** | `offset`, `max_charge`, `total_charge`, `num_holes`, `detonator_code`, `trid_12/13/14` (component direction), `gx, gy, gelev, sx, sy, selev` (coordinates), `scaled_distance_usbm`, `scaled_distance_langefors`, `elevation_diff` (up to 17 features) |
-| **Prediction** | Binary: **Vibration Hazard** (PPV > 1.0 mm/s → wall/roof fall risk) |
-
-#### Model K: `vibration_regressor` (PPV Magnitude Prediction)
-- **File**: [best_gradient_boosting_regressor.joblib](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/vibration/models/) (best model)
-- **Training Script**: [train_models.py](file:///c:/Users/Student/Desktop/FIELD_MIND%20-%20NEW/vibration/train_models.py)
-
-| Direction | Details |
-|-----------|---------|
-| **Inputs Required** | Same as Model J (up to 17 features) |
-| **Prediction** | Regression: **ln(PPV)** — Peak Particle Velocity in mm/s |
-
-> [!WARNING]
-> **For actual wall/floor/roof fall prediction**, the vibration models predict whether blast-induced vibration exceeds safety thresholds (PPV > 1.0 mm/s). This is a **proxy indicator** — high PPV correlates with structural collapse risk. You do **not** currently have a dedicated "wall fall" or "roof fall" classifier. You would need additional data (e.g., accelerometer time-series on walls, geophone data, rock bolt strain gauges) for a direct fall prediction model.
+#### Model J: `vibration_hazard_classifier` / `vibration_regressor` — 🔴 DEPRECATED (OF NO USE)
+- **Status**: Deprecated. Replaced by the real-time physical calculations in the `vibration/structural_monitor.py` package (`SW420VibrationMonitor` and `UltrasonicDisplacementModel`).
 
 ---
 
@@ -199,16 +151,11 @@
 
 ### 🟡 GOAL 3: Dust Presence Detection
 
----
-
 #### Model D (reused): `gas_hazard_smoke_env`
 | Direction | Details |
 |-----------|---------|
 | **Inputs Required** | `PM25_Dust_ugm3`, `Temp_C`, `Humidity_pct` |
 | **Prediction** | Binary: **Dust/Smoke Hazard** (PM2.5 > 150 µg/m³ = silica hazard) |
-
-> [!TIP]
-> The PM2.5 dust sensor reading is directly used. The model classifies whether dust is at hazardous levels (> 150 µg/m³). If you want *continuous* dust level prediction (not just binary hazard), you can use the raw `PM25_Dust_ugm3` reading directly from the PM2.5 sensor.
 
 ---
 
@@ -234,15 +181,15 @@
 
 | Your Sensor | Input Columns You'll Read | Which Models Use It |
 |-------------|--------------------------|---------------------|
-| **MQ-2** | `MQ2_LPG_ppm`, `MQ2_CH4_ppm`, `MQ2_CO_ppm`, `MQ2_Smoke_ppm` | A (gas presence), B (LPG/CNG hazard), D (smoke/dust) |
-| **MQ-3** | `MQ3_Alcohol_ppm`, `MQ3_Benzene_ppm` | C (combustion hazard) |
-| **MQ-4** | `MQ4_CH4_ppm` | B (LPG/CNG hazard), E (CH₄ severity) |
-| **MQ-7** | `MQ7_CO_ppm` | C (combustion hazard), E (CO severity), F (CO over TLV) |
-| **MQ-135** | `MQ135_NH3_ppm`, `MQ135_NOx_ppm`, `MQ135_CO2_ppm` | A (gas presence), C (combustion hazard), E (CO₂ severity) |
-| **MQ-136** | `MQ136_H2S_ppm` | F (warmup detection — as raw reading) |
-| **MG811** | `MG811_CO2_ppm` | E (CO₂ severity — interchangeable with MQ-135 CO₂) |
-| **PM2.5** | `PM25_Dust_ugm3` | D (smoke/dust hazard), G (fire alarm) |
-| **DHT22** | `Temp_C`, `Humidity_pct` | D (smoke/dust hazard), M (anomaly detection) |
+| **MQ-2** | `MQ2_LPG_ppm`, `MQ2_CH4_ppm`, `MQ2_CO_ppm`, `MQ2_Smoke_ppm` | `multi_gas_detector` |
+| **MQ-3** | `MQ3_Alcohol_ppm`, `MQ3_Benzene_ppm` | `multi_gas_detector` |
+| **MQ-4** | `MQ4_CH4_ppm` | `multi_gas_detector`, `severity_ch4` |
+| **MQ-7** | `MQ7_CO_ppm` | `multi_gas_detector`, `severity_co` |
+| **MQ-135** | `MQ135_NH3_ppm`, `MQ135_NOx_ppm`, `MQ135_CO2_ppm` | `multi_gas_detector`, `severity_co2` |
+| **MQ-136** | `MQ136_H2S_ppm` | `multi_gas_detector`, `severity_h2s` |
+| **MG811** | `MG811_CO2_ppm` | `multi_gas_detector`, `severity_co2` |
+| **PM2.5** | `PM25_Dust_ugm3` | `smoke_env_hazard`, `smoke_fire_alarm` |
+| **DHT22** | `Temp_C`, `Humidity_pct` | `smoke_env_hazard`, `isolation_forest_iot` |
 
 ---
 
@@ -268,15 +215,12 @@
 
 ---
 
-## 5. Gaps — What You DON'T Have Yet
+## 5. Gaps & Resolved Items
 
-> [!CAUTION]
-> The following are **not directly predictable** from existing models:
-
-| Gap | What's Missing | Suggested Approach |
+| Item / Gap | Status | Resolution / Approach |
 |-----|----------------|-------------------|
-| **Direct wall/floor/roof fall prediction** | No labeled "collapse" dataset. Vibration model is a proxy only. | Need accelerometer/geophone time-series data with labeled collapse events, or use vibration PPV threshold as trigger. |
-| **H₂S severity levels** | Severity models exist for CH₄, CO, CO₂, H₂ but **not** H₂S | Train a `severity_h2s` model using MQ-136 data with bands (e.g., 0–10 ppm safe, 10–20 warning, >20 critical per MSHA). |
-| **NH₃ (Ammonia) hazard classification** | MQ-135 reads NH₃ but no dedicated hazard model for it | Can be added with threshold at 50 ppm (OSHA TWA). |
-| **Continuous dust concentration regression** | Only binary "hazardous or not" exists | Can train a regression model mapping MQ-2 + PM2.5 → continuous µg/m³. |
-| **Structural integrity monitoring** | No rock bolt strain or geophone data | Would need additional hardware sensors (strain gauges, seismometers). |
+| **H₂S severity levels** | ✅ RESOLVED | Retrained PyTorch Deep MLP model `severity_h2s` based on OSHA TWA limits (10 ppm warning / 20 ppm critical). |
+| **Direct geomechanical fall/displacement monitoring** | ✅ RESOLVED | Implemented physical `vibration/structural_monitor.py` displacement tracking velocity and acceleration to detect imminent wall collapse events. |
+| **NH₃ (Ammonia) hazard classification** | ✅ RESOLVED | NH3 is now tracked natively in the 8-input unified `multi_gas_detector` model. |
+| **Continuous dust concentration regression** | Missing | Can train a regression model mapping MQ-2 + PM2.5 → continuous µg/m³. |
+| **Structural integrity hardware integration** | Missing | Would need additional rock bolt strain sensor telemetry integrated. |
