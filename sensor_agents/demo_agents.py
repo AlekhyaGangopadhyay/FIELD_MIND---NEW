@@ -41,6 +41,7 @@ from sensor_agents.vibration_agent     import VibrationSensorAgent
 from sensor_agents.ultrasonic_agent    import UltrasonicSensorAgent
 from sensor_agents.ekg_agent           import EKGAgent
 from sensor_agents.mine_orchestrator_agent import MineOrchestratorAgent
+from sensor_agents.multi_gas_agent     import MultiGasDetectorAgent
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -220,6 +221,7 @@ def run_demo(n_ticks: int = 300, verbose_agents: bool = False) -> None:
     env_agent   = EnvSensorAgent(WORKSPACE_ROOT,   bus, verbose=verbose_agents)
     vib_agent   = VibrationSensorAgent(WORKSPACE_ROOT, bus, verbose=verbose_agents)
     ultra_agent = UltrasonicSensorAgent(WORKSPACE_ROOT, bus, verbose=verbose_agents)
+    multi_gas_agent = MultiGasDetectorAgent(WORKSPACE_ROOT, bus, verbose=verbose_agents)
     ekg_agent   = EKGAgent(WORKSPACE_ROOT, bus, verbose=False)
     orchestrator = MineOrchestratorAgent(bus, verbose=True)
 
@@ -262,6 +264,7 @@ def run_demo(n_ticks: int = 300, verbose_agents: bool = False) -> None:
             env_result   = env_agent.step(env_raw,     timestamp=ts)
             vib_result   = vib_agent.step(vib_raw,     timestamp=ts)
             ultra_result = ultra_agent.step(ultra_raw, timestamp=ts)
+            multigas_result = multi_gas_agent.step(gas_raw, timestamp=ts)
 
             # ── Orchestrator tick (global state fusion) ────────────────
             global_state = orchestrator.tick(timestamp=ts)
@@ -287,7 +290,7 @@ def run_demo(n_ticks: int = 300, verbose_agents: bool = False) -> None:
     print("  DEMO COMPLETE — Final Agent Status Reports")
     print("█"*70 + "\n")
 
-    for agent in [gas_agent, env_agent, vib_agent, ultra_agent]:
+    for agent in [gas_agent, env_agent, vib_agent, ultra_agent, multi_gas_agent]:
         print(agent.status_report())
         print()
     print(ekg_agent.status_report())

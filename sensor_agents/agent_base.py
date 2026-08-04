@@ -104,6 +104,7 @@ class SensorAgentBase(ABC):
         self._replay_y: List[int]        = []
 
         # --- Dataset replay sampler (iterator over original CSV rows) ---
+        self._dataset_df      = None
         self._dataset_iter    = None
         self._dataset_columns : List[str] = []
         if dataset_path:
