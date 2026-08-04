@@ -45,30 +45,96 @@
     "multi_gas_detector": {
         "task_type": "multilabel_classification",
         "model_type": "PyTorch_LayerNormSwishMLP",
-        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\multi_gas_detector.joblib",
+        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\multi_gas_detector.joblib",
         "features": [
-            "MQ2_CO_ppm",
-            "MQ2_LPG_ppm",
-            "MQ2_Smoke_ppm"
+            "CH4_ppm",
+            "CO_ppm",
+            "CO2_ppm",
+            "H2_ppm",
+            "H2S_ppm",
+            "NH3_ppm",
+            "LPG_ppm",
+            "CNG_ppm"
         ],
         "targets": [
-            "Methane",
-            "CO",
-            "LPG",
-            "Smoke",
-            "NOx"
+            "target_Methane",
+            "target_CO",
+            "target_CO2",
+            "target_H2",
+            "target_H2S",
+            "target_NH3",
+            "target_LPG",
+            "target_CNG"
+        ],
+        "train_shape": [
+            37500,
+            8
+        ],
+        "test_shape": [
+            12500,
+            8
         ],
         "metrics": {
-            "accuracy": 0.973168,
-            "elementwise_accuracy": 0.973168,
-            "exact_subset_accuracy": 0.87224,
-            "precision": 0.7860888715508909,
-            "recall": 0.768366344940148,
-            "f1_score": 0.766076289748316
+            "accuracy": 0.98814,
+            "elementwise_accuracy": 0.98814,
+            "exact_subset_accuracy": 0.90784,
+            "precision": 0.9987229862475442,
+            "recall": 0.9533557285952664,
+            "f1_score": 0.974503711109588,
+            "per_target_metrics": {
+                "Methane": {
+                    "accuracy": 0.998,
+                    "precision": 1.0,
+                    "recall": 0.9919794674366378,
+                    "f1_score": 0.9959735867289419
+                },
+                "CO": {
+                    "accuracy": 0.98136,
+                    "precision": 1.0,
+                    "recall": 0.9246198641216434,
+                    "f1_score": 0.9608337535720289
+                },
+                "CO2": {
+                    "accuracy": 0.97664,
+                    "precision": 1.0,
+                    "recall": 0.9076533839342188,
+                    "f1_score": 0.9515915119363395
+                },
+                "H2": {
+                    "accuracy": 0.99712,
+                    "precision": 1.0,
+                    "recall": 0.988173455978975,
+                    "f1_score": 0.9940515532055518
+                },
+                "H2S": {
+                    "accuracy": 0.952,
+                    "precision": 0.9897838899803536,
+                    "recall": 0.8144196572906564,
+                    "f1_score": 0.8935792834338417
+                },
+                "NH3": {
+                    "accuracy": 1.0,
+                    "precision": 1.0,
+                    "recall": 1.0,
+                    "f1_score": 1.0
+                },
+                "LPG": {
+                    "accuracy": 1.0,
+                    "precision": 1.0,
+                    "recall": 1.0,
+                    "f1_score": 1.0
+                },
+                "CNG": {
+                    "accuracy": 1.0,
+                    "precision": 1.0,
+                    "recall": 1.0,
+                    "f1_score": 1.0
+                }
+            }
         },
-        "remarks": "Multi-Task PyTorch LayerNormSwishMLP predicting multi-gas presence (Methane, CO, LPG, Smoke, NOx).",
+        "remarks": "Multi-Task PyTorch LayerNormSwishMLP predicting multi-gas presence (Methane, CO, CO2, H2, H2S, NH3, LPG, CNG) on 50,000 balanced CGAN samples.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-28T13:57:02.651378"
+        "trained_at": "2026-08-04T17:16:39.923571"
     },
     "mine_baseline_iforest": {
         "task_type": "anomaly_detection",
@@ -108,7 +174,7 @@
     "severity_ch4": {
         "task_type": "multiclass_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\severity_ch4.joblib",
+        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\severity_ch4.joblib",
         "features": [
             "ppm"
         ],
@@ -116,32 +182,32 @@
             "severity"
         ],
         "train_shape": [
-            22500,
+            45000,
             1
         ],
         "test_shape": [
-            7500,
+            15000,
             1
         ],
         "metrics": {
-            "accuracy": 0.9906666666666667,
-            "macro_precision": 0.9907861213561979,
-            "macro_recall": 0.9906666666666667,
-            "macro_f1": 0.9906862514448164,
-            "learned_L1_L2_threshold_ppm": 12393.739373937395,
-            "learned_L2_L3_threshold_ppm": 18764.376437643765,
-            "expected_L1_L2_threshold_ppm": 12500.0,
-            "expected_L2_L3_threshold_ppm": 18750.0,
+            "accuracy": 0.9928,
+            "macro_precision": 0.9885741769903001,
+            "macro_recall": 0.9906128689936899,
+            "macro_f1": 0.9895727129189466,
+            "learned_L1_L2_threshold_ppm": 10103.336777892595,
+            "learned_L2_L3_threshold_ppm": 15063.502116737223,
+            "expected_L1_L2_threshold_ppm": 10000.0,
+            "expected_L2_L3_threshold_ppm": 15000.0,
             "tlv_ppm": 25000.0
         },
-        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on real mine data for CH4.",
+        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on corrected safety standard labels for CH4.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-28T13:39:13.012677"
+        "trained_at": "2026-08-04T17:04:55.383395"
     },
     "severity_co": {
         "task_type": "multiclass_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\severity_co.joblib",
+        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\severity_co.joblib",
         "features": [
             "ppm"
         ],
@@ -149,32 +215,32 @@
             "severity"
         ],
         "train_shape": [
-            22500,
+            45000,
             1
         ],
         "test_shape": [
-            7500,
+            15000,
             1
         ],
         "metrics": {
-            "accuracy": 0.9192,
-            "macro_precision": 0.9326585162141848,
-            "macro_recall": 0.9192,
-            "macro_f1": 0.9183317776129399,
-            "learned_L1_L2_threshold_ppm": 29.002900290029,
-            "learned_L2_L3_threshold_ppm": 67.006700670067,
-            "expected_L1_L2_threshold_ppm": 37.5,
+            "accuracy": 0.88,
+            "macro_precision": 0.9042316409902585,
+            "macro_recall": 0.8604834605597964,
+            "macro_f1": 0.8745887260618299,
+            "learned_L1_L2_threshold_ppm": 18.890629687656254,
+            "learned_L2_L3_threshold_ppm": 46.30487682922764,
+            "expected_L1_L2_threshold_ppm": 25.0,
             "expected_L2_L3_threshold_ppm": 50.0,
             "tlv_ppm": 50.0
         },
-        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on real mine data for CO.",
+        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on corrected safety standard labels for CO.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-28T13:39:31.314976"
+        "trained_at": "2026-08-04T17:05:34.664532"
     },
     "severity_co2": {
         "task_type": "multiclass_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\severity_co2.joblib",
+        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\severity_co2.joblib",
         "features": [
             "ppm"
         ],
@@ -182,32 +248,32 @@
             "severity"
         ],
         "train_shape": [
-            22500,
+            45000,
             1
         ],
         "test_shape": [
-            7500,
+            15000,
             1
         ],
         "metrics": {
-            "accuracy": 0.9026666666666666,
-            "macro_precision": 0.9150686711662321,
-            "macro_recall": 0.9026666666666667,
-            "macro_f1": 0.8976581100012392,
-            "learned_L1_L2_threshold_ppm": 445.5445544554455,
-            "learned_L2_L3_threshold_ppm": 973.5973597359736,
-            "expected_L1_L2_threshold_ppm": 400.0,
-            "expected_L2_L3_threshold_ppm": 1000.0,
-            "tlv_ppm": 300.0
+            "accuracy": 0.9742,
+            "macro_precision": 0.9560161754457988,
+            "macro_recall": 0.9784231377589911,
+            "macro_f1": 0.9667574773453232,
+            "learned_L1_L2_threshold_ppm": 965.3655121837395,
+            "learned_L2_L3_threshold_ppm": 3876.462548751625,
+            "expected_L1_L2_threshold_ppm": 1000.0,
+            "expected_L2_L3_threshold_ppm": 4000.0,
+            "tlv_ppm": 5000.0
         },
-        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on real mine data for CO2.",
+        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on corrected safety standard labels for CO2.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-28T13:39:49.190272"
+        "trained_at": "2026-08-04T17:06:13.029958"
     },
     "severity_h2": {
         "task_type": "multiclass_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\severity_h2.joblib",
+        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\severity_h2.joblib",
         "features": [
             "ppm"
         ],
@@ -215,27 +281,27 @@
             "severity"
         ],
         "train_shape": [
-            22500,
+            45000,
             1
         ],
         "test_shape": [
-            7500,
+            15000,
             1
         ],
         "metrics": {
-            "accuracy": 0.9572,
-            "macro_precision": 0.9620701878766394,
-            "macro_recall": 0.9571999999999999,
-            "macro_f1": 0.957765034462768,
-            "learned_L1_L2_threshold_ppm": 17314.531453145315,
-            "learned_L2_L3_threshold_ppm": 25181.31813181318,
-            "expected_L1_L2_threshold_ppm": 18000.0,
-            "expected_L2_L3_threshold_ppm": 25000.0,
+            "accuracy": 0.9908,
+            "macro_precision": 0.9931116503698534,
+            "macro_recall": 0.9785002360483955,
+            "macro_f1": 0.9855843989737386,
+            "learned_L1_L2_threshold_ppm": 3537.451248374946,
+            "learned_L2_L3_threshold_ppm": 19645.988199606654,
+            "expected_L1_L2_threshold_ppm": 4000.0,
+            "expected_L2_L3_threshold_ppm": 20000.0,
             "tlv_ppm": 20000.0
         },
-        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on real mine data for H2.",
+        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on corrected safety standard labels for H2.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-28T13:40:07.071910"
+        "trained_at": "2026-08-04T17:06:51.683070"
     },
     "part1_warmup": {
         "model_type": "PyTorch_LayerNormSwishMLP",
@@ -339,22 +405,35 @@
     "severity_h2s": {
         "task_type": "multiclass_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\severity_h2s.joblib",
+        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\severity_h2s.joblib",
         "features": [
             "ppm"
         ],
         "targets": [
             "severity"
         ],
+        "train_shape": [
+            45000,
+            1
+        ],
+        "test_shape": [
+            15000,
+            1
+        ],
         "metrics": {
-            "accuracy": 0.9977,
-            "precision": 0.9977049902666618,
-            "recall": 0.9977,
-            "f1_score": 0.9977000363867856
+            "accuracy": 0.9965333333333334,
+            "macro_precision": 0.9965500752563704,
+            "macro_recall": 0.9965376996805112,
+            "macro_f1": 0.9965349091252064,
+            "learned_L1_L2_threshold_ppm": 9.573652455081836,
+            "learned_L2_L3_threshold_ppm": 19.21564052135071,
+            "expected_L1_L2_threshold_ppm": 10.0,
+            "expected_L2_L3_threshold_ppm": 20.0,
+            "tlv_ppm": 20.0
         },
-        "remarks": "PyTorch Deep Neural Network trained on 60,000 balanced CGAN H2S samples.",
+        "remarks": "PyTorch Deep Neural Network (4-layer MLP + BatchNorm + GELU + Dropout) trained on corrected safety standard labels for H2S.",
         "training_time_sec": 0.0,
-        "trained_at": "2026-07-30T13:38:24.230739"
+        "trained_at": "2026-08-04T17:07:29.357686"
     },
     "nh3_hazard": {
         "task_type": "binary_classification",
