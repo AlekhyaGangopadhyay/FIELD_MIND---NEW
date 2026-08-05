@@ -1,8 +1,18 @@
-# Implementation Plan — SciSense Novelty Update: Cross-Modal Coherence Residual (CMCR)
+# Implementation Plan — SciSense Novelty Update: Cross-Modal Coherence Residual (CMCR) — ✅ COMPLETED
 
 This plan details how we will update the `FIELD_MIND` SciSense protocol to meet the project's novelty and patent requirements. We will implement **Cross-Modal Coherence Residual (CMCR)**, transforming the SciSense embeddings from a passive logging role into the primary, load-bearing trigger for the Anomaly-Triggered Reasoning (ATR) system.
 
 ---
+
+## Implementation Status
+
+CMCR is implemented in `scisense_protocol/coherence.py`, wired into
+`atr_activation/orchestrator.py`, and displayed by
+`unified_demo/streaming_safety_simulation.py`. Inputs are finite, bounded
+modal vectors before projection. The tracker warms up on normal frames,
+maintains an EMA similarity baseline, suppresses baseline updates for
+residual spikes, and the simulation reports CMCR-driven
+`IDLE -> ACTIVE_REASONING` transitions per node.
 
 ## User Review Required
 
@@ -56,8 +66,8 @@ Create a new module in the SciSense directory to:
    ```powershell
    python e:\FIELD_MIND\FIELD_MIND---NEW\unified_demo\streaming_safety_simulation.py
    ```
-2. Verify that the console displays the running **Coherence Residual ($R_t$)** values on each tick.
+2. Verify that the console displays the running **Coherence Residual ($R_t$)** values and threshold on each tick.
 3. Simulate an anomaly (e.g. inject high vibration and gas concentrations simultaneously) and verify that:
    - The Coherence Residual spikes.
-   - The system triggers the state transition `IDLE -> ACTIVE_REASONING`.
+   - The system triggers the CMCR state transition `IDLE -> ACTIVE_REASONING`.
    - The LLM boots and runs active reasoning.
