@@ -90,7 +90,7 @@ class EKGAgent:
         if msg.source == self.agent_name:
             return   # Don't process own messages
 
-        if msg.msg_type == MessageType.ALERT:
+        if msg.msg_type in (MessageType.ALERT, MessageType.MULTIGAS_ALERT):
             self._handle_alert(msg)
 
         elif msg.msg_type == MessageType.QUERY:
