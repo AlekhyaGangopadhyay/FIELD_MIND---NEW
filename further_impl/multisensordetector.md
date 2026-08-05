@@ -4,6 +4,10 @@ This plan outlines how we trained the `multi_gas_detector.joblib` model using a 
 
 ---
 
+The reproducible training entry point is now `gas_sensors/train_multi_gas_detector.py`.
+The standalone runtime is `sensor_agents/multi_gas_agent.py`; its dedicated
+`MULTIGAS_ALERT` messages are also consumed by the EKG and global orchestrator.
+
 ## User Review Required
 
 > [!IMPORTANT]
@@ -19,7 +23,7 @@ This plan outlines how we trained the `multi_gas_detector.joblib` model using a 
 
 ### Component 1 — Model Training
 
-#### [NEW] [train_multi_gas_detector.py](file:///C:/Users/iamal/.gemini/antigravity-ide/brain/6e8885f3-a741-423e-b11d-251b8e6bebe4/scratch/train_multi_gas_detector.py) (Scratch Script)
+#### [NEW] `gas_sensors/train_multi_gas_detector.py`
 Create a training script to:
 1. Load `multi_gas_detector_real_v2.csv` (50,000 rows).
 2. Split features and targets:
@@ -48,9 +52,9 @@ Create a new agent class inheriting from `SensorAgentBase` that:
 ## Verification Plan
 
 ### Automated Tests
-1. Run the training scratch script:
+1. Run the reproducible training script:
    ```powershell
-   python C:\Users\iamal\.gemini\antigravity-ide\brain\6e8885f3-a741-423e-b11d-251b8e6bebe4\scratch\train_multi_gas_detector.py
+   python gas_sensors/train_multi_gas_detector.py
    ```
 2. Verify the model file compiles and is saved at `gas_sensors/models/multi_gas_detector.joblib`.
 3. Run the end-to-end multi-agent streaming simulation to verify the new agent runs in parallel, consumes sensor streams, and outputs active gas predictions without crashing:
