@@ -6,9 +6,7 @@ agent that observes gas concentrations, reasons about hazard conditions,
 acts by publishing ALERT messages, and learns from the original gas dataset.
 
 Supported Production Suite Models (from gas_sensors/models/):
-  - gas_hazard_lpg_cng.joblib        (LPG/CNG, 2 features, PyTorch LayerNormSwishMLP)
-  - gas_hazard_co_nox_c6h6.joblib   (CO/NOx/Benzene, 3 features, PyTorch LayerNormSwishMLP)
-  - multi_gas_detector.joblib        (Multi-Task Presence, 3 features, PyTorch LayerNormSwishMLP)
+  - multi_gas_detector.joblib        (Multi-Task Presence, 8 features, PyTorch DeepHazardNet)
   - mine_baseline_iforest.joblib     (Clean-Air Baseline Anomaly Detector, IsolationForest)
   - severity_ch4.joblib              (Methane Severity Classifier, PyTorch Deep MLP)
   - severity_co.joblib               (CO Severity Classifier, PyTorch Deep MLP)
@@ -32,7 +30,7 @@ import os
 import sys
 import joblib
 import numpy as np
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 # Ensure gas_sensors path is in sys.path for PyTorch DL wrappers unpickling
 gas_sensors_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "gas_sensors"))
@@ -108,8 +106,6 @@ class GasSensorAgent(SensorAgentBase):
 
     def _load_models(self, model_dir: str) -> None:
         model_map = {
-            "lpg_cng"         : "gas_hazard_lpg_cng.joblib",
-            "co_nox"          : "gas_hazard_co_nox_c6h6.joblib",
             "multi_gas"       : "multi_gas_detector.joblib",
             "baseline_iforest": "mine_baseline_iforest.joblib",
             "severity_ch4"    : "severity_ch4.joblib",
@@ -213,6 +209,28 @@ class GasSensorAgent(SensorAgentBase):
             result["lpg_hazard"] = int(self.model.predict(lpg_vec)[0])
         except Exception:
             result["lpg_hazard"] = 0
+
+        # The legacy two-/three-feature artifacts are no longer shipped.  Use
+        # the production eight-output model for the equivalent legacy flags.
+        if "multi_gas" in self._models and ("lpg_cng" not in self._models or "co_nox" not in self._models):
+            try:
+                multi_vec = np.array([[
+                    features.get("MQ4_CH4_ppm", 0.0),
+                    features.get("MQ7_CO_ppm", 0.0),
+                    features.get("MG811_CO2_ppm", 400.0),
+                    features.get("H2_ppm", 0.0),
+                    features.get("MQ136_H2S_ppm", 0.0),
+                    features.get("MQ135_NH3_ppm", 0.0),
+                    features.get("MQ2_LPG_ppm", 0.0),
+                    features.get("CNG_ppm", 0.0),
+                ]])
+                multi_pred = np.asarray(self._models["multi_gas"].predict(multi_vec)[0]).reshape(-1)
+                if "lpg_cng" not in self._models:
+                    result["lpg_hazard"] = int(bool(multi_pred[6] or multi_pred[7]))
+                if "co_nox" not in self._models:
+                    result["co_nox_hazard"] = int(multi_pred[1])
+            except Exception:
+                result.setdefault("co_nox_hazard", 0)
 
         # 2. CO / NOx / Benzene (3 features — PyTorch Deep model)
         if "co_nox" in self._models:
