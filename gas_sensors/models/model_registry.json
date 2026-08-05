@@ -45,7 +45,7 @@
     "multi_gas_detector": {
         "task_type": "multilabel_classification",
         "model_type": "PyTorch_LayerNormSwishMLP",
-        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\multi_gas_detector.joblib",
+        "model_path": "gas_sensors/models/multi_gas_detector.joblib",
         "features": [
             "CH4_ppm",
             "CO_ppm",
@@ -138,7 +138,7 @@
     },
     "mine_baseline_iforest": {
         "task_type": "anomaly_detection",
-        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\mine_baseline_iforest.joblib",
+        "model_path": "gas_sensors/models/mine_baseline_iforest.joblib",
         "features": [
             "air_quality",
             "smoke",
@@ -174,7 +174,7 @@
     "severity_ch4": {
         "task_type": "multiclass_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\severity_ch4.joblib",
+        "model_path": "gas_sensors/models/severity_ch4.joblib",
         "features": [
             "ppm"
         ],
@@ -207,7 +207,7 @@
     "severity_co": {
         "task_type": "multiclass_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\severity_co.joblib",
+        "model_path": "gas_sensors/models/severity_co.joblib",
         "features": [
             "ppm"
         ],
@@ -240,7 +240,7 @@
     "severity_co2": {
         "task_type": "multiclass_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\severity_co2.joblib",
+        "model_path": "gas_sensors/models/severity_co2.joblib",
         "features": [
             "ppm"
         ],
@@ -273,7 +273,7 @@
     "severity_h2": {
         "task_type": "multiclass_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\severity_h2.joblib",
+        "model_path": "gas_sensors/models/severity_h2.joblib",
         "features": [
             "ppm"
         ],
@@ -405,7 +405,7 @@
     "severity_h2s": {
         "task_type": "multiclass_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "c:\\FIELDMIND\\FIELD_MIND---NEW\\gas_sensors\\models\\severity_h2s.joblib",
+        "model_path": "gas_sensors/models/severity_h2s.joblib",
         "features": [
             "ppm"
         ],
@@ -438,7 +438,7 @@
     "nh3_hazard": {
         "task_type": "binary_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\nh3_hazard.joblib",
+        "model_path": "gas_sensors/models/nh3_hazard.joblib",
         "features": [
             "MQ135_NH3_ppm"
         ],
@@ -458,7 +458,7 @@
     "co2_hazard": {
         "task_type": "binary_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\co2_hazard.joblib",
+        "model_path": "gas_sensors/models/co2_hazard.joblib",
         "features": [
             "ppm"
         ],
@@ -478,7 +478,7 @@
     "smoke_env_hazard": {
         "task_type": "binary_classification",
         "model_type": "PyTorch_Deep_MLP",
-        "model_path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\gas_sensors\\models\\smoke_env_hazard.joblib",
+        "model_path": "gas_sensors/models/smoke_env_hazard.joblib",
         "features": [
             "PM25_Dust_ugm3",
             "Temp_C",
@@ -499,7 +499,7 @@
     },
     "mq4_gas_classification": {
         "task_type": "multiclass_classification",
-        "model_path": "D:\\Users\\SUPRATIK\\FieldMind\\FIELD_MIND---NEW\\gas_sensors\\models\\mq4_gas_classifier.joblib",
+        "model_path": "gas_sensors/models/mq4_gas_classifier.joblib",
         "features": [
             "feature_1",
             "feature_2",
