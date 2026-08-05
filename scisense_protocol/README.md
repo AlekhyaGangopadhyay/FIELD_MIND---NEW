@@ -1,76 +1,118 @@
-# SciSense Protocol - Unified Alignment Space
+# SciSense Protocol
 
-The **SciSense Protocol** represents Layer 1 of the FIELD-MIND industrial architecture. It resolves the problem of high heterogeneity in sensor data types, formats, and sample rates by aligning distinct sensor domains (waveforms, concentration indexes, numeric logs, and spatial metrics) into a **shared 4,096-dimensional embedding space**.
+SciSense is FIELD-MIND's cross-modal alignment and coherence layer. It converts heterogeneous gas, environmental, vibration, and ultrasonic readings into modality-specific vectors in a shared 4,096-dimensional space. ATR uses those projections to monitor changes in relationships between sensor domains and to trigger higher-level reasoning when the relationships become anomalous.
 
----
+## Current data flow
 
-## 🏗️ Architecture
-
-```
- Physical Sensors            Alignment Layer              Neural Projection Encoders         Embedding Space
-(Variable Frequencies)     (Temporal Windowing)               (Shared Dim = 4096)            (Unit Hypersphere)
-
- [Gas Sensors] --------> [ 1.0s Window Average ] -------> [ GasEncoder ] ----------------+
-                                                                                          |
- [Env Sensors] --------> [ 1.0s Window Average ] -------> [ EnvironmentalEncoder ] ------+------> z in R^4096
-                                                                                          |      (L2-Normalized)
- [Vibration]   --------> [ Event-based Trigger ] -------> [ VibrationEncoder ] ----------+
-                                                                                          |
- [Ultrasonic]  --------> [ 1.0s Window Average ] -------> [ UltrasonicEncoder ] ----------+
-```
-
----
-
-## 📂 Core Files
-
-* **[encoders.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/scisense_protocol/encoders.py)**: PyTorch modules mapping specific sensor dimensions to a joint embedding. Output embeddings are L2-normalized so they represent unit vectors, allowing cosine similarity measures to compare multi-sensor contexts directly.
-* **[alignment.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/scisense_protocol/alignment.py)**: Resamples and synchronizes data with divergent frequencies using forward-filling and window averaging to create unified epochs.
-* **[demo_alignment.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/scisense_protocol/demo_alignment.py)**: End-to-end execution runner showcasing stream simulation, temporal window alignment, and embedding projection.
-* **[coherence.py](coherence.py)**: Cross-Modal Coherence Residual (CMCR) tracker with bounded input normalization, EMA similarity baseline, Frobenius residuals, and a 3-sigma anomaly gate.
-
----
-
-## 📐 Mathematical Framework
-
-Each modality encoder $M_i$ maps its native input vector $x_i \in \mathbb{R}^{d_i}$ to a hidden representation, which is projected and normalized:
-
-$$h_i = \text{ReLU}(\text{LayerNorm}(\mathbf{W}_{h,i} x_i + b_{h,i}))$$
-$$z_i = \frac{\mathbf{W}_{p,i} h_i + b_{p,i}}{\|\mathbf{W}_{p,i} h_i + b_{p,i}\|_2}$$
-
-Where $z_i \in \mathbb{R}^{4096}$ is the unit-length embedding vector. Fusing modalities can be done via dot products (cosine similarity) or direct concatenation:
-
-$$\text{Similarity}(z_{\text{gas}}, z_{\text{ultrasonic}}) = z_{\text{gas}}^T z_{\text{ultrasonic}}$$
-
-## 🤝 Integration with Pre-Trained Classifiers (ATR Tier 1)
-
-While the pre-trained `scikit-learn` classifiers and regressors (such as the Random Forest and Gradient Boosting models) make localized, single-domain predictions (e.g. Methane Alarm, Vibration Hazard), the SciSense Protocol neural encoders project these domains into a unified embedding space.
-
-In the Anomaly-Triggered Reasoning (ATR) workflow, these modules work together:
-
-| Aspect | Pre-Trained Models (Tier 1) | SciSense Protocol Encoders (Layer 1) |
-| :--- | :--- | :--- |
-| **Objective** | Continuous monitoring and hazard triggers (e.g. `vibration_hazard = 1`). | Joint representation mapping (generates unit-length vectors $z \in \mathbb{R}^{4096}$). |
-| **Output** | String/numeric class decision or threshold value. | 4096-dimensional projection vector for LLM analysis. |
-
-```mermaid
-graph TD
-    A[Streaming Sensor Feeds] --> B[Tier 1: Pre-Trained Classifiers]
-    A --> C[Layer 1: SciSense Temporal Alignment]
-    B -->|Predicts Hazard / Anomaly| D{Trigger Tier 2?}
-    D -->|Yes| E[Retrieve Aligned Epoch Features]
-    C --> E
-    E --> F[SciSense Encoders project to 4096-D]
-    F --> H[CMCR similarity residual]
-    H --> D
-    F --> G[Offline LLM Reasoning Loop]
+```text
+Raw sensor streams or synchronized frames
+              |
+              v
+TemporalAligner (optional 1-second windows, averaging, forward-fill)
+              |
+              v
+Bounded modality normalization (tanh(value / practical scale))
+              |
+              v
+Gas / Environment / Vibration / Ultrasonic encoder
+              |
+              v
+L2-normalized 4,096-dimensional embeddings
+              |
+              v
+Pairwise cosine-similarity matrix
+              |
+              v
+CMCR residual against an EMA normal baseline
+              |
+              v
+ATR trigger and state transition
 ```
 
----
+The temporal aligner is used by the standalone demo. The ATR orchestrator receives one synchronized frame at a time, keeps a bounded history, projects all four modalities, and sends the embeddings directly to the coherence tracker.
 
-## 🚀 How to Run the Demo
+## Modality encoders
 
-To run the simulator and project the aligned sensor streams into the 4096-dimensional space:
+| Encoder | Default input | Hidden width | Output |
+| --- | ---: | ---: | ---: |
+| `GasEncoder` | 6 values: CH4, CO, LPG, smoke, NOx, CO2 | 128 | 4,096-D unit vector |
+| `EnvironmentalEncoder` | 4 values: temperature, humidity, pressure, occupancy | 128 | 4,096-D unit vector |
+| `VibrationEncoder` | 15 blast/structural features | 256 | 4,096-D unit vector |
+| `UltrasonicEncoder` | 24 distance sensors | 256 | 4,096-D unit vector |
+
+Each encoder is a small feed-forward PyTorch network followed by `SciSenseProjection`. The projection applies a linear layer, layer normalization, and L2 normalization. The resulting vectors have unit norm, so their dot product is cosine similarity.
+
+The encoders currently provide the projection architecture and are instantiated with their default PyTorch initialization. No trained SciSense encoder checkpoint is loaded by `ATROrchestrator`; therefore the current embeddings are suitable for pipeline integration and coherence mechanics, but they are not yet a trained semantic cross-modal representation.
+
+## CMCR coherence tracking
+
+`SciSenseCoherenceTracker` maintains a fixed modality order:
+
+```text
+(gas, env, vibration, ultrasonic)
+```
+
+For each frame it:
+
+1. Builds the pairwise cosine-similarity matrix from the available embeddings.
+2. Calculates the Cross-Modal Coherence Residual (CMCR), `R_t`, as the Frobenius distance from the EMA baseline matrix.
+3. Estimates an anomaly threshold as `mean(residuals) + 3 * std(residuals)` after at least five prior observations.
+4. Updates the EMA baseline only for normal frames when the caller permits baseline updates.
+
+The first frame initializes the baseline. During warm-up, anomaly decisions are disabled until `min_history` observations are available. In ATR, frames already flagged by Tier 1 hazard monitors are not allowed to update the normal baseline, preventing known hazard states from contaminating the reference state.
+
+`normalize_modal_vector` converts heterogeneous numeric channels into finite, bounded values using practical full-scale values and a clipped `tanh` transform. NaN and infinite inputs become zero. This prevents high-ppm gas readings or large spatial coordinates from dominating the projection input.
+
+## ATR integration
+
+[`atr_activation/orchestrator.py`](../atr_activation/orchestrator.py) combines SciSense with the existing Tier 1 monitors:
+
+1. Tier 1 evaluates gas, environmental, vibration, and ultrasonic safety conditions.
+2. The current frame is normalized and projected into four SciSense embeddings.
+3. CMCR is evaluated against the learned normal relationship between modalities.
+4. A Tier 1 hazard or CMCR anomaly sets `triggered=True` and moves the device from `IDLE` to `ACTIVE_REASONING`.
+5. Clean frames can return the device to `IDLE`; hazard frames do not update the coherence baseline.
+
+The returned dictionary includes the Tier 1 evaluations plus `coherence_residual`, `coherence_threshold`, `coherence_anomaly`, baseline status, the similarity matrices, and `aligned_embeddings` for downstream inspection.
+
+## Core files
+
+- [`encoders.py`](encoders.py): modality encoders and the shared 4,096-D projection.
+- [`alignment.py`](alignment.py): timestamp-based windowing, within-window averaging, and forward-fill alignment.
+- [`coherence.py`](coherence.py): input normalization, similarity matrices, EMA baseline, residual history, and the 3-sigma gate.
+- [`demo_alignment.py`](demo_alignment.py): standalone heterogeneous-stream alignment and projection demo.
+- [`atr_activation/orchestrator.py`](../atr_activation/orchestrator.py): production-style Tier 1 plus SciSense orchestration.
+- [`unified_demo/streaming_safety_simulation.py`](../unified_demo/streaming_safety_simulation.py): multi-node streaming simulation with per-node CMCR state.
+
+## Run the standalone demo
+
+From the `FIELD_MIND---NEW` repository root:
 
 ```bash
 python scisense_protocol/demo_alignment.py
 ```
+
+The demo creates ten seconds of synthetic streams, aligns them into one-second epochs, projects available modalities, prints embedding shapes and norms, and reports gas-to-ultrasonic cosine similarity.
+
+## Minimal coherence example
+
+```python
+from scisense_protocol.coherence import (
+    SciSenseCoherenceTracker,
+    normalize_modal_vector,
+)
+
+tracker = SciSenseCoherenceTracker()
+
+gas = normalize_modal_vector([1200, 8, 20, 2, 1, 450], [10000, 50, 1000, 100, 5, 5000])
+result = tracker.update({"gas": gas})
+
+print(result["residual"])
+print(result["is_anomaly"])
+```
+
+When a modality is unavailable, its embedding may be omitted or set to `None`; the tracker leaves the corresponding similarities at zero. All callers should keep modality names and ordering stable across frames.
+
+## Dependencies
+
+The protocol uses Python, PyTorch, NumPy, and pandas. The standalone demo only requires the SciSense protocol modules and those Python dependencies; the ATR orchestrator additionally loads FIELD-MIND's Tier 1 sensor models.
