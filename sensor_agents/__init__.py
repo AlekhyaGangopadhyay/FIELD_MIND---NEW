@@ -27,6 +27,7 @@ from .vibration_agent import VibrationSensorAgent
 from .ultrasonic_agent import UltrasonicSensorAgent
 from .ekg_agent import EKGAgent
 from .mine_orchestrator_agent import MineOrchestratorAgent
+from .multi_gas_agent import MultiGasDetectorAgent
 from .input_validator import SensorHealthReport, validate_sensor, VALID_RANGES
 
 __all__ = [
@@ -38,6 +39,7 @@ __all__ = [
     "UltrasonicSensorAgent",
     "EKGAgent",
     "MineOrchestratorAgent",
+    "MultiGasDetectorAgent",
     "SensorHealthReport",
     "validate_sensor",
     "VALID_RANGES",
