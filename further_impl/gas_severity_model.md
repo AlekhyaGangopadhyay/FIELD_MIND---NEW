@@ -31,7 +31,7 @@ Because the maximum concentration of Carbon Dioxide (CO₂) in the mine dataset 
 
 ## Next Steps — Component 2 (Model Retraining)
 
-#### [NEW] [retrain_severity_models.py](file:///C:/Users/iamal/.gemini/antigravity-ide\brain\6e8885f3-a741-423e-b11d-251b8e6bebe4/scratch/retrain_severity_models.py) (Scratch Script)
+#### [NEW] `gas_sensors/retrain_severity_models.py`
 We will now write a script to:
 1. Load the five newly generated `*_corrected.csv` datasets.
 2. Train 5 separate PyTorch Deep MLP multiclass classifiers (`PyTorchSeverityClassifier` with 3 outputs: 0, 1, 2) on these datasets.
@@ -50,7 +50,7 @@ We will now write a script to:
 ### Automated Tests
 1. Run the model training script:
    ```powershell
-   python C:\Users\iamal\.gemini\antigravity-ide\brain\6e8885f3-a741-423e-b11d-251b8e6bebe4\scratch\retrain_severity_models.py
+   python gas_sensors/retrain_severity_models.py
    ```
 2. Verify that all 5 model files compile, achieve $\ge$ 90% test accuracy under the corrected labels, and are successfully written to `gas_sensors/models/`.
 3. Run the end-to-end simulation to confirm the `GasSensorAgent` queries the newly trained models to output the corrected severity alarms:

@@ -26,6 +26,7 @@ The **SciSense Protocol** represents Layer 1 of the FIELD-MIND industrial archit
 * **[encoders.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/scisense_protocol/encoders.py)**: PyTorch modules mapping specific sensor dimensions to a joint embedding. Output embeddings are L2-normalized so they represent unit vectors, allowing cosine similarity measures to compare multi-sensor contexts directly.
 * **[alignment.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/scisense_protocol/alignment.py)**: Resamples and synchronizes data with divergent frequencies using forward-filling and window averaging to create unified epochs.
 * **[demo_alignment.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/scisense_protocol/demo_alignment.py)**: End-to-end execution runner showcasing stream simulation, temporal window alignment, and embedding projection.
+* **[coherence.py](coherence.py)**: Cross-Modal Coherence Residual (CMCR) tracker with bounded input normalization, EMA similarity baseline, Frobenius residuals, and a 3-sigma anomaly gate.
 
 ---
 
@@ -59,6 +60,8 @@ graph TD
     D -->|Yes| E[Retrieve Aligned Epoch Features]
     C --> E
     E --> F[SciSense Encoders project to 4096-D]
+    F --> H[CMCR similarity residual]
+    H --> D
     F --> G[Offline LLM Reasoning Loop]
 ```
 
