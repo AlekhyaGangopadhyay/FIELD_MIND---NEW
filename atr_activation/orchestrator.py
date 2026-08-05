@@ -2,15 +2,19 @@ import os
 import sys
 import torch
 import numpy as np
-from detector_wrappers import Tier1Monitor
 
 # Set up system paths so we can import from scisense_protocol
 workspace_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if workspace_dir not in sys.path:
     sys.path.append(workspace_dir)
 
-from scisense_protocol.alignment import TemporalAligner
+try:
+    from .detector_wrappers import Tier1Monitor
+except ImportError:  # Support ``python atr_activation/demo_atr.py``.
+    from detector_wrappers import Tier1Monitor
+
 from scisense_protocol.encoders import GasEncoder, EnvironmentalEncoder, VibrationEncoder, UltrasonicEncoder
+from scisense_protocol.coherence import SciSenseCoherenceTracker, normalize_modal_vector
 
 class ATROrchestrator:
     """
@@ -21,7 +25,7 @@ class ATROrchestrator:
     def __init__(self, workspace_root):
         self.workspace_root = workspace_root
         self.monitor = Tier1Monitor(workspace_root)
-        self.aligner = TemporalAligner(time_window_seconds=1.0)
+        self.coherence_tracker = SciSenseCoherenceTracker()
         
         # Load SciSense PyTorch projection encoders
         self.gas_encoder = GasEncoder()
@@ -43,6 +47,80 @@ class ATROrchestrator:
             'ultrasonic': []
         }
         self.history_limit = 50 # Keep last 50 updates for alignment window
+
+    @staticmethod
+    def _value(features, *keys, default=0.0):
+        """Read the first finite numeric alias from a feature dictionary."""
+        if not isinstance(features, dict):
+            return float(default)
+        for key in keys:
+            try:
+                value = float(features.get(key, default))
+            except (TypeError, ValueError):
+                continue
+            if np.isfinite(value):
+                return value
+        return float(default)
+
+    def _project_modalities(self, gas_feat, env_feat, vib_feat, ultra_feat):
+        """Project the current frame into the four SciSense spaces."""
+        gas_values = [
+            self._value(gas_feat, "MQ4_CH4_ppm", "CH4_ppm", "methane"),
+            self._value(gas_feat, "MQ7_CO_ppm", "CO_ppm", "co"),
+            self._value(gas_feat, "MQ2_LPG_ppm", "LPG_ppm", "lpg"),
+            self._value(gas_feat, "MQ2_Smoke_ppm", "smoke"),
+            self._value(gas_feat, "MQ135_NOx_ppm", "NOx_ppm", "nox"),
+            self._value(gas_feat, "MG811_CO2_ppm", "CO2_ppm", "co2"),
+        ]
+        env_values = [
+            self._value(env_feat, "temp", "temperature", "Temperature[C]", "Temperature"),
+            self._value(env_feat, "humidity", "Humidity[%]", "Humidity"),
+            self._value(env_feat, "pressure", "Pressure[hPa]", "Pressure"),
+            self._value(env_feat, "occupancy", "occupancy_state", "Occupancy"),
+        ]
+        vib_values = [
+            self._value(vib_feat, f"feature_{i}") for i in range(15)
+        ]
+        if not any(vib_values):
+            vib_values = [
+                self._value(vib_feat, "offset"),
+                self._value(vib_feat, "max_charge"),
+                self._value(vib_feat, "total_charge"),
+                self._value(vib_feat, "num_holes"),
+                self._value(vib_feat, "detonator_code"),
+                self._value(vib_feat, "trid_12"),
+                self._value(vib_feat, "trid_13"),
+                self._value(vib_feat, "trid_14"),
+                self._value(vib_feat, "gx"),
+                self._value(vib_feat, "gy"),
+                self._value(vib_feat, "gelev"),
+                self._value(vib_feat, "sx"),
+                self._value(vib_feat, "sy"),
+                self._value(vib_feat, "selev"),
+                self._value(vib_feat, "elevation_diff"),
+            ]
+        ultra_values = [
+            self._value(ultra_feat, f"US{i}") for i in range(1, 25)
+        ]
+        if not any(ultra_values):
+            ultra_values[:2] = [
+                self._value(ultra_feat, "SD_front"),
+                self._value(ultra_feat, "SD_left"),
+            ]
+
+        tensors = {
+            "gas": torch.tensor(normalize_modal_vector(gas_values, [10000, 50, 1000, 100, 5, 5000])).unsqueeze(0),
+            "env": torch.tensor(normalize_modal_vector(env_values, [40, 100, 1100, 1])).unsqueeze(0),
+            "vibration": torch.tensor(normalize_modal_vector(vib_values, [1, 100, 1000, 100, 1000, 1, 1, 1, 1000, 1000, 1000, 1000, 1000, 1000, 100])).unsqueeze(0),
+            "ultrasonic": torch.tensor(normalize_modal_vector(ultra_values, [5] * 24)).unsqueeze(0),
+        }
+        with torch.no_grad():
+            return {
+                "gas": self.gas_encoder(tensors["gas"]),
+                "env": self.env_encoder(tensors["env"]),
+                "vibration": self.vib_encoder(tensors["vibration"]),
+                "ultrasonic": self.ultra_encoder(tensors["ultrasonic"]),
+            }
         
     def add_to_history(self, stream_name, timestamp, features):
         """Appends raw features to the sliding temporal history log (keeping only numeric scalars)."""
@@ -92,6 +170,15 @@ class ATROrchestrator:
         if gas_res.get('co_nox_hazard') == 1:
             is_triggered = True
             trigger_reasons.append("CO / NOx toxic gas spike!")
+        if gas_res.get('co2_hazard') == 1:
+            is_triggered = True
+            trigger_reasons.append("Carbon dioxide concentration hazard!")
+        if gas_res.get('h2s_hazard') == 1:
+            is_triggered = True
+            trigger_reasons.append("Hydrogen sulfide concentration hazard!")
+        if gas_res.get('smoke_env_hazard') == 1:
+            is_triggered = True
+            trigger_reasons.append("Smoke / environmental gas hazard!")
             
         # Environmental anomaly
         if env_res.get('anomaly_detected') == 1:
@@ -113,7 +200,23 @@ class ATROrchestrator:
         if ultra_res.get('sharp_turn_required') == 1:
             is_triggered = True
             trigger_reasons.append("Collision alert! Navigation system required sharp steering evasive action!")
-            
+
+        # SciSense is load-bearing: project every frame and compare the
+        # resulting cross-modal relationships with the learned normal state.
+        embeddings = self._project_modalities(gas_feat, env_feat, vib_feat, ultra_feat)
+        coherence = self.coherence_tracker.update(
+            embeddings,
+            # Tier-1 hazard frames are not safe baseline observations.
+            update_baseline=not is_triggered,
+        )
+        if coherence["is_anomaly"]:
+            is_triggered = True
+            trigger_reasons.append(
+                "Cross-modal coherence residual anomaly detected "
+                f"(R_t={coherence['residual']:.4f} > "
+                f"{coherence['threshold']:.4f})!"
+            )
+
         # 4. Handle State Transitions
         output = {
             'timestamp': timestamp,
@@ -123,7 +226,23 @@ class ATROrchestrator:
             'ultrasonic_eval': ultra_res,
             'triggered': is_triggered,
             'trigger_reasons': trigger_reasons,
-            'device_state': self.device_state
+            'device_state': self.device_state,
+            'coherence_residual': coherence['residual'],
+            'coherence_threshold': coherence['threshold'],
+            'coherence_anomaly': coherence['is_anomaly'],
+            'coherence_baseline_ready': coherence['baseline_ready'],
+            'coherence_baseline_updates': coherence['baseline_updates'],
+            'coherence_residual_mean': coherence['residual_mean'],
+            'coherence_residual_std': coherence['residual_std'],
+            'coherence_warming_up': coherence['sample_count'] < self.coherence_tracker.min_history,
+            'coherence_similarity_matrix': coherence['similarity_matrix'].tolist(),
+            'coherence_baseline_matrix': (
+                None if coherence['baseline_matrix'] is None
+                else coherence['baseline_matrix'].tolist()
+            ),
+            # Kept on every tick so callers can inspect the representation
+            # that produced R_t, including safe baseline frames.
+            'aligned_embeddings': embeddings,
         }
         
         if is_triggered:
@@ -141,73 +260,10 @@ class ATROrchestrator:
                 self.device_state = "ACTIVE_REASONING"
                 output['device_state'] = self.device_state
                 
-            # Run Tier 2 Projection: Align the recent sliding history using SciSense Protocol
-            print(f"[SciSense] Aligning last 10 seconds of sliding feature history at timestamp {timestamp:.2f}...")
-            aligned_epochs = self.aligner.align_streams(
-                self.sliding_history, 
-                start_time=timestamp - 10.0, 
-                end_time=timestamp + 1.0
+            print(
+                f"[SciSense] Coherence residual R_t={coherence['residual']:.4f} "
+                f"(threshold={coherence['threshold']:.4f})"
             )
-            
-            # Project the most recent aligned epoch
-            latest_epoch = aligned_epochs[-1]
-            features = latest_epoch['aligned_features']
-            
-            embeddings = {}
-            with torch.no_grad():
-                # Project Gas (dim = 6)
-                if features['gas'] is not None:
-                    g_dict = features['gas']
-                    g_list = [
-                        g_dict.get('MQ4_CH4_ppm', g_dict.get('methane', 0.0)),
-                        g_dict.get('MQ7_CO_ppm', g_dict.get('co', 0.0)),
-                        g_dict.get('MQ2_LPG_ppm', g_dict.get('lpg', 0.0)),
-                        g_dict.get('MQ2_Smoke_ppm', g_dict.get('smoke', 0.0)),
-                        g_dict.get('MQ135_NOx_ppm', g_dict.get('nox', 0.0)),
-                        g_dict.get('MG811_CO2_ppm', g_dict.get('co2', 0.0))
-                    ]
-                    g_vec = torch.tensor(g_list).float().unsqueeze(0)
-                    embeddings['gas'] = self.gas_encoder(g_vec)
-                    
-                # Project Env (dim = 4)
-                if features['env'] is not None:
-                    e_dict = features['env']
-                    e_list = [
-                        e_dict.get('temp', e_dict.get('temperature', e_dict.get('Temperature[C]', e_dict.get('Temperature', 0.0)))),
-                        e_dict.get('humidity', e_dict.get('Humidity[%]', e_dict.get('Humidity', 0.0))),
-                        e_dict.get('pressure', e_dict.get('Pressure[hPa]', e_dict.get('Pressure', 0.0))),
-                        e_dict.get('occupancy', e_dict.get('occupancy_state', e_dict.get('Occupancy', 0.0)))
-                    ]
-                    e_vec = torch.tensor(e_list).float().unsqueeze(0)
-                    embeddings['env'] = self.env_encoder(e_vec)
-                    
-                # Project Vibration (dim = 15)
-                if features['vibration'] is not None:
-                    v_dict = features['vibration']
-                    v_list = [v_dict.get(f'feature_{i}', 0.0) for i in range(15)]
-                    if all(v == 0.0 for v in v_list) and 'offset' in v_dict:
-                        v_list = [
-                            v_dict.get('offset', 0.0), v_dict.get('max_charge', 0.0), v_dict.get('total_charge', 0.0),
-                            v_dict.get('num_holes', 0.0), v_dict.get('detonator_code', 0.0), v_dict.get('trid_12', 0.0),
-                            v_dict.get('trid_13', 0.0), v_dict.get('trid_14', 0.0), v_dict.get('gx', 0.0),
-                            v_dict.get('gy', 0.0), v_dict.get('gelev', 0.0), v_dict.get('sx', 0.0),
-                            v_dict.get('sy', 0.0), v_dict.get('selev', 0.0), v_dict.get('elevation_diff', 0.0)
-                        ]
-                    v_vec = torch.tensor(v_list).float().unsqueeze(0)
-                    embeddings['vibration'] = self.vib_encoder(v_vec)
-                else:
-                    embeddings['vibration'] = torch.zeros(1, 4096)
-                    
-                # Project Ultrasonic (dim = 24)
-                if features['ultrasonic'] is not None:
-                    u_dict = features['ultrasonic']
-                    u_list = [u_dict.get(f'US{i}', 0.0) for i in range(1, 25)]
-                    if all(u == 0.0 for u in u_list) and 'SD_front' in u_dict:
-                        u_list = [u_dict.get('SD_front', 0.0), u_dict.get('SD_left', 0.0)] + [0.0] * 22
-                    u_vec = torch.tensor(u_list).float().unsqueeze(0)
-                    embeddings['ultrasonic'] = self.ultra_encoder(u_vec)
-                    
-            output['aligned_embeddings'] = embeddings
             
         else:
             if self.device_state == "ACTIVE_REASONING":
