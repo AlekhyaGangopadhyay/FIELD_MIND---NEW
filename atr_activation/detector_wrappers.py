@@ -43,8 +43,6 @@ class Tier1Monitor:
         # 1. Gas Models (Production Core Suite)
         gas_dir = os.path.join(self.root_dir, "gas_sensors", "models")
         gas_files = {
-            'lpg_cng'         : 'gas_hazard_lpg_cng.joblib',
-            'co_nox'          : 'gas_hazard_co_nox_c6h6.joblib',
             'multi_gas'       : 'multi_gas_detector.joblib',
             'baseline_iforest': 'mine_baseline_iforest.joblib',
             'severity_ch4'    : 'severity_ch4.joblib',
@@ -100,7 +98,10 @@ class Tier1Monitor:
             except Exception as e:
                 print(f"  Error loading model {key} from {path}: {e}")
         else:
-            print(f"  Warning: Model {key:<15} not found at {path}")
+            # Vibration classifier/regressor artifacts are optional: the
+            # structural monitor remains available without them.
+            if key not in {'vib_classifier', 'vib_regressor'}:
+                print(f"  Warning: Model {key:<15} not found at {path}")
 
     # --- INFERENCE RUNNERS ---
 
@@ -177,23 +178,7 @@ class Tier1Monitor:
             aq_score = self.models['gas_air_quality'].predict(X)[0]
             hazards['air_quality_score'] = float(aq_score)
             
-        # G. H2S Severity (1 feature: MQ136_H2S_ppm)
-        if 'gas_severity_h2s' in self.models:
-            if isinstance(gas_features, dict) and 'MQ136_H2S_ppm' in gas_features:
-                X = np.array([gas_features['MQ136_H2S_ppm']]).reshape(1, -1)
-            elif not isinstance(gas_features, dict) and len(gas_features) == 1:
-                X = np.array(gas_features).reshape(1, -1)
-            else:
-                X = np.zeros((1, 1))
-            try:
-                h2s_sev = self.models['gas_severity_h2s'].predict(X)[0]
-                hazards['h2s_severity'] = int(h2s_sev)
-                hazards['h2s_hazard'] = int(h2s_sev >= 1)
-            except Exception:
-                hazards['h2s_severity'] = 0
-                hazards['h2s_hazard'] = 0
-
-        # H. NH3 Hazard (1 feature: MQ135_NH3_ppm)
+        # G. NH3 Hazard (1 feature: MQ135_NH3_ppm)
         if 'gas_nh3_hazard' in self.models:
             if isinstance(gas_features, dict) and 'MQ135_NH3_ppm' in gas_features:
                 X = np.array([gas_features['MQ135_NH3_ppm']]).reshape(1, -1)
@@ -207,7 +192,7 @@ class Tier1Monitor:
             except Exception:
                 hazards['nh3_hazard'] = 0
             
-        # I. CO2 Hazard (1 feature: MG811_CO2_ppm)
+        # H. CO2 Hazard (1 feature: MG811_CO2_ppm)
         if 'gas_co2_hazard' in self.models:
             if isinstance(gas_features, dict) and 'MG811_CO2_ppm' in gas_features:
                 X = np.array([gas_features['MG811_CO2_ppm']]).reshape(1, -1)
@@ -221,17 +206,19 @@ class Tier1Monitor:
             except Exception:
                 hazards['co2_hazard'] = 0
 
-        # J. Multi-Gas presence detector (8 features: CH4_ppm, CO_ppm, CO2_ppm, H2_ppm, H2S_ppm, NH3_ppm, LPG_ppm, CNG_ppm)
+        # I. Multi-Gas presence detector (8 features: CH4_ppm, CO_ppm, CO2_ppm, H2_ppm, H2S_ppm, NH3_ppm, LPG_ppm, CNG_ppm)
         if 'gas_multi_gas' in self.models:
             if isinstance(gas_features, dict):
                 ch4_val = float(gas_features.get('CH4_ppm', gas_features.get('MQ4_CH4_ppm', 0.0)))
                 co_val = float(gas_features.get('CO_ppm', gas_features.get('MQ7_CO_ppm', 0.0)))
                 co2_val = float(gas_features.get('CO2_ppm', gas_features.get('MG811_CO2_ppm', 400.0)))
-                h2_val = float(gas_features.get('H2_ppm', gas_features.get('MQ2_LPG_ppm', 0.0)))
+                # LPG is not hydrogen.  Do not manufacture an H2 signal when
+                # legacy telemetry does not contain an H2 channel.
+                h2_val = float(gas_features.get('H2_ppm', 0.0))
                 h2s_val = float(gas_features.get('H2S_ppm', gas_features.get('MQ136_H2S_ppm', 0.0)))
                 nh3_val = float(gas_features.get('NH3_ppm', gas_features.get('MQ135_NH3_ppm', 0.0)))
                 lpg_val = float(gas_features.get('LPG_ppm', gas_features.get('MQ2_LPG_ppm', 0.0)))
-                cng_val = float(gas_features.get('CNG_ppm', ch4_val * 0.2))
+                cng_val = float(gas_features.get('CNG_ppm', 0.0))
                 
                 X_multigas = np.array([[ch4_val, co_val, co2_val, h2_val, h2s_val, nh3_val, lpg_val, cng_val]])
             elif not isinstance(gas_features, dict) and len(gas_features) == 8:
@@ -244,8 +231,45 @@ class Tier1Monitor:
                 gas_names = ["Methane", "CO", "CO2", "H2", "H2S", "NH3", "LPG", "CNG"]
                 for name, pred in zip(gas_names, preds):
                     hazards[f'multigas_{name}'] = int(pred)
+                # Preserve the legacy result keys consumed by ATR while
+                # exposing the complete multi-label result above.
+                hazards['methane_hazard'] = hazards.get('multigas_Methane', 0)
+                hazards['co_nox_hazard'] = hazards.get('multigas_CO', 0)
+                hazards['lpg_hazard'] = int(
+                    hazards.get('multigas_LPG', 0) or hazards.get('multigas_CNG', 0)
+                )
             except Exception:
                 pass
+
+        # J. Concentration-based severity heads.  These are intentionally
+        # independent of the presence detector so a warning/critical level is
+        # still reported when a multi-label model is unavailable.
+        severity_inputs = {
+            'ch4': ('MQ4_CH4_ppm', 'CH4_ppm'),
+            'co': ('MQ7_CO_ppm', 'CO_ppm'),
+            'co2': ('MG811_CO2_ppm', 'CO2_ppm'),
+            'h2': ('H2_ppm',),
+            'h2s': ('MQ136_H2S_ppm', 'H2S_ppm'),
+        }
+        for gas_name, aliases in severity_inputs.items():
+            model_key = f'gas_severity_{gas_name}'
+            if model_key not in self.models:
+                continue
+            value = 0.0
+            if isinstance(gas_features, dict):
+                for alias in aliases:
+                    if alias in gas_features:
+                        value = float(gas_features[alias])
+                        break
+            elif len(gas_features) == 1:
+                value = float(gas_features[0])
+            try:
+                level = int(self.models[model_key].predict(np.array([[value]]))[0])
+                hazards[f'{gas_name}_severity'] = level
+                hazards[f'{gas_name}_hazard'] = int(level >= 1)
+            except Exception:
+                hazards[f'{gas_name}_severity'] = 0
+                hazards[f'{gas_name}_hazard'] = 0
 
         return hazards
 
