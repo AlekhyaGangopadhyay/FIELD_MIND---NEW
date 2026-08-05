@@ -1,79 +1,65 @@
-# 📊 FIELD-MIND Gas Sensor Models: Deep Learning Architecture Search & Benchmark Evaluation Report
+# FIELD-MIND Gas Sensor Evaluation
 
-**Project**: FIELD-MIND — Offline Multimodal Agentic AI for Underground Mining  
-**Module**: Gas Sensor Analytics & ATR Tier 1 Monitoring  
-**Optimization Method**: Automated Deep Learning Architecture Search Tournament across PyTorch Neural Network Architectures (`ResNet1DMLP`, `LayerNormSwishMLP`, `WideAndDeepNet`, `Conv1DNet`)
+**Snapshot:** 2026-08-05
+**Scope:** current gas-sensor artifacts present in `gas_sensors/models/` and loaded by the runtime integration.
 
----
+This document is the current evaluation record for the gas-sensor stack. It uses the serialized model files and the metadata in [`models/model_registry.json`](models/model_registry.json) as the source of truth. Obsolete, missing, and tournament-only model entries are not included as production models.
 
-## 1. Executive Summary & Architecture Search Tournament Results
+## Current production model inventory
 
-To achieve maximum accuracy and generalization on real underground mine gas telemetry, we resolved label noise in `gas_hazard_co_nox_c6h6` using physical combustion dynamics (5% sensor boundary noise injected) and trained on a **70:30 Train/Test Split** (21,000 train / 9,000 test samples).
+There are 11 current gas models. The five severity heads share the same corrected-label training design but have separate gas-specific thresholds and learned decision boundaries.
 
----
+| Artifact | Task | Model / architecture | Inputs | Test result |
+| --- | --- | --- | --- | --- |
+| `multi_gas_detector.joblib` | Eight-output multilabel gas presence | PyTorch LayerNorm/SiLU MLP | 8 ppm channels: CH4, CO, CO2, H2, H2S, NH3, LPG, CNG | Elementwise accuracy **98.81%**; exact eight-target match **90.78%**; P/R/F1 **99.87% / 95.34% / 97.45%** |
+| `mine_baseline_iforest.joblib` | Clean-air anomaly detection | StandardScaler + IsolationForest | 8 real mine sensor channels | Clean-air normal rate **98.95%**; anomaly/false-alarm rate **1.05%** |
+| `severity_ch4.joblib` | CH4 severity, 3 classes | PyTorch Deep MLP | `ppm` | Accuracy **99.28%**; macro F1 **0.9896**; learned boundaries about **10,103 / 15,064 ppm**; TLV **25,000 ppm** |
+| `severity_co.joblib` | CO severity, 3 classes | PyTorch Deep MLP | `ppm` | Accuracy **88.00%**; macro F1 **0.8746**; learned boundaries about **18.9 / 46.3 ppm**; TLV **50 ppm** |
+| `severity_co2.joblib` | CO2 severity, 3 classes | PyTorch Deep MLP | `ppm` | Accuracy **97.42%**; macro F1 **0.9668**; learned boundaries about **965 / 3,876 ppm**; TLV **5,000 ppm** |
+| `severity_h2.joblib` | H2 severity, 3 classes | PyTorch Deep MLP | `ppm` | Accuracy **99.08%**; macro F1 **0.9856**; learned boundaries about **3,537 / 19,646 ppm**; TLV **20,000 ppm** |
+| `severity_h2s.joblib` | H2S severity, 3 classes | PyTorch Deep MLP | `ppm` | Accuracy **99.65%**; macro F1 **0.9965**; learned boundaries about **9.6 / 19.2 ppm**; TLV **20 ppm** |
+| `nh3_hazard.joblib` | NH3 binary hazard alert | PyTorch Deep MLP | `MQ135_NH3_ppm` | Accuracy **98.86%**; precision **99.07%**; recall **98.65%**; F1 **0.9886** |
+| `co2_hazard.joblib` | CO2 binary hazard alert | PyTorch Deep MLP | `ppm` | Accuracy **99.74%**; precision **99.81%**; recall **99.45%**; F1 **0.9963** |
+| `smoke_env_hazard.joblib` | Dust/environment binary hazard alert | PyTorch Deep MLP | PM2.5 dust, temperature, humidity | Accuracy **99.86%**; precision **99.78%**; recall **99.94%**; F1 **0.9986** |
+| `mq4_gas_classifier.joblib` | MQ4 methane multiclass classification | StandardScaler + soft-voting ensemble: 2 RBF SVMs, linear SVM, 2 MLPs | 128 MQ4 response features | Accuracy **77.37%**; macro F1 **0.7789**; 8-fold train CV **99.47%** |
 
-## 2. 🏆 Deep Learning Architecture Search Winners
+### Interpretation notes
 
-| Target Category | Winning PyTorch Architecture | Winner Test Accuracy | Winner Precision | Winner Recall | Winner F1-Score | Impact & Accuracy Gain |
-| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **`gas_hazard_lpg_cng`** | **`LayerNormSwishMLP`** | **99.97%** | **100.00%** | **99.96%** | **0.9998** | 🔥 **Class Imbalance Fix**: Dynamic `pos_weight` + L1 physical safety boundary |
-| **`severity_ch4`** | **PyTorch Deep MLP** | **99.28%** | **98.86%** | **99.06%** | **0.9896** | ⚡ **Corrected Labels**: 10,000 ppm (1.0% LEL) / 15,000 ppm MSHA thresholds |
-| **`multi_gas_detector`** | **`LayerNormSwishMLP`** | **97.32%** | **78.61%** | **76.84%** | **0.7661** | 🚀 **+47.18% Boost**: Elementwise 97.32% / Exact Subset 87.22% multi-task presence |
-| **`severity_h2`** | **PyTorch Deep MLP** | **99.08%** | **99.31%** | **97.85%** | **0.9856** | ⚡ **Corrected Labels**: 4,000 ppm / 20,000 ppm LEL thresholds |
-| **`gas_hazard_co_nox_c6h6`**| **`LayerNormSwishMLP`** | **93.81%** | **99.89%** | **84.96%** | **0.9182** | 🔥 **70:30 Split Proof**: High precision on 54,000 balanced CGAN samples |
-| **`severity_co`** | **PyTorch Deep MLP** | **88.00%** | **90.42%** | **86.05%** | **0.8746** | 🔥 **Safety Thresholds**: Corrected 25 ppm (OSHA PEL) / 50 ppm limits under noise |
-| **`severity_co2`** | **PyTorch Deep MLP** | **97.42%** | **95.60%** | **97.84%** | **0.9668** | ⚡ **Exposure Limits**: Warning (1,000 ppm) / Danger (4,000 ppm) mapping |
-| **`severity_h2s`** | **PyTorch Deep MLP** | **99.65%** | **99.66%** | **99.65%** | **0.9965** | ⚡ **OSHA TWA Standard**: Corrected 10 ppm warning / 20 ppm critical thresholds |
-| **`nh3_hazard`** | **PyTorch Deep MLP** | **98.86%** | **99.07%** | **98.65%** | **0.9886** | 🔥 **NH3 Hazard**: Accurate 25 ppm NIOSH REL threshold detection |
-| **`co2_hazard`** | **PyTorch Deep MLP** | **99.74%** | **99.81%** | **99.45%** | **0.9963** | ⚡ **CO2 Hazard**: Asphyxiation early warning at 1000 ppm |
-| **`smoke_env_hazard`**| **PyTorch Deep MLP** | **99.86%** | **99.78%** | **99.94%** | **0.9986** | 🔥 **Dust/Smoke**: High-sensitivity physical PM2.5+temp hazard |
+- `multi_gas_detector` is the unified presence detector. Its exact-subset score is stricter than its elementwise score because all eight gas outputs must be correct for a row to count as correct.
+- The severity models use concentration-based corrected labels (`severity` 0/1/2), not the old location/band index. Their registry metrics are held-out test metrics from the retraining scripts.
+- The MQ4 result is deliberately reported against batches 9-10, which are held out by batch rather than randomly mixed with the training data. The high cross-validation score therefore should not be confused with the 77.37% temporal test accuracy.
+- Historical tournament artifacts are not loaded by the current gas runtime and are not counted as production models.
 
----
+## Training dataset table
 
-## 3. Production Suite Benchmark Table (12 Active Core Models)
+The counts below are taken from the files currently under `gas_sensors/data/` and the split logic in the corresponding training scripts. For balanced datasets, “rows used” means rows after the script's balancing/filtering step.
 
-| Model Name | Task Type | Winning Arch Used | Train Dataset | Split Ratio | Train Samples | Test Samples | Train Acc | Test Acc | Test Precision | Test Recall | Test F1 |
-| :--- | :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **`gas_hazard_lpg_cng`** | Binary Classification | `LayerNormSwishMLP` | `mine_part2_ch4_balanced_cgan.csv` | **75 : 25** | 45,000 | 15,000 | **99.98%** | **99.97%** | **100.00%** | **99.96%** | **0.9998** |
-| **`severity_ch4`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_ch4_balanced_cgan_corrected.csv` | **75 : 25** | 45,000 | 15,000 | **99.30%** | **99.28%** | 98.86% | 99.06% | **0.9896** |
-| **`multi_gas_detector`** | Multi-Label Classification | `LayerNormSwishMLP` | `multi_gas_detector_real_v2.csv` | **75 : 25** | 37,500 | 12,500 | **99.10%** | **98.81%*** | 99.87% | 95.34% | **0.9745** |
-| **`severity_h2`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_h2_balanced_cgan_corrected.csv` | **75 : 25** | 45,000 | 15,000 | **99.15%** | **99.08%** | 99.31% | 97.85% | **0.9856** |
-| **`gas_hazard_co_nox_c6h6`** | Binary Classification | `LayerNormSwishMLP` | `mine_part2_co_balanced_cgan.csv` | **70 : 30** | **42,000** | **18,000** | **93.90%** | **93.81%** | **99.89%** | **84.96%** | **0.9182** |
-| **`severity_co`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_co_balanced_cgan_corrected.csv` | **75 : 25** | 45,000 | 15,000 | **88.25%** | **88.00%** | 90.42% | 86.05% | **0.8746** |
-| **`severity_co2`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_co2_balanced_cgan_corrected.csv` | **75 : 25** | 45,000 | 15,000 | **97.55%** | **97.42%** | 95.60% | 97.84% | **0.9668** |
-| **`mine_baseline_iforest`** | Anomaly Detection | IsolationForest | `mine_part1_clean.csv` | **100% Base** | 1,721 | 1,721 | **99.00%** | **98.95%**** | N/A | N/A | N/A |
-| **`severity_h2s`** | Multiclass Classification | PyTorch Deep MLP | `mine_part2_h2s_balanced_cgan_corrected.csv` | **75 : 25** | 45,000 | 15,000 | **99.70%** | **99.65%** | **99.66%** | **99.65%** | **0.9965** |
-| **`nh3_hazard`** | Binary Classification | PyTorch Deep MLP | `nh3_hazard_balanced_cgan.csv` | **50 : 50** | 30,000 | 30,000 | **98.86%** | **98.86%** | **99.07%** | **98.65%** | **0.9886** |
-| **`co2_hazard`** | Binary Classification | PyTorch Deep MLP | `mine_part2_co2_balanced_cgan.csv` | **50 : 50** | 30,000 | 30,000 | **99.74%** | **99.74%** | **99.81%** | **99.45%** | **0.9963** |
-| **`smoke_env_hazard`**| Binary Classification | PyTorch Deep MLP | `FIELDMIND_physics_dataset.csv` | **50 : 50** | 3,552 | 3,552 | **99.86%** | **99.86%** | **99.78%** | **99.94%** | **0.9986** |
+| Model(s) | Dataset/source | Source rows | Features used | Target | Training/evaluation split | Purpose |
+| --- | --- | ---: | --- | --- | --- | --- |
+| `multi_gas_detector` | [`multi_gas_detector_real_v2.csv`](data/multi_gas_detector_real_v2.csv) | 50,000 | 8 ppm channels: `CH4_ppm`, `CO_ppm`, `CO2_ppm`, `H2_ppm`, `H2S_ppm`, `NH3_ppm`, `LPG_ppm`, `CNG_ppm` | 8 binary presence columns: `target_Methane` through `target_CNG` | 37,500 train / 12,500 test (75/25) | Unified multi-gas presence detection |
+| `severity_ch4` | [`mine_part2_ch4_balanced_cgan_corrected.csv`](data/mine_part2_ch4_balanced_cgan_corrected.csv) | 60,000 | `ppm_noisy` (normalized to model input `ppm`) | `severity` (0/1/2) | 45,000 train / 15,000 test (75/25, stratified) | Corrected CH4 concentration severity |
+| `severity_co` | [`mine_part2_co_balanced_cgan_corrected.csv`](data/mine_part2_co_balanced_cgan_corrected.csv) | 60,000 | `ppm_noisy` (normalized to `ppm`) | `severity` (0/1/2) | 45,000 train / 15,000 test (75/25, stratified) | Corrected CO concentration severity |
+| `severity_co2` | [`mine_part2_co2_balanced_cgan_corrected.csv`](data/mine_part2_co2_balanced_cgan_corrected.csv) | 60,000 | `ppm_noisy` (normalized to `ppm`) | `severity` (0/1/2) | 45,000 train / 15,000 test (75/25, stratified) | Corrected CO2 concentration severity |
+| `severity_h2` | [`mine_part2_h2_balanced_cgan_corrected.csv`](data/mine_part2_h2_balanced_cgan_corrected.csv) | 60,000 | `ppm_noisy` (normalized to `ppm`) | `severity` (0/1/2) | 45,000 train / 15,000 test (75/25, stratified) | Corrected H2 concentration severity |
+| `severity_h2s` | [`mine_part2_h2s_balanced_cgan_corrected.csv`](data/mine_part2_h2s_balanced_cgan_corrected.csv) | 60,000 | `ppm` | `severity` (0/1/2) | 45,000 train / 15,000 test (75/25, stratified) | Corrected H2S concentration severity |
+| `mine_baseline_iforest` | [`mine_part1_clean.csv`](data/mine_part1_clean.csv) | 1,815 raw; 1,721 steady-state | `air_quality`, `smoke`, `alcohol`, `flamable_gas`, `MQ136_raw`, `MQ7_raw`, `t`, `h` | Unlabelled normal baseline; IsolationForest anomaly score | Fit and evaluated on the 1,721 steady-state rows; 94 warm-up rows excluded | Hardware noise-floor baseline and sensor-fault detection |
+| `nh3_hazard` | [`nh3_hazard_balanced_cgan.csv`](data/nh3_hazard_balanced_cgan.csv) | 60,000 | `MQ135_NH3_ppm` | `Hazard_Alert` | 30,000 train / 30,000 test (50/50, stratified) | NH3 hazard alert |
+| `co2_hazard` | [`mine_part2_co2_balanced_cgan_corrected.csv`](data/mine_part2_co2_balanced_cgan_corrected.csv) | 60,000 | `ppm` with 5% threshold uncertainty noise during training | `over_tlv`-style binary hazard label at the configured 1,000 ppm boundary | 30,000 train / 30,000 test (50/50, stratified) | Early CO2 hazard alert |
+| `smoke_env_hazard` | [`FIELDMIND_physics_dataset.csv`](data/FIELDMIND_physics_dataset.csv) | 50,000 raw; 7,104 balanced | `PM25_Dust_ugm3`, `Temp_C`, `Humidity_pct` | `Hazard_Alert` | 3,552 train / 3,552 test (50/50 after class balancing) | Dust, temperature, and humidity hazard alert |
+| `mq4_gas_classifier` | [`Methane_MQ4/Dataset/`](data/Methane_MQ4/Dataset/) batches 1-10 | 13,910 total | `feature_1` ... `feature_128` | `label` | 9,840 train (batches 1-8) / 4,070 test (batches 9-10) | Batch-held-out MQ4 methane classification |
 
-*\*Note for `multi_gas_detector`: Multi-task elementwise accuracy across all 8 gas targets is **98.81%** (with per-gas accuracies: Methane **99.80%**, CO **98.14%**, CO₂ **97.66%**, H₂ **99.71%**, H₂S **95.20%**, NH₃ **100.00%**, LPG **100.00%**, CNG **100.00%**). Exact multi-label subset accuracy (requiring all 8 predictions to match simultaneously) is **90.78%**.*
+## Reproducibility references
 
-*\*Note for `mine_baseline_iforest`: Clean-air baseline classification accuracy is **98.95%** (correctly identified non-anomalous steady state air), corresponding to a low false-alarm rate of **1.05%**.*
+- Multi-gas training: [`train_multi_gas_detector.py`](train_multi_gas_detector.py)
+- Severity retraining: [`retrain_severity_models.py`](retrain_severity_models.py)
+- Baseline anomaly detector: [`train_mine_baseline.py`](train_mine_baseline.py)
+- NH3, CO2, and smoke/environment heads: [`train_new_dl_models.py`](train_new_dl_models.py)
+- MQ4 ensemble: [`train_methane.py`](train_methane.py) and [`data_loader.py`](data_loader.py)
+- Serialized artifacts and recorded metrics: [`models/model_registry.json`](models/model_registry.json)
 
----
+## Validation status
 
-## 4. Deprecated & Unused Models (Of No Use)
-
-To streamline real-time execution and support the new safety-standard compliance, several legacy and intermediate models have been deprecated and are **of no use** in the active production environment:
-
-1. **Legacy Binary Hazard Classifiers**:
-   - `gas_hazard_lpg_cng.joblib`: Deprecated. Replaced by the 8-input unified `multi_gas_detector.joblib` which includes LPG/CNG targets.
-   - `gas_hazard_co_nox_c6h6.joblib`: Deprecated. Replaced by `multi_gas_detector.joblib` and specialized hazard detectors (`co2_hazard.joblib`, `nh3_hazard.joblib`).
-2. **Intermediate/Tournaments MLP Winners (`*_dl_best.joblib` files)**:
-   - All 8 tournament-specific MLP classifiers are now obsolete:
-     - `ch4_severity_dl_best.joblib` / `ch4_over_tlv_dl_best.joblib`
-     - `co_severity_dl_best.joblib` / `co_over_tlv_dl_best.joblib`
-     - `co2_severity_dl_best.joblib` / `co2_over_tlv_dl_best.joblib`
-     - `h2_severity_dl_best.joblib` / `h2_over_tlv_dl_best.joblib`
-   - These are fully replaced by the retrained multiclass safety classifiers (`severity_ch4`, `severity_co`, `severity_co2`, `severity_h2`, `severity_h2s`).
-3. **Deprecated Vibration Models**:
-   - `best_random_forest_classifier.joblib` / `best_gradient_boosting_regressor.joblib`: Obsolete and removed. The geomechanical monitoring pipeline has transitioned to real-time physical calculations (`vibration/structural_monitor.py`) which bypasses the old preprocessed vibration CSV datasets.
-
----
-
-## 5. System Integration & Verification
-
-- **Agent Integration**: [gas_agent.py](file:///c:/FIELDMIND/FIELD_MIND---NEW/sensor_agents/gas_agent.py) updated with `dataset_name="FIELDMIND_real_replay.csv"` (30,000 rows with real temperature and humidity envelopes) supporting A/B testing of synthetic vs. real replay datasets.
-- **ATR Tier 1 Integration**: [detector_wrappers.py](file:///c:/FIELDMIND/FIELD_MIND---NEW/atr_activation/detector_wrappers.py) (`Tier1Monitor`) successfully loads all winning PyTorch models via [dl_wrappers.py](file:///c:/FIELDMIND/FIELD_MIND---NEW/gas_sensors/dl_wrappers.py) and executes real-time inference without runtime errors.
-- **Registry Update**: All 8 production models registered in [model_registry.json](file:///c:/FIELDMIND/FIELD_MIND---NEW/gas_sensors/models/model_registry.json) with winning Deep Learning architecture names.
+- All 11 production artifact names in this document resolve under `gas_sensors/models/`.
+- Dataset filenames and row counts were checked against the current `gas_sensors/data/` directory.
+- The old missing hazard entries, obsolete tournament winner rows, and deprecated vibration-model section were removed from this evaluation document.
+- No model file was deleted as part of this documentation cleanup; only current production artifacts are recorded here.

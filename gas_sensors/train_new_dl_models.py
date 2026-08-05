@@ -29,7 +29,7 @@ def train_new_models():
         registry = {}
 
     # 2. Train severity_h2s (Deep Learning Multiclass)
-    h2s_data_path = os.path.join(DATA_DIR, "mine_part2_h2s_balanced_cgan.csv")
+    h2s_data_path = os.path.join(DATA_DIR, "mine_part2_h2s_balanced_cgan_corrected.csv")
     if os.path.exists(h2s_data_path):
         print("\n--- Training PyTorch Deep Learning Model: severity_h2s ---")
         df_h2s = pd.read_csv(h2s_data_path)
@@ -132,7 +132,7 @@ def train_new_models():
         print(f"Error: NH3 dataset not found at {nh3_data_path}")
 
     # 4. Train co2_hazard (Deep Learning Binary)
-    co2_data_path = os.path.join(DATA_DIR, "mine_part2_co2_balanced_cgan.csv")
+    co2_data_path = os.path.join(DATA_DIR, "mine_part2_co2_balanced_cgan_corrected.csv")
     if os.path.exists(co2_data_path):
         print("\n--- Training PyTorch Deep Learning Model: co2_hazard ---")
         df_co2 = pd.read_csv(co2_data_path)
