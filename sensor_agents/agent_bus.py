@@ -21,6 +21,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 class MessageType(Enum):
     ALERT    = "ALERT"            # Hazard detected — immediate action required
+    MULTIGAS_ALERT = "MULTIGAS_ALERT"  # Multi-label gas presence warning
     INFO     = "INFO"             # Normal status update
     CLEAR    = "CLEAR"            # Previous hazard has been resolved
     LEARNING_UPDATE = "LEARNING_UPDATE"  # Agent updated its model weights
@@ -144,7 +145,7 @@ class AgentBus:
         self._history.append(message)
 
         # Count alerts per source
-        if message.msg_type == MessageType.ALERT:
+        if message.msg_type in (MessageType.ALERT, MessageType.MULTIGAS_ALERT):
             self._alert_counts[message.source] = (
                 self._alert_counts.get(message.source, 0) + 1
             )
