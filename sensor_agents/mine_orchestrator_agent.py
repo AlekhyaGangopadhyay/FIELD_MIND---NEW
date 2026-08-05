@@ -94,7 +94,7 @@ class MineOrchestratorAgent:
 
     def _on_sensor_alert(self, msg: AgentMessage) -> None:
         """Receive an ALERT from a sensor agent and update global state."""
-        if msg.msg_type == MessageType.ALERT:
+        if msg.msg_type in (MessageType.ALERT, MessageType.MULTIGAS_ALERT):
             self._active_alerts[msg.source] = msg
             self._alert_history.append(msg)
             self._evaluate_global_state(msg.timestamp)
