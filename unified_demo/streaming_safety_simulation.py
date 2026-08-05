@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List
 
 import numpy as np
+import torch
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 WORKSPACE_ROOT = os.path.dirname(SCRIPT_DIR)
@@ -31,6 +32,13 @@ if WORKSPACE_ROOT not in sys.path:
 from atr_activation.detector_wrappers import Tier1Monitor
 from faiss_rag import SafetyProtocolEvaluator
 from reasoning_core.chat_assistant import MineSafetyChatAssistant
+from scisense_protocol.coherence import SciSenseCoherenceTracker, normalize_modal_vector
+from scisense_protocol.encoders import (
+    EnvironmentalEncoder,
+    GasEncoder,
+    UltrasonicEncoder,
+    VibrationEncoder,
+)
 
 
 DEFAULT_HISTORY_PATH = os.path.join(SCRIPT_DIR, "data", "simulation_history.json")
@@ -236,6 +244,40 @@ def build_model_inputs(readings: Dict[str, float]) -> Dict[str, Dict[str, Any]]:
         "vibration": vibration_inputs,
         "ultrasonic": ultrasonic_inputs,
     }
+
+
+def project_scisense_frame(features: Dict[str, Dict[str, Any]], encoders: Dict[str, Any]) -> Dict[str, torch.Tensor]:
+    """Project one node's four current modalities for CMCR tracking."""
+    gas = features["gas"]
+    env = features["env"]
+    vibration = features["vibration"]
+    ultrasonic = features["ultrasonic"]
+    vectors = {
+        "gas": [gas.get(key, 0.0) for key in (
+            "MQ4_CH4_ppm", "MQ7_CO_ppm", "MQ2_LPG_ppm", "MQ2_Smoke_ppm",
+            "MQ135_NOx_ppm", "MG811_CO2_ppm",
+        )],
+        "env": [env.get(key, 0.0) for key in ("temp", "humidity", "pressure", "occupancy")],
+        "vibration": [vibration.get(key, 0.0) for key in (
+            "offset", "max_charge", "total_charge", "num_holes", "detonator_code",
+            "trid_12", "trid_13", "trid_14", "gx", "gy", "gelev", "sx", "sy",
+            "selev", "elevation_diff",
+        )],
+        "ultrasonic": [ultrasonic.get(f"US{i}", 0.0) for i in range(1, 25)],
+    }
+    scales = {
+        "gas": [10000, 50, 1000, 100, 5, 5000],
+        "env": [40, 100, 1100, 1],
+        "vibration": [1, 100, 1000, 100, 1000, 1, 1, 1, 1000, 1000, 1000, 1000, 1000, 1000, 100],
+        "ultrasonic": [5] * 24,
+    }
+    with torch.no_grad():
+        return {
+            name: encoders[name](torch.tensor(
+                normalize_modal_vector(values, scales[name]), dtype=torch.float32
+            ).unsqueeze(0))
+            for name, values in vectors.items()
+        }
 
 
 def evaluate_sample(monitor: Tier1Monitor, readings: Dict[str, float]) -> Dict[str, Any]:
@@ -457,6 +499,22 @@ def run_simulation(args: argparse.Namespace) -> None:
     start = datetime.now(timezone.utc)
     history: List[Dict[str, Any]] = []
     evaluator = SafetyProtocolEvaluator()
+    encoders = {
+        "gas": GasEncoder().eval(),
+        "env": EnvironmentalEncoder().eval(),
+        "vibration": VibrationEncoder().eval(),
+        "ultrasonic": UltrasonicEncoder().eval(),
+    }
+    # Nodes are separate physical locations, so each learns its own normal
+    # cross-modal relationship instead of treating node changes as anomalies.
+    coherence_trackers = {
+        f"{tunnel_id}_NODE_{i + 1}": SciSenseCoherenceTracker()
+        for i in range(args.nodes)
+    }
+    coherence_states = {
+        f"{tunnel_id}_NODE_{i + 1}": "IDLE"
+        for i in range(args.nodes)
+    }
 
     for tick in range(args.timestamps):
         loop_started = time.perf_counter()
@@ -469,6 +527,23 @@ def run_simulation(args: argparse.Namespace) -> None:
             result = evaluate_sample(monitor, readings)
             check_readings = result["readings"]
             check = evaluator.assess(check_readings, result["predictions"])
+            node_coherence = coherence_trackers[node_id]
+            coherence = node_coherence.update(
+                project_scisense_frame(build_model_inputs(readings), encoders),
+                update_baseline=check.overall_status == "SAFE",
+            )
+            previous_state = coherence_states[node_id]
+            if coherence["is_anomaly"]:
+                coherence_states[node_id] = "ACTIVE_REASONING"
+            elif previous_state == "ACTIVE_REASONING" and check.overall_status == "SAFE":
+                coherence_states[node_id] = "IDLE"
+            if coherence_states[node_id] != previous_state:
+                print(
+                    f"    CMCR STATE: {previous_state} -> "
+                    f"{coherence_states[node_id]}"
+                )
+            result["predictions"]["coherence_residual"] = coherence["residual"]
+            result["predictions"]["coherence_anomaly"] = int(coherence["is_anomaly"])
             history.append({
                 "timestamp": timestamp,
                 "tunnel_id": tunnel_id,
@@ -476,6 +551,13 @@ def run_simulation(args: argparse.Namespace) -> None:
                 "readings": check_readings,
                 "predictions": result["predictions"],
                 "status": check.overall_status,
+                "coherence": {
+                    "residual": coherence["residual"],
+                    "threshold": coherence["threshold"],
+                    "anomaly": coherence["is_anomaly"],
+                    "baseline_updates": coherence["baseline_updates"],
+                    "state": coherence_states[node_id],
+                },
             })
             r = check_readings
             print(f"  {node_id}")
@@ -487,6 +569,11 @@ def run_simulation(args: argparse.Namespace) -> None:
                   f"Wall Dist={r['ultrasonic_distance']:>4.2f}m")
             print(f"    Nav:   Clr={r['min_distance']:>4.2f}m  "
                   f">> {check.overall_status}")
+            print(
+                f"    CMCR:  R_t={coherence['residual']:.4f}  "
+                f"threshold={coherence['threshold']:.4f}  "
+                f">> {'ANOMALY' if coherence['is_anomaly'] else 'baseline'}"
+            )
 
         sys.stdout.flush()
         if not args.fast and tick < args.timestamps - 1:
