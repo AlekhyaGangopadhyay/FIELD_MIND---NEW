@@ -71,11 +71,13 @@ class MultiGasDetectorAgent(SensorAgentBase):
             "CH4_ppm": float(raw_data.get("CH4_ppm", raw_data.get("MQ4_CH4_ppm", 0.0))),
             "CO_ppm": float(raw_data.get("CO_ppm", raw_data.get("MQ7_CO_ppm", 0.0))),
             "CO2_ppm": float(raw_data.get("CO2_ppm", raw_data.get("MG811_CO2_ppm", 400.0))),
-            "H2_ppm": float(raw_data.get("H2_ppm", raw_data.get("MQ2_LPG_ppm", 0.0))),
+            # LPG and H2 are different channels; keep H2 at zero when no H2
+            # sensor is present instead of creating a false positive.
+            "H2_ppm": float(raw_data.get("H2_ppm", 0.0)),
             "H2S_ppm": float(raw_data.get("H2S_ppm", raw_data.get("MQ136_H2S_ppm", raw_data.get("Sensor3[ppm]", 0.0)))),
             "NH3_ppm": float(raw_data.get("NH3_ppm", raw_data.get("MQ135_NH3_ppm", raw_data.get("NH3", 0.0)))),
             "LPG_ppm": float(raw_data.get("LPG_ppm", raw_data.get("MQ2_LPG_ppm", 0.0))),
-            "CNG_ppm": float(raw_data.get("CNG_ppm", raw_data.get("MQ4_CH4_ppm", 0.0) * 0.2)),
+            "CNG_ppm": float(raw_data.get("CNG_ppm", 0.0)),
         }
 
     def infer(self, features: Dict[str, Any]) -> Dict[str, Any]:
@@ -91,8 +93,10 @@ class MultiGasDetectorAgent(SensorAgentBase):
             y_pred_proba = self.model.predict_proba(X_vec)
             
             # Extract lists of length 8
-            preds = y_pred[0]
-            probs = y_pred_proba[0]
+            preds = np.asarray(y_pred[0]).reshape(-1)
+            probs = np.asarray(y_pred_proba[0]).reshape(-1)
+            if len(preds) != len(self.gas_names) or len(probs) != len(self.gas_names):
+                raise ValueError("multi-gas model returned an unexpected output width")
         except Exception as e:
             # Fallback if model behaves differently (e.g. dummy RandomForest)
             try:
@@ -138,8 +142,18 @@ class MultiGasDetectorAgent(SensorAgentBase):
         return 0
 
     def _build_fresh_model(self):
-        # Return a dummy RandomForest since we don't retrain PyTorch DNN online
+        # The production model is multi-label.  A binary RandomForest trained
+        # from the base class's single aggregate label would silently corrupt
+        # its eight-output contract, so this agent keeps the deployed model
+        # frozen until a dedicated multi-label retraining job is run.
         return RandomForestClassifier(n_estimators=10, random_state=42)
+
+    def _trigger_refit(self) -> None:
+        """Discard aggregate replay labels without replacing the 8-head model."""
+        if len(self._replay_X) < self.replay_buffer_size:
+            return
+        self._replay_X.clear()
+        self._replay_y.clear()
 
     def _features_to_vector(self, features: Dict[str, Any]) -> np.ndarray:
         return np.array([features[f] for f in self.feature_names])
@@ -166,7 +180,7 @@ class MultiGasDetectorAgent(SensorAgentBase):
             # Broadcast the ALERT message
             msg = AgentMessage(
                 source=self.agent_name,
-                msg_type=MessageType.ALERT,
+                msg_type=MessageType.MULTIGAS_ALERT,
                 severity=severity,
                 payload={
                     **inference,
