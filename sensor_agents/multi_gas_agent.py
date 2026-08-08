@@ -39,12 +39,12 @@ class MultiGasDetectorAgent(SensorAgentBase):
                 import joblib
                 primary_model = joblib.load(model_path)
                 if verbose:
-                    print(f"  [MultiGasDetectorAgent] ✓ Loaded model: multi_gas_detector")
+                    print(f"  [MultiGasDetectorAgent] [OK] Loaded model: multi_gas_detector")
             except Exception as e:
-                print(f"  [MultiGasDetectorAgent] ✗ Failed to load multi_gas_detector: {e}")
+                print(f"  [MultiGasDetectorAgent] [ERROR] Failed to load multi_gas_detector: {e}")
                 primary_model = None
         else:
-            print(f"  [MultiGasDetectorAgent] ⚠ Model not found: multi_gas_detector.joblib")
+            print(f"  [MultiGasDetectorAgent] [WARNING] Model not found: multi_gas_detector.joblib")
             primary_model = None
 
         if primary_model is None:

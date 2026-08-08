@@ -82,6 +82,12 @@ class MineOrchestratorAgent:
         # Consecutive ticks below clear threshold
         self._low_score_streak = 0
 
+        # VoI decision theory parameters (Move 2)
+        self.use_voi = True
+        self.u_accident = 100.0  # Cost of true hazard going unevacuated
+        self.u_shutdown = 15.0   # Cost of necessary or unnecessary evacuation
+        self.c_reason = 1.5      # Cost of waking the LLM reasoning core
+
         # Subscribe to all sensor agent alerts
         for source in _SOURCE_WEIGHTS:
             self.bus.subscribe(source, self._on_sensor_alert)
@@ -121,12 +127,34 @@ class MineOrchestratorAgent:
                 score   += weight * sev_mult * conf
         return min(1.0, score)
 
+    def compute_voi(self, score: float) -> float:
+        """
+        Calculate decision-theoretic Value of Information (VoI).
+        VoI = E[U(a*(I))] - E[U(a*)]
+        where:
+          a* is the immediate decision without reasoning: max(E[U(base)], E[U(evac)])
+          a*(I) is the action chosen with reasoning: if true hazard -> evac; if false -> base
+        """
+        # Expected utility of baseline (staying IDLE / doing nothing)
+        eu_base = -score * self.u_accident
+        # Expected utility of evacuation (EMERGENCY)
+        eu_evac = -self.u_shutdown
+        # Max expected utility of immediate decision
+        eu_immediate = max(eu_base, eu_evac)
+        
+        # Expected utility with reasoning (LLM decides correctly based on information)
+        eu_reason = -score * self.u_shutdown
+        
+        voi = eu_reason - eu_immediate
+        return float(max(0.0, voi))
+
     def _evaluate_global_state(self, timestamp: float) -> None:
         """Evaluate global hazard state and trigger transitions."""
         score = self.compute_global_hazard_score()
         self._score_history.append({"timestamp": timestamp, "score": score})
 
-        if score < _ACTIVE_THRESHOLD:
+        clear_threshold = self.u_shutdown / self.u_accident if self.use_voi else _ACTIVE_THRESHOLD
+        if score < clear_threshold:
             self._low_score_streak += 1
         else:
             self._low_score_streak = 0
@@ -134,14 +162,26 @@ class MineOrchestratorAgent:
         prev_state = self.device_state
 
         # ── State Transition Logic ─────────────────────────────────────
-        if score >= _EMERGENCY_THRESHOLD:
-            new_state = "EMERGENCY"
-        elif score >= _ACTIVE_THRESHOLD:
-            new_state = "ACTIVE_REASONING"
-        elif self._low_score_streak >= _CLEAR_TICKS:
-            new_state = "IDLE"
+        if self.use_voi:
+            voi = self.compute_voi(score)
+            if voi > self.c_reason:
+                new_state = "ACTIVE_REASONING"
+            else:
+                if -score * self.u_accident < -self.u_shutdown:  # score >= u_shutdown/u_accident
+                    new_state = "EMERGENCY"
+                elif self._low_score_streak >= _CLEAR_TICKS:
+                    new_state = "IDLE"
+                else:
+                    new_state = self.device_state
         else:
-            new_state = self.device_state   # No change
+            if score >= _EMERGENCY_THRESHOLD:
+                new_state = "EMERGENCY"
+            elif score >= _ACTIVE_THRESHOLD:
+                new_state = "ACTIVE_REASONING"
+            elif self._low_score_streak >= _CLEAR_TICKS:
+                new_state = "IDLE"
+            else:
+                new_state = self.device_state   # No change
 
         if new_state != prev_state:
             self._transition_state(prev_state, new_state, score, timestamp)
@@ -169,20 +209,20 @@ class MineOrchestratorAgent:
         }
         self._event_log.append(event)
 
-        # ── Console output ─────────────────────────────────────────────
+        # -- Console output ---------------------------------------------
         border = "!" if new_state in ("EMERGENCY", "ACTIVE_REASONING") else "."
         print(f"\n{border * 70}")
-        print(f"[MineOrchestrator] STATE: {prev_state} → {new_state}  (score={score:.3f})")
+        print(f"[MineOrchestrator] STATE: {prev_state} -> {new_state}  (score={score:.3f})")
         if reasons:
             for r in reasons:
-                print(f"  ↳ {r}")
+                print(f"  - {r}")
 
         if new_state == "EMERGENCY":
-            print("  ⚠ MULTI-AGENT EMERGENCY — Multiple sensor domains flagging hazards!")
+            print("  [WARNING] MULTI-AGENT EMERGENCY -- Multiple sensor domains flagging hazards!")
         elif new_state == "ACTIVE_REASONING":
-            print("  → Activating reasoning core. Loading SciSense projection layers...")
+            print("  -> Activating reasoning core. Loading SciSense projection layers...")
         elif new_state == "IDLE":
-            print("  ✓ All hazards cleared. Returning to low-power monitoring mode.")
+            print("  [OK] All hazards cleared. Returning to low-power monitoring mode.")
         print(f"{border * 70}\n")
 
         # Publish system-level message
@@ -244,7 +284,7 @@ class MineOrchestratorAgent:
         avg_score = sum(scores) / len(scores) if scores else 0.0
 
         lines = [
-            "╔══ MineOrchestratorAgent Status Report ══╗",
+            "=== MineOrchestratorAgent Status Report ===",
             f"  Device state      : {self.device_state}",
             f"  Global hazard score: {score:.4f}",
             f"  Avg score (history): {avg_score:.4f}",
@@ -254,7 +294,7 @@ class MineOrchestratorAgent:
         ]
         if self._event_log:
             last = self._event_log[-1]
-            lines.append(f"  Last transition    : {last['prev_state']} → {last['new_state']} (score={last['global_score']})")
+            lines.append(f"  Last transition    : {last['prev_state']} -> {last['new_state']} (score={last['global_score']})")
         return "\n".join(lines)
 
     def get_event_log(self) -> List[Dict[str, Any]]:

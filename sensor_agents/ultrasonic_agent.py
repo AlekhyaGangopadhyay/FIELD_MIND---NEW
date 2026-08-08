@@ -86,12 +86,12 @@ class UltrasonicSensorAgent(SensorAgentBase):
         if os.path.exists(path):
             try:
                 m = joblib.load(path)
-                print(f"  [UltrasonicSensorAgent] ✓ Loaded model: {name}")
+                print(f"  [UltrasonicSensorAgent] [OK] Loaded model: {name}")
                 return m
             except Exception as e:
-                print(f"  [UltrasonicSensorAgent] ✗ Failed to load {name}: {e}")
+                print(f"  [UltrasonicSensorAgent] [ERROR] Failed to load {name}: {e}")
         else:
-            print(f"  [UltrasonicSensorAgent] ⚠ Model not found: {fname}")
+            print(f"  [UltrasonicSensorAgent] [WARNING] Model not found: {fname}")
         return None
 
     def _extract_model_and_classes(self):

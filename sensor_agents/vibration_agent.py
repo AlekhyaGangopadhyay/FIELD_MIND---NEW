@@ -106,12 +106,12 @@ class VibrationSensorAgent(SensorAgentBase):
         if os.path.exists(path):
             try:
                 m = joblib.load(path)
-                print(f"  [VibrationSensorAgent] ✓ Loaded model: {name}")
+                print(f"  [VibrationSensorAgent] [OK] Loaded model: {name}")
                 return m
             except Exception as e:
-                print(f"  [VibrationSensorAgent] ✗ Failed to load {name}: {e}")
+                print(f"  [VibrationSensorAgent] [ERROR] Failed to load {name}: {e}")
         else:
-            print(f"  [VibrationSensorAgent] ⚠ Model not found: {fname}")
+            print(f"  [VibrationSensorAgent] [WARNING] Model not found: {fname}")
         return None
 
     def _preprocess_dataset(self) -> None:
