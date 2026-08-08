@@ -94,12 +94,12 @@ class EnvSensorAgent(SensorAgentBase):
         if os.path.exists(path):
             try:
                 m = joblib.load(path)
-                print(f"  [EnvSensorAgent] ✓ Loaded model: {name}")
+                print(f"  [EnvSensorAgent] [OK] Loaded model: {name}")
                 return m
             except Exception as e:
-                print(f"  [EnvSensorAgent] ✗ Failed to load {name}: {e}")
+                print(f"  [EnvSensorAgent] [ERROR] Failed to load {name}: {e}")
         else:
-            print(f"  [EnvSensorAgent] ⚠ Model not found: {fname}")
+            print(f"  [EnvSensorAgent] [WARNING] Model not found: {fname}")
         return None
 
     def _seed_replay_from_dataset(self, n_seed: int = 100) -> None:

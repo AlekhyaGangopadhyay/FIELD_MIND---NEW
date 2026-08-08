@@ -73,9 +73,9 @@ class EKGAgent:
             self._graph = MineKnowledgeGraph()
             if os.path.exists(graph_json):
                 self._graph.load(graph_json)
-                print(f"  [EKGAgent] ✓ Knowledge graph loaded from {graph_json}")
+                print(f"  [EKGAgent] [OK] Knowledge graph loaded from {graph_json}")
             else:
-                print(f"  [EKGAgent] ⚠ No existing graph file — starting with empty graph.")
+                print(f"  [EKGAgent] [WARNING] No existing graph file -- starting with empty graph.")
             self._ekg_available = True
         except Exception as e:
             print(f"  [EKGAgent] EKG unavailable (will run in log-only mode): {e}")
@@ -237,7 +237,7 @@ class EKGAgent:
 
     def status_report(self) -> str:
         lines = [
-            f"╔══ EKGAgent Status Report ══╗",
+            f"=== EKGAgent Status Report ===",
             f"  EKG available      : {self._ekg_available}",
             f"  Events written     : {self._events_written}",
             f"  Queries answered   : {self._queries_answered}",

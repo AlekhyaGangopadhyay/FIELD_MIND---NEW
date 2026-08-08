@@ -145,13 +145,13 @@ class DatasetSensorSimulator:
 
 def print_step_summary(tick: int, results: dict, global_state: dict) -> None:
     """Print a compact multi-agent step summary."""
-    print(f"\n{'═'*70}")
+    print(f"\n{'='*70}")
     print(f"  TICK {tick:>4}  |  Global State: {global_state['device_state']}  |  "
           f"Hazard Score: {global_state['global_score']:.3f}")
-    print(f"{'─'*70}")
+    print(f"{'-'*70}")
     for agent_name, res in results.items():
         conf = res.get("confidence", 0.0)
-        act  = res.get("action", "—")
+        act  = res.get("action", "-")
         buf  = res.get("replay_buffer_size", 0)
         rfits= res.get("metrics", {}).get("refit_count", 0)
         print(
@@ -159,9 +159,9 @@ def print_step_summary(tick: int, results: dict, global_state: dict) -> None:
             f"  buf={buf:<4}  refits={rfits}"
         )
     if global_state["active_sources"]:
-        print(f"{'─'*70}")
+        print(f"{'-'*70}")
         print(f"  Active alert sources: {global_state['active_sources']}")
-    print(f"{'═'*70}")
+    print(f"{'='*70}")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -169,10 +169,10 @@ def print_step_summary(tick: int, results: dict, global_state: dict) -> None:
 # ═══════════════════════════════════════════════════════════════════════════
 
 def run_demo(n_ticks: int = 300, verbose_agents: bool = False) -> None:
-    print("\n" + "█"*70)
-    print("  FIELD-MIND — AI SENSOR AGENT SYSTEM DEMO")
-    print("  Each sensor runs as an autonomous agent: Observe→Reason→Act→Learn")
-    print("█"*70 + "\n")
+    print("\n" + "="*70)
+    print("  FIELD-MIND -- AI SENSOR AGENT SYSTEM DEMO")
+    print("  Each sensor runs as an autonomous agent: Observe->Reason->Act->Learn")
+    print("="*70 + "\n")
 
     # ── 1. Load original datasets for simulation ───────────────────────────
     print("[Setup] Loading original datasets for sensor simulation...")
@@ -285,10 +285,10 @@ def run_demo(n_ticks: int = 300, verbose_agents: bool = False) -> None:
     except KeyboardInterrupt:
         print("\n[Demo] Interrupted by user.")
 
-    # ── 6. Final Reports ───────────────────────────────────────────────────
-    print("\n\n" + "█"*70)
-    print("  DEMO COMPLETE — Final Agent Status Reports")
-    print("█"*70 + "\n")
+    # -- 6. Final Reports ---------------------------------------------------
+    print("\n\n" + "="*70)
+    print("  DEMO COMPLETE -- Final Agent Status Reports")
+    print("="*70 + "\n")
 
     for agent in [gas_agent, env_agent, vib_agent, ultra_agent, multi_gas_agent]:
         print(agent.status_report())

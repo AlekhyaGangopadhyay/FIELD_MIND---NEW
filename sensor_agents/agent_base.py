@@ -452,10 +452,9 @@ class SensorAgentBase(ABC):
         )
 
     def status_report(self) -> str:
-        """Return a formatted multi-line status string for this agent."""
         snap = self._get_metrics_snapshot()
         lines = [
-            f"╔══ {self.agent_name} Status Report ══╗",
+            f"=== {self.agent_name} Status Report ===",
             f"  Ticks processed   : {snap['tick_count']}",
             f"  Alerts emitted    : {snap['alert_count']}",
             f"  Model refits      : {snap['refit_count']}",
