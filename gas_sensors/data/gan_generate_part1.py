@@ -64,7 +64,7 @@ def run_part1_gan():
     df = pd.read_csv(INPUT_CSV)
     print(f"Loaded input data: {INPUT_CSV} ({len(df)} rows)")
 
-    feature_cols = ["air_quality", "smoke", "alcohol", "flamable_gas", "MQ136_raw", "MQ7_raw", "t", "h"]
+    feature_cols = ["air_quality_ppm", "smoke_ppm", "alcohol_ppm", "flamable_gas_ppm", "MQ136_ppm", "MQ7_ppm", "t", "h"]
     for col in feature_cols:
         df[col] = df.groupby("is_warmup")[col].transform(lambda x: x.fillna(x.median()))
         df[col] = df[col].fillna(df[col].median())
@@ -154,20 +154,61 @@ def run_part1_gan():
                 df_gen["is_warmup"] = (cls == 1)
 
                 # Physical bounds enforcement
-                df_gen["air_quality"] = np.clip(df_gen["air_quality"], 0, None)
-                df_gen["smoke"] = np.clip(df_gen["smoke"], 0, None)
-
-                # Warmup alcohol in real sensor data is constant 25.0
-                if cls == 1:
-                    df_gen["alcohol"] = 25.0
-                else:
-                    df_gen["alcohol"] = np.clip(df_gen["alcohol"], 0, None)
-
-                df_gen["flamable_gas"] = np.clip(df_gen["flamable_gas"], 0, None)
-                df_gen["MQ136_raw"] = np.clip(df_gen["MQ136_raw"], 0, None)
-                df_gen["MQ7_raw"] = np.clip(df_gen["MQ7_raw"], 0, None)
+                df_gen["air_quality_ppm"] = np.clip(df_gen["air_quality_ppm"], 0, None)
+                df_gen["smoke_ppm"] = np.clip(df_gen["smoke_ppm"], 0, None)
+                df_gen["alcohol_ppm"] = np.clip(df_gen["alcohol_ppm"], 0, None)
+                df_gen["flamable_gas_ppm"] = np.clip(df_gen["flamable_gas_ppm"], 0, None)
+                df_gen["MQ136_ppm"] = np.clip(df_gen["MQ136_ppm"], 0, None)
+                df_gen["MQ7_ppm"] = np.clip(df_gen["MQ7_ppm"], 0, None)
                 df_gen["t"] = np.clip(df_gen["t"], 15.0, 45.0)
                 df_gen["h"] = np.clip(df_gen["h"], 20.0, 95.0)
+
+                # Back-calculate raw columns from generated ppm
+                temp = df_gen["t"]
+                hum = df_gen["h"]
+                cf = 1.0 - 0.005 * (temp - 20.0) - 0.002 * (hum - 65.0)
+                cf = np.clip(cf, 0.1, 5.0)
+
+                temp_real = df["t"].fillna(df["t"].median())
+                hum_real = df["h"].fillna(df["h"].median())
+                cf_real = 1.0 - 0.005 * (temp_real - 20.0) - 0.002 * (hum_real - 65.0)
+                cf_real = np.clip(cf_real, 0.1, 5.0)
+
+                calibration_params = {
+                    "air_quality":  {"RL": 10.0, "is_mv": False, "clean_ratio": 3.6,   "a": 110.47, "b": -2.862, "out_col": "air_quality_ppm"},
+                    "smoke":        {"RL": 10.0, "is_mv": False, "clean_ratio": 9.8,   "a": 613.9,  "b": -2.07,   "out_col": "smoke_ppm"},
+                    "alcohol":      {"RL": 10.0, "is_mv": False, "clean_ratio": 60.0,  "a": 0.4,    "b": -2.5,    "out_col": "alcohol_ppm"},
+                    "flamable_gas": {"RL": 20.0, "is_mv": True,  "clean_ratio": 4.4,   "a": 1012.7, "b": -2.78,   "out_col": "flamable_gas_ppm"},
+                    "MQ136_raw":    {"RL": 10.0, "is_mv": True,  "clean_ratio": 1.0,   "a": 28.5,   "b": -1.95,   "out_col": "MQ136_ppm"},
+                    "MQ7_raw":      {"RL": 10.0, "is_mv": False, "clean_ratio": 27.0,  "a": 99.04,  "b": -1.518,  "out_col": "MQ7_ppm"},
+                }
+
+                for col, params in calibration_params.items():
+                    ppm = df_gen[params["out_col"]]
+                    ratio = (np.clip(ppm, 1e-8, None) / params["a"]) ** (1.0 / params["b"])
+                    
+                    val = df[col].interpolate(limit=3)
+                    if params["is_mv"]:
+                        vout = np.clip(val / 1000.0, 0.001, 4.999)
+                    else:
+                        vout = np.clip(val * 5.0 / 1023.0, 0.001, 4.999)
+                    rs = params["RL"] * (5.0 - vout) / vout
+                    rs_corrected = rs / cf_real
+                    steady_state_rs = rs_corrected[~df["is_warmup"]].dropna()
+                    if len(steady_state_rs) > 0:
+                        rs_clean = np.median(steady_state_rs)
+                    else:
+                        rs_clean = params["RL"] * 2.0
+                    r0 = rs_clean / params["clean_ratio"]
+
+                    rs_gen = r0 * ratio * cf
+                    rs_gen = np.clip(rs_gen, 0.001, 1e6)
+                    vout_gen = (5.0 * params["RL"]) / (rs_gen + params["RL"])
+
+                    if params["is_mv"]:
+                        df_gen[col] = vout_gen * 1000.0
+                    else:
+                        df_gen[col] = vout_gen * 1023.0 / 5.0
 
                 # Metadata columns
                 real_dt = df[df["is_warmup"] == (cls == 1)]["dt_s"].dropna().values

@@ -79,6 +79,15 @@ def parse(raw: pd.DataFrame) -> pd.DataFrame:
         df = pd.concat([df, pd.DataFrame(loose)], ignore_index=True)
     return df
 
+CALIBRATION_PARAMS = {
+    "air_quality":  {"RL": 10.0, "is_mv": False, "clean_ratio": 3.6,   "a": 110.47, "b": -2.862, "out_col": "air_quality_ppm"},
+    "smoke":        {"RL": 10.0, "is_mv": False, "clean_ratio": 9.8,   "a": 613.9,  "b": -2.07,   "out_col": "smoke_ppm"},
+    "alcohol":      {"RL": 10.0, "is_mv": False, "clean_ratio": 60.0,  "a": 0.4,    "b": -2.5,    "out_col": "alcohol_ppm"},
+    "flamable_gas": {"RL": 20.0, "is_mv": True,  "clean_ratio": 4.4,   "a": 1012.7, "b": -2.78,   "out_col": "flamable_gas_ppm"},
+    "MQ136_raw":    {"RL": 10.0, "is_mv": True,  "clean_ratio": 1.0,   "a": 28.5,   "b": -1.95,   "out_col": "MQ136_ppm"},
+    "MQ7_raw":      {"RL": 10.0, "is_mv": False, "clean_ratio": 27.0,  "a": 99.04,  "b": -1.518,  "out_col": "MQ7_ppm"},
+}
+
 def clean(df: pd.DataFrame) -> pd.DataFrame:
     df["timestamp"] = pd.to_datetime(df["ts"], format="%H:%M:%S %d/%m/%y", errors="coerce")
     df = df.dropna(subset=["timestamp"]).drop(columns=["ts"])
@@ -93,6 +102,36 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     # Warm-up flag: MQ heaters stabilising. See doc section 1.5 -- do NOT train on these.
     df["elapsed_s"] = (df["timestamp"] - df["timestamp"].iloc[0]).dt.total_seconds()
     df["is_warmup"] = df["elapsed_s"] < 600          # first 10 minutes
+
+    # Calibration logic (ADC -> ppm)
+    # Compute temperature and humidity correction factors
+    temp = df["t"].fillna(df["t"].median())
+    hum = df["h"].fillna(df["h"].median())
+    cf = 1.0 - 0.005 * (temp - 20.0) - 0.002 * (hum - 65.0)
+    cf = np.clip(cf, 0.1, 5.0)
+
+    for col, params in CALIBRATION_PARAMS.items():
+        val = df[col].interpolate(limit=3)
+        if params["is_mv"]:
+            vout = np.clip(val / 1000.0, 0.001, 4.999)
+        else:
+            vout = np.clip(val * 5.0 / 1023.0, 0.001, 4.999)
+
+        rs = params["RL"] * (5.0 - vout) / vout
+        rs_corrected = rs / cf
+
+        # Calibrate R0 from steady-state clean air
+        steady_state_rs = rs_corrected[~df["is_warmup"]].dropna()
+        if len(steady_state_rs) > 0:
+            rs_clean = np.median(steady_state_rs)
+        else:
+            rs_clean = params["RL"] * 2.0  # fallback estimation
+        
+        r0 = rs_clean / params["clean_ratio"]
+
+        # Calculate ratio and ppm
+        ratio = rs_corrected / r0
+        df[params["out_col"]] = params["a"] * (ratio ** params["b"])
 
     return df.reset_index(drop=True)
 
