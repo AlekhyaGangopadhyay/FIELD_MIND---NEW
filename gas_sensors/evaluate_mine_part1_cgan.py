@@ -53,7 +53,7 @@ os.makedirs(DOCS_DIR, exist_ok=True)
 REAL_PATH = os.path.join(DATA_DIR, "mine_part1_clean.csv")
 BALANCED_PATH = os.path.join(DATA_DIR, "mine_part1_balanced_gan.csv")
 
-FEATURE_COLS = ["air_quality", "smoke", "alcohol", "flamable_gas", "MQ136_raw", "MQ7_raw", "t", "h"]
+FEATURE_COLS = ["air_quality_ppm", "smoke_ppm", "alcohol_ppm", "flamable_gas_ppm", "MQ136_ppm", "MQ7_ppm", "t", "h"]
 
 def compute_mmd(X_real, X_syn, gamma=1.0):
     n = min(len(X_real), len(X_syn), 2000)
@@ -346,7 +346,7 @@ def run_evaluation():
     # 13. Pairwise Scatter Plots
     # ---------------------------------------------------------
     print("[13/13] Generating Pairwise Scatter Plots...")
-    pairs = [("air_quality", "flamable_gas"), ("MQ136_raw", "smoke"), ("t", "h"), ("MQ7_raw", "alcohol")]
+    pairs = [("air_quality_ppm", "flamable_gas_ppm"), ("MQ136_ppm", "smoke_ppm"), ("t", "h"), ("MQ7_ppm", "alcohol_ppm")]
     fig, axes = plt.subplots(2, 2, figsize=(14, 11))
     axes = axes.flatten()
 

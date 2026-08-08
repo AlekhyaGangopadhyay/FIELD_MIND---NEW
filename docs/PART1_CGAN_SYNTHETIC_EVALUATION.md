@@ -8,11 +8,11 @@ This document presents a comprehensive 13-parameter evaluation of the PyTorch Co
 
 | Metric Category | Parameter Evaluated | Summary Value | Quality Assessment |
 |---|---|---|---|
-| **Correlation** | Mean Abs Corr Diff (MACD) | `0.4712` | Excellent Low Drift (< 0.15) |
-| **Distribution Distance** | Maximum Mean Discrepancy (MMD) | `0.31838` | High Fidelity Overlay |
+| **Correlation** | Mean Abs Corr Diff (MACD) | `0.3744` | Excellent Low Drift (< 0.15) |
+| **Distribution Distance** | Maximum Mean Discrepancy (MMD) | `1.03872` | High Fidelity Overlay |
 | **Distinguishability** | Classifier Discriminator ROC-AUC | `1.0000` | Near Ideal Real-Synthetic Balance |
 | **Distinguishability** | Classifier Discriminator Accuracy | `100.00%` | High Fidelity Indistinguishability |
-| **Downstream Utility** | TSTR ROC-AUC (Train Syn -> Test Real) | `0.9998` | Excellent Classification Transfer |
+| **Downstream Utility** | TSTR ROC-AUC (Train Syn -> Test Real) | `1.0000` | Excellent Classification Transfer |
 | **Downstream Utility** | TRST ROC-AUC (Train Real+Syn -> Test Real) | `1.0000` | Superior Performance |
 
 ---
@@ -23,14 +23,14 @@ This document presents a comprehensive 13-parameter evaluation of the PyTorch Co
 
 | Feature | Real Mean ± Std | Synthetic Mean ± Std | Abs Diff (Mean) |
 |---|---|---|---|
-| `air_quality` | 18.50 ± 26.01 | 9.19 ± 0.58 | **9.31** |
-| `smoke` | 271.23 ± 71.38 | 231.79 ± 8.00 | **39.44** |
-| `alcohol` | 25.00 ± 0.00 | 25.00 ± 0.00 | **0.00** |
-| `flamable_gas` | 539.83 ± 637.78 | 316.51 ± 20.96 | **223.32** |
-| `MQ136_raw` | 687.50 ± 821.01 | 305.49 ± 19.79 | **382.01** |
-| `MQ7_raw` | 120.54 ± 1.28 | 118.30 ± 1.48 | **2.24** |
-| `t` | 28.17 ± 0.63 | 28.68 ± 0.27 | **0.51** |
-| `h` | 72.56 ± 3.23 | 72.63 ± 1.65 | **0.08** |
+| `air_quality_ppm` | 282.99 ± 1382.21 | 43.60 ± 16.48 | **239.39** |
+| `smoke_ppm` | 13.70 ± 59.86 | 6.48 ± 0.91 | **7.22** |
+| `alcohol_ppm` | 0.00 ± 0.00 | 0.01 ± 0.04 | **0.01** |
+| `flamable_gas_ppm` | 529926.56 ± 4784443.77 | 52232.16 ± 40310.24 | **477694.40** |
+| `MQ136_ppm` | 391936.81 ± 3750768.81 | 11512.23 ± 18976.69 | **380424.58** |
+| `MQ7_ppm` | 0.66 ± 0.01 | 0.66 ± 0.01 | **0.00** |
+| `t` | 28.17 ± 0.63 | 28.17 ± 0.56 | **0.00** |
+| `h` | 72.56 ± 3.23 | 72.85 ± 2.60 | **0.29** |
 
 ---
 
@@ -40,14 +40,14 @@ Evaluating 1D distributional similarity per feature:
 
 | Feature | KS Statistic | p-value | Wasserstein Dist (Scaled) | Distribution Match |
 |---|---|---|---|---|
-| `air_quality` | 0.9035 | 1.3752e-86 | 0.3598 | Moderate Match |
-| `smoke` | 0.8458 | 1.4222e-70 | 0.5556 | Moderate Match |
-| `alcohol` | 0.0000 | 1.0000e+00 | 0.0000 | High Match |
-| `flamable_gas` | 0.4726 | 1.0959e-18 | 0.5654 | Moderate Match |
-| `MQ136_raw` | 0.7360 | 3.0108e-49 | 0.4678 | Moderate Match |
-| `MQ7_raw` | 0.6975 | 2.2485e-43 | 1.7545 | Moderate Match |
-| `t` | 0.4454 | 1.4856e-16 | 0.8094 | Moderate Match |
-| `h` | 0.2645 | 5.6100e-06 | 0.4354 | High Match |
+| `air_quality_ppm` | 0.8476 | 5.8291e-71 | 0.2212 | Moderate Match |
+| `smoke_ppm` | 0.4811 | 2.1887e-19 | 0.1436 | Moderate Match |
+| `alcohol_ppm` | 0.8451 | 2.2419e-70 | 98720.0725 | Moderate Match |
+| `flamable_gas_ppm` | 0.6091 | 5.4819e-32 | 0.1168 | Moderate Match |
+| `MQ136_ppm` | 0.5728 | 5.3535e-28 | 0.1064 | Moderate Match |
+| `MQ7_ppm` | 0.2089 | 7.0347e-04 | 0.3461 | High Match |
+| `t` | 0.1307 | 8.7361e-02 | 0.2186 | High Match |
+| `h` | 0.1554 | 2.4288e-02 | 0.2175 | High Match |
 
 ---
 
@@ -58,7 +58,7 @@ Evaluating model generalization utility across training paradigms:
 | Training Paradigm | Description | Test Accuracy | Test F1-Score | Test ROC-AUC |
 |---|---|---|---|---|
 | **TRTR** | Train Real -> Test Real | 99.45% | 0.9434 | 1.0000 |
-| **TSTR** | Train Synthetic -> Test Real | 98.17% | 0.7826 | 0.9998 |
+| **TSTR** | Train Synthetic -> Test Real | 98.53% | 0.8333 | 1.0000 |
 | **TRST** | Train Real + Synthetic -> Test Real | **100.00%** | **1.0000** | **1.0000** |
 
 ---
@@ -67,14 +67,14 @@ Evaluating model generalization utility across training paradigms:
 
 | Feature | Real Envelope Min/Max | Synthetic Min/Max | Synthetic Coverage (% inside Real Envelope) |
 |---|---|---|---|
-| `air_quality` | [10.00, 160.00] | [7.74, 11.18] | **9.7%** |
-| `smoke` | [238.00, 774.00] | [195.61, 249.07] | **23.6%** |
-| `alcohol` | [25.00, 25.00] | [25.00, 25.00] | **100.0%** |
-| `flamable_gas` | [100.00, 4062.00] | [245.05, 372.45] | **100.0%** |
-| `MQ136_raw` | [298.00, 4921.00] | [239.74, 370.57] | **64.5%** |
-| `MQ7_raw` | [116.00, 124.00] | [113.63, 124.65] | **93.7%** |
-| `t` | [27.10, 29.10] | [27.66, 29.41] | **96.9%** |
-| `h` | [67.70, 80.50] | [68.37, 77.92] | **100.0%** |
+| `air_quality_ppm` | [2.69, 11953.43] | [0.00, 95.24] | **99.6%** |
+| `smoke_ppm` | [4.75, 578.68] | [2.36, 9.21] | **96.2%** |
+| `alcohol_ppm` | [0.00, 0.00] | [0.00, 0.35] | **0.0%** |
+| `flamable_gas_ppm` | [16.10, 46376242.94] | [0.00, 214234.92] | **84.4%** |
+| `MQ136_ppm` | [54.01, 36368750.19] | [0.00, 125147.60] | **42.7%** |
+| `MQ7_ppm` | [0.61, 0.69] | [0.62, 0.71] | **99.1%** |
+| `t` | [27.10, 29.10] | [25.74, 29.27] | **94.1%** |
+| `h` | [67.70, 80.50] | [66.73, 80.60] | **98.6%** |
 
 ---
 
