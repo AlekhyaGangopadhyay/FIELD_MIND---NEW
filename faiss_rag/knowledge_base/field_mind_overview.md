@@ -24,7 +24,7 @@ Layer 2B: Memory (Tier 2)
   └── FAISS Vector Database — offline semantic search over scientific docs
 
 Layer 3: Scientific Reasoning Core (triggered on EMERGENCY)
-  └── LangGraph agent loop with Llama-3.2-3B-Instruct (4-bit quantized)
+  └── LangGraph agent loop with Qwen2.5-7B-Instruct (4-bit quantized)
   └── OBSERVE → EKG-RETRIEVE → RAG-RETRIEVE → HYPOTHESIZE → SUGGEST
 ```
 
@@ -135,7 +135,7 @@ Query example:
 retriever = RAGRetriever(index_path, metadata_path, embedder)
 results = retriever.retrieve("methane concentration safe limit underground", top_k=5)
 context = retriever.format_context(results)
-# → Used as grounding context for Llama-3.2-3B reasoning
+# → Used as grounding context for Qwen2.5-7B reasoning
 ```
 
 ---

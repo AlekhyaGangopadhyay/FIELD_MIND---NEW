@@ -1,6 +1,6 @@
 # FAISS Vector Database (RAG) — FIELD-MIND Layer 2B
 
-The **FAISS RAG module** is FIELD-MIND's offline semantic search layer. It indexes mining safety literature, operational protocols, and system documentation into a FAISS vector store and retrieves the most relevant knowledge chunks to ground the downstream Scientific Reasoning Core (Layer 3 / LangGraph + Llama-3.2-3B).
+The **FAISS RAG module** is FIELD-MIND's offline semantic search layer. It indexes mining safety literature, operational protocols, and system documentation into a FAISS vector store and retrieves the most relevant knowledge chunks to ground the downstream Scientific Reasoning Core (Layer 3 / LangGraph + Qwen2.5-7B).
 
 All processing runs **100% offline** — no API calls, no internet required. Designed to operate within the 4 GB RAM envelope of an NVIDIA Jetson Nano.
 
@@ -279,7 +279,7 @@ if orchestrator.device_state == "EMERGENCY":
     # Retrieve and inject as LLM context
     results = retriever.retrieve(query, top_k=5)
     context = retriever.format_context(results)
-    # → Pass `context` as system prompt grounding to Llama-3.2-3B
+    # → Pass `context` as system prompt grounding to Qwen2.5-7B
 ```
 
 ### LangGraph RAG-RETRIEVE Step

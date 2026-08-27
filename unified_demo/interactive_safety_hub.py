@@ -327,7 +327,7 @@ def main():
     # STEP 4: Multi-Turn Interactive Conversation Loop with LLM
     # ───────────────────────────────────────────────────────────────────────
     print("\n" + "─" * 80)
-    print("💬 STEP 4: Interactive Qwen LLM Chat Assistant")
+    print("💬 STEP 4: Interactive Safety Chat Assistant")
     print("  Type your questions below. Type 'exit' to quit or 'new' to test new inputs.")
     print("─" * 80)
 

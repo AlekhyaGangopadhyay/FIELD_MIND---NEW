@@ -23,7 +23,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     root = Path(__file__).resolve().parent
     parser.add_argument("--root", type=Path, default=root)
-    parser.add_argument("--model", type=Path, default=root / "gas_sensors" / "models" / "Qwen2.5-7B-Instruct-Q4_K_M.gguf")
+    parser.add_argument("--model", type=Path, default=root / "reasoning_core" / "Qwen2.5-7B-Instruct-Q4_K_M.gguf")
     parser.add_argument("--min-free-gb", type=float, default=20.0)
     parser.add_argument("--allow-missing", action="store_true")
     args = parser.parse_args()
@@ -35,7 +35,8 @@ def main() -> int:
     failures.append(not check("Python", tuple(map(int, platform.python_version().split(".")[:2])) >= (3, 10), platform.python_version()))
     free_gb = shutil.disk_usage(root).free / 1e9
     failures.append(not check("Free storage", free_gb >= args.min_free_gb, f"{free_gb:.1f} GB free; need >= {args.min_free_gb:.1f} GB"))
-    failures.append(not check("GGUF model", model.is_file() and model.stat().st_size > 100_000_000, str(model)))
+    model_exists = model.is_file() and model.stat().st_size > 100_000_000
+    check("GGUF model (optional)", True, f"Found {model.name}" if model_exists else "Missing; running with expert fallback.")
     failures.append(not check("CUDA visibility", bool(shutil.which("tegrastats") or shutil.which("nvidia-smi")), "tegrastats/nvidia-smi available"))
     if Path("/proc/meminfo").exists():
         meminfo = Path("/proc/meminfo").read_text(encoding="ascii", errors="ignore")

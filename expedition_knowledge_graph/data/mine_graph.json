@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "saved_at": "2026-08-08T17:58:45.900211",
-    "total_nodes": 1436,
-    "total_edges": 1697
+    "saved_at": "2026-08-27T10:41:29.805501",
+    "total_nodes": 1440,
+    "total_edges": 1701
   },
   "nodes": [
     {
@@ -30845,6 +30845,48 @@
         "reason": "IsolationForest anomaly (score=-0.004) | confidence=0.50",
         "label": "EnvironmentalReading"
       }
+    },
+    {
+      "id": "learned_rule_1786344334412",
+      "properties": {
+        "timestamp": 1786344334.412366,
+        "actual_situation": "Tunnel High-Pressure Water Spraying Operation",
+        "explanation": "MQ-7 electrochemical sensor experienced moisture condensation drift at 88.5% humidity; actual ambient CO is safe (12.0 ppm).",
+        "rule_text": "The rule should address the potential issue of moisture condensation affecting the MQ-7 sensor's accuracy in high-pressure water spraying operations within tunnels.\n**Self-Learned Safety Rule for Tunnel High-Pressure Water Spraying Operation:**\n\n**Rule: Monitor and Control Humidity Levels to Prevent Moisture Condensation on MQ-7 Sensor.**\n\n**Explanation:**\nDuring high-pressure water spraying operations in tunnels, moisture condensation can occur, leading to drift in the readings of the MQ-7 electrochemical sensor. This can result in inaccurate measurements of carbon monoxide (CO) levels, which may compromise safety. To mitigate this issue, it is essential to maintain a controlled environment with appropriate humidity levels to prevent moisture condensation on the sensor. Regular monitoring of humidity and temperature should be conducted, and any necessary adjustments to the environment should be made to ensure the MQ-7 sensor operates within its optimal conditions. This will help ensure accurate CO measurements and maintain the safety of the operation. \n\n**Action Steps:**\n1. **Monitor Humidity:** Continuously monitor the ambient humidity levels in the tunnel.\n2. **Control Humidity:** Implement measures to control humidity, such as dehumidifiers or proper ventilation.\n3. **Regular Checks:** Perform regular checks on the MQ-7 sensor to ensure it is functioning correctly.\n4. **Calibration:** Calibrate the MQ-7 sensor periodically to maintain accuracy.\n5. **Training:** Ensure all personnel are trained on the importance of maintaining optimal humidity levels and the potential impacts of moisture condensation.\n\nBy adhering to this rule, the accuracy and reliability of the CO measurements can be maintained, ensuring the safety of the operation. \n\n**Conclusion:**\nMaintaining controlled humidity levels is crucial for the accurate operation of the MQ-7 sensor during high-pressure water spraying operations in tunnels. This rule helps prevent moisture condensation, which can lead to inaccurate CO readings and potential safety hazards. Regular monitoring and control of humidity will ensure the safety and effectiveness of the operation. \n\n**Rule: Monitor and Control Humidity Levels to Prevent Moisture Condensation on MQ-7 Sensor.** \n\n**Priority: High** \n\n**Category: Environmental Control** \n\n**Safety Impact: High** \n\n**Action Required: Immediate** \n\n**Responsible Party: Tunnel Operation Team** \n\n**Review Frequency: Daily** \n\n**Documentation: Maintain a log of humidity levels and sensor readings.** \n\n**Training: Conduct regular training sessions on the importance of humidity control.** \n\n**Follow-Up: Implement corrective actions if humidity levels exceed",
+        "segment_id": "Heading_A1",
+        "label": "SelfLearnedRule"
+      }
+    },
+    {
+      "id": "reasoning_event_1786344368663",
+      "properties": {
+        "timestamp": 1786344368.663015,
+        "hypothesis": "General gas concentration levels rising, indicating reduced ventilation flow. | Environmental comfort indices deviated from normal baseline monitoring parameters.",
+        "suggestions": "Based on the current data, what are the most pressing issues and how should they be addressed?; Based on the current data, the most pressing issues are the elevated levels of carbon monoxide (CO) and the deviation from normal environmental comfort indices. Here is a list of prioritized, actionable",
+        "segment_id": "Heading_A1",
+        "label": "ReasoningResolution"
+      }
+    },
+    {
+      "id": "learned_rule_1787807489685",
+      "properties": {
+        "timestamp": 1787807489.6858196,
+        "actual_situation": "Tunnel High-Pressure Water Spraying Operation",
+        "explanation": "MQ-7 electrochemical sensor experienced moisture condensation drift at 88.5% humidity; actual ambient CO is safe (12.0 ppm).",
+        "rule_text": "When real-time telemetry indicates 'Tunnel High-Pressure Water Spraying Operation' despite conflicting model output, apply corrective contextual rule: MQ-7 electrochemical sensor experienced moisture condensation drift at 88.5% humidity; actual ambient CO is safe (12.0 ppm).. Override initial prediction and update experience replay memory.",
+        "segment_id": "Heading_A1",
+        "label": "SelfLearnedRule"
+      }
+    },
+    {
+      "id": "reasoning_event_1787807489805",
+      "properties": {
+        "timestamp": 1787807489.8055012,
+        "hypothesis": "General gas concentration levels rising, indicating reduced ventilation flow. | Environmental comfort indices deviated from normal baseline monitoring parameters.",
+        "suggestions": "Maintain continuous low-power monitoring and standard reporting.",
+        "segment_id": "Heading_A1",
+        "label": "ReasoningResolution"
+      }
     }
   ],
   "edges": [
@@ -42725,6 +42767,34 @@
     },
     {
       "from": "reasoning_event_1785326950827",
+      "to": "Heading_A1",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
+      }
+    },
+    {
+      "from": "learned_rule_1786344334412",
+      "to": "Heading_A1",
+      "properties": {
+        "rel_type": "LEARNED_FOR"
+      }
+    },
+    {
+      "from": "reasoning_event_1786344368663",
+      "to": "Heading_A1",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
+      }
+    },
+    {
+      "from": "learned_rule_1787807489685",
+      "to": "Heading_A1",
+      "properties": {
+        "rel_type": "LEARNED_FOR"
+      }
+    },
+    {
+      "from": "reasoning_event_1787807489805",
       "to": "Heading_A1",
       "properties": {
         "rel_type": "RESOLVED_FOR"

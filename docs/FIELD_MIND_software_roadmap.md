@@ -21,7 +21,7 @@ graph TD
     end
 
     subgraph Layer 3: Reasoning Core
-        L3A[LangGraph Agent Loop] -->|Status: Done| L3B[Llama-3.2-3B Quantized Inference] -->|Status: Done| Out4[Actionable Advice]
+        L3A[LangGraph Agent Loop] -->|Status: Done| L3B[Qwen2.5-7B Quantized Inference] -->|Status: Done| Out4[Actionable Advice]
     end
 ```
 
@@ -106,9 +106,9 @@ graph TD
 
 ---
 
-### 6. Scientific Reasoning Core (LangGraph + Quantized Llama)
+### 6. Scientific Reasoning Core (LangGraph + Quantized Qwen)
 * **Status**: 🟢 **Completed**
-* **Description**: Local agent loop utilizing `Llama-3.2-3B-Instruct-GGUF` (4-bit quantized) via llama.cpp or local runtime to perform offline structured reasoning. Includes a high-quality expert rule fallback for on-device execution on limited hardware.
+* **Description**: Local agent loop utilizing `Qwen2.5-7B-Instruct-Q4_K_M.gguf` (4-bit quantized) via llama.cpp or local runtime to perform offline structured reasoning. Includes a high-quality expert rule fallback for on-device execution on limited hardware.
 * **Implemented Features**:
   * **LangGraph State Machine**: Implements the compiled diagnostic loop: `OBSERVE` (reads anomaly) $\rightarrow$ `EKG-RETRIEVE` (retrieves segment history) $\rightarrow$ `RAG-RETRIEVE` (queries FAISS safety database) $\rightarrow$ `HYPOTHESIZE` (identifies root cause) $\rightarrow$ `SUGGEST` (generates safety recommendations) $\rightarrow$ `UPDATE_EKG` (links and saves to NetworkX).
     * Scripts: [agent_loop.py](file:///c:/Users/Student/Desktop/FIELD_MIND - NEW/reasoning_core/agent_loop.py)
