@@ -13,7 +13,7 @@ Key layers running on the Jetson Nano include:
 2. **SciSense Projection Encoders (Layer 1)**: PyTorch projection networks aligning sensor inputs into a 4096-D shared space.
 3. **Expedition Knowledge Graph (EKG - Layer 2B)**: Directed property graph mapping tunnel geometry and historical alerts (serialized as JSON).
 4. **FAISS Vector Database (RAG - Layer 2C)**: Index of mining literature, manuals, and safety guidelines.
-5. **Scientific Reasoning Core (Layer 3)**: A `LangGraph` agent loop executing a quantized **Llama-3.2-3B-Instruct** LLM in GGUF format via `llama.cpp` / `llama-cpp-python`.
+5. **Scientific Reasoning Core (Layer 3)**: A `LangGraph` agent loop executing a quantized **Qwen2.5-7B-Instruct** LLM in GGUF format via `llama.cpp` / `llama-cpp-python`.
 6. **Rugged Tablet Web Dashboard & ASR**: FastAPI server and offline voice processing (ASR Whisper-cpp / Vosk).
 
 ---
@@ -71,10 +71,10 @@ To ensure system stability, speed, and safety in underground environments, the f
 * **Storage Allocation**: All files, libraries, swap, and models reside on the SSD (>128GB capacity, >400MB/s read/write).
 * **Trade-off**: Adds slightly to hardware costs (~₹3,000 for SSD and casing) but eliminates the storage bottleneck, eliminates eMMC wear-out risks, and reduces LLM load latency to **under 5 seconds**.
 
-### Strategy 3: Downscaling to a 1B Parameter LLM
+### Strategy 3: Downscaling to a Smaller Parameter LLM
 * **Setup**: If forced to run strictly on the 16GB eMMC without external media:
-  - Downscale the LLM from `Llama-3.2-3B` to **`Llama-3.2-1B-Instruct` (Q4_K_M GGUF)**.
-  - The model size drops from **2.1 GB to ~700 MB**.
+  - Downscale the LLM from `Qwen2.5-7B-Instruct` to **`Qwen2.5-1.5B-Instruct` (Q4_K_M GGUF)**.
+  - The model size drops from **4.35 GB to ~1.2 GB**.
   - System swap space can be trimmed safely to **2.5 GB**.
-  - Total storage footprint drops to **~9.0 GB**, leaving a comfortable ~7.0 GB free on the eMMC.
-* **Trade-off**: Lower reasoning capabilities and citation quality compared to the 3B model, but provides low-latency loading (under 3 seconds on eMMC) and runs without external storage.
+  - Total storage footprint drops to **~9.5 GB**, leaving a comfortable ~6.5 GB free on the eMMC.
+* **Trade-off**: Lower reasoning capabilities and citation quality compared to the 7B model, but provides low-latency loading and runs without external storage.

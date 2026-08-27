@@ -106,7 +106,7 @@ Step 03 | INJECT: Environmental microclimate anomaly
   Reason: Environmental temperature/humidity anomaly detected (Isolation Forest)!
 [ATR STATE TRANSITION] IDLE -> ACTIVE_REASONING
   -> Swapping device memory context...
-  -> Loading Llama-3.2-3B-Instruct quantized reasoning engine (~3.0 GB RAM)...
+  -> Loading Qwen2.5-7B-Instruct-Q4_K_M quantized reasoning engine (~4.35 GB RAM)...
   -> Activating SciSense projection embedding layers!
 [SciSense] Aligning ...
   Device Memory State: ACTIVE_REASONING | Triggered: True
@@ -144,7 +144,7 @@ ATR Activation Pipeline test completed successfully!
 |------|-------------|
 | **Model loading** | All 13 Tier 1 models loaded without error. |
 | **State machine** | `IDLE → ACTIVE_REASONING` triggered on every simulated anomaly (environment, gas, vibration, ultrasonic). |
-| **Reasoning core** | Llama‑3.2‑3B‑Instruct quantized engine loaded (≈ 3 GB RAM) only during the active phase, then correctly swapped out. |
+| **Reasoning core** | Qwen2.5-7B-Instruct-Q4_K_M quantized reasoning engine loaded (≈ 4.35 GB RAM) only during the active phase, then correctly swapped out. |
 | **SciSense embeddings** | Produced 4 × 4096‑D unit vectors on every active step – identical to the Layer 1 demo. |
 | **Recovery** | After each anomaly clears, the orchestrator returns to `IDLE` and unloads the LLM, confirming power‑aware behavior. |
 | **Runtime** | Entire 10‑step simulation finished in ≈ 15 seconds on the host CPU; memory spikes only during active reasoning (≈ 3 GB). |
