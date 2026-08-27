@@ -347,7 +347,7 @@ class ScientificReasoningCore:
         Executes LLM Self-Reflection when a model misprediction/discrepancy occurs,
         embeds the new corrective safety rule into FAISS vector memory, and logs to EKG.
         """
-        print(f"\n  [Self-Learning Engine] Initiating LLM Reflection Loop (Qwen2.5-7B) for {segment_id} ...")
+        print(f"\n  [Self-Learning Engine] Initiating LLM Reflection Loop for {segment_id} ...")
         
         reflection_payload = dict(anomalies)
         reflection_payload["actual_situation"] = actual_situation
@@ -410,7 +410,7 @@ class ScientificReasoningCore:
         Evaluates whether active ML model predictions and environmental explanations are physically feasible
         given real-time telemetry, EKG historical context, and FAISS safety rules.
         If an unfeasible condition, false alarm, or physical discrepancy is identified (or supplied via ground truth),
-        triggers the Qwen LLM Reflection Engine, embeds the self-learned rule into FAISS RAG, and logs to EKG.
+        triggers the LLM Reflection Engine, embeds the self-learned rule into FAISS RAG, and logs to EKG.
         """
         print(f"\n  [Feasibility Assessor] Evaluating physical feasibility of predictions for {segment_id} ...")
 
