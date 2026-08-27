@@ -42,9 +42,10 @@ class OfflineLLMRunner:
             model_path = str(candidate.resolve())
         else:
             candidates = [
+                self.workspace_root / 'reasoning_core' / 'Qwen2.5-7B-Instruct-Q4_K_M.gguf',
+                self.workspace_root / 'reasoning_core' / 'models' / 'Qwen2.5-7B-Instruct-Q4_K_M.gguf',
                 self.workspace_root / 'gas_sensors' / 'models' / 'Qwen2.5-7B-Instruct-Q4_K_M.gguf',
                 self.workspace_root / 'models' / 'Qwen2.5-7B-Instruct-Q4_K_M.gguf',
-                self.workspace_root / 'reasoning_core' / 'models' / 'Qwen2.5-7B-Instruct-Q4_K_M.gguf',
             ]
             model_path = next((str(c) for c in candidates if c.is_file()), None)
         self.model_path = model_path
@@ -72,7 +73,7 @@ class OfflineLLMRunner:
             except Exception as e:
                 print(f"  [LLMRunner] ⚠ Failed to load GGUF model ({e}). Fallback to Expert System enabled.")
         elif not self.model_path:
-            print("  [LLMRunner] No GGUF model found at 'gas_sensors/models/Qwen2.5-7B-Instruct-Q4_K_M.gguf'. Defaulting to Expert System & Reflection Engine.")
+            print("  [LLMRunner] No GGUF model found at 'reasoning_core/Qwen2.5-7B-Instruct-Q4_K_M.gguf'. Defaulting to Expert System & Reflection Engine.")
 
     def ensure_loaded(self) -> bool:
         if self._initialized and self._llm:

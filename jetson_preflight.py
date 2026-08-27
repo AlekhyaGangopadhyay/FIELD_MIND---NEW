@@ -23,7 +23,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     root = Path(__file__).resolve().parent
     parser.add_argument("--root", type=Path, default=root)
-    parser.add_argument("--model", type=Path, default=root / "gas_sensors" / "models" / "Qwen2.5-7B-Instruct-Q4_K_M.gguf")
+    parser.add_argument("--model", type=Path, default=root / "reasoning_core" / "Qwen2.5-7B-Instruct-Q4_K_M.gguf")
     parser.add_argument("--min-free-gb", type=float, default=20.0)
     parser.add_argument("--allow-missing", action="store_true")
     args = parser.parse_args()
