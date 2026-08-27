@@ -3,7 +3,7 @@ demo_self_learning.py — Real-Time Agent Self-Learning & Reflection Demonstrati
 ===================================================================================
 Demonstrates FIELD-MIND's autonomous self-learning loop on NVIDIA Jetson Orin Nano:
   1. A sensor anomaly is detected, but real-world ground truth differs from the initial model prediction.
-  2. The LLM Reflection Engine (Qwen2.5-7B-Instruct) formulates a corrective safety rule.
+  2. The LLM Reflection Engine (or fallback Expert Rule Engine) formulates a corrective safety rule.
   3. The rule is dynamically embedded into the FAISS Vector RAG index and logged to the EKG graph.
   4. The corrected observation is pushed to the Experience Replay Buffer for online ML retraining.
   5. When identical telemetry arrives again, RAG retrieves the self-learned rule, preventing repeat errors!
@@ -29,14 +29,15 @@ from sensor_agents.gas_agent import GasSensorAgent
 
 
 def run_self_learning_demo():
+    # Initialize Core Reasoning Engine & Gas Agent
+    reasoning_core = ScientificReasoningCore(workspace_root=WORKSPACE_ROOT)
+
+    model_status = "Loaded (quantized GGUF)" if reasoning_core.llm_runner.ensure_loaded() else "Offline Fallback Expert Rule Engine"
     print("=" * 80)
     print("  FIELD-MIND — Autonomous Self-Learning & Real-Time Reflection Demo")
     print("  Hardware: NVIDIA Jetson Orin Nano (8GB Unified LPDDR5 Memory)")
-    print("  LLM Engine: Qwen2.5-7B-Instruct-Q4_K_M.gguf (INT4 7B Quantized)")
+    print(f"  LLM Engine: {model_status}")
     print("=" * 80)
-
-    # Initialize Core Reasoning Engine & Gas Agent
-    reasoning_core = ScientificReasoningCore(workspace_root=WORKSPACE_ROOT)
     bus = AgentBus()
     gas_agent = GasSensorAgent(workspace_root=WORKSPACE_ROOT, bus=bus, verbose=False)
 
@@ -70,7 +71,7 @@ def run_self_learning_demo():
     print(f"  [Root Cause Explanation]: {explanation}")
     print(f"  [True Ground-Truth Label]: 0 (Normal / Clean Air)")
 
-    # Evaluate physical feasibility of prediction with Qwen LLM
+    # Evaluate physical feasibility of prediction with LLM reasoning
     feasibility_res = reasoning_core.evaluate_feasibility_and_learn(
         anomalies=telemetry_tick_1,
         model_predictions=initial_inference,

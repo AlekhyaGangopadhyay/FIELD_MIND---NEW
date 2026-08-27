@@ -88,7 +88,7 @@ reasoning_core/
 
 The reasoning core uses `OfflineLLMRunner` to execute model queries offline:
 
-1. **Quantized LLM Execution (GGUF)**: If `llama-cpp-python` is installed and a GGUF model path (such as `Llama-3.2-3B-Instruct-GGUF`) is provided during initialization, the runner runs model inference on CPU threads.
+1. **Quantized LLM Execution (GGUF)**: If `llama-cpp-python` is installed and a GGUF model path (such as `Qwen2.5-7B-Instruct-Q4_K_M.gguf`) is provided during initialization, the runner runs model inference on CPU threads.
 2. **Domain-Informed Expert Fallback**: If no model path is provided or compiling GGUF packages fails, the runner defaults to a robust, rules-based expert system mapping standard mining limits and EKG historical associations to structured Markdown suggestions.
 
 ---
@@ -120,7 +120,7 @@ from reasoning_core import ScientificReasoningCore
 # Initialize reasoning core
 core = ScientificReasoningCore(
     workspace_root = "/path/to/FIELD_MIND",
-    model_path     = "models/Llama-3.2-3B-Instruct-Q4_K_M.gguf"  # Optional GGUF path
+    model_path     = "models/Qwen2.5-7B-Instruct-Q4_K_M.gguf"  # Optional GGUF path
 )
 
 # Run complete diagnostic loop
@@ -145,7 +145,7 @@ from reasoning_core import MineSafetyChatAssistant
 # Initialize conversational assistant
 assistant = MineSafetyChatAssistant(
     workspace_root = "/path/to/FIELD_MIND",
-    model_path     = "models/Llama-3.2-3B-Instruct-Q4_K_M.gguf"  # Optional GGUF path
+    model_path     = "models/Qwen2.5-7B-Instruct-Q4_K_M.gguf"  # Optional GGUF path
 )
 
 # Simple single-node query (original API, still works)
