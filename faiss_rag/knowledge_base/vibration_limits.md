@@ -119,3 +119,28 @@ The `VibrationSensorAgent` runs both models each tick:
 ### EKG Integration
 
 Blast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.
+
+---
+
+## SW-420 Shock Vibration Monitoring
+
+The SW-420 omnidirectional vibration sensor provides continuous digital pulse counting for physical impact and shock wave detection in underground galleries:
+
+| Shock Metric | Threshold / Status | Operational Impact | Action Required |
+|--------------|-------------------|--------------------|-----------------|
+| Baseline Normal | < 5 pulses/s | Normal background machinery | Continue continuous monitoring |
+| Level 1 Shock Alert | 5 – 20 pulses/s | Micro-fracture / moderate tremor | Inspect area for micro-fractures and loose rock |
+| Level 2 Critical Shock | > 20 pulses/s | Heavy structural shock / collapse wave | **IMMEDIATELY EVACUATE** and de-energize electrical equipment |
+
+---
+
+## Geomechanical Wall Displacement & Convergence Monitoring
+
+Continuous ultrasonic measurement monitors tunnel heading convergence and rock mass deformation:
+
+1. **Velocity Thresholds**:
+   - `Velocity > -0.01 m/s`: Normal stability.
+   - `Velocity < -0.01 m/s`: Slow geomechanical wall displacement. Inspect structural support pillars.
+   - `Velocity < -0.05 m/s & accelerating`: Uncontrolled wall displacement. **IMMEDIATE EVACUATION** protocol triggered.
+2. **False Obstacle Discrimination**: Instantaneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.
+

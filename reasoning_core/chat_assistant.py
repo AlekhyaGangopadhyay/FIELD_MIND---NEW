@@ -114,23 +114,40 @@ class MineSafetyChatAssistant:
         rag_context = assessment.rag_context or "FAISS safety guidelines index is unavailable."
         protocol_report = assessment.format_report()
 
-        # 3. Format Prompt
-        prompt = (
-            "You are FIELD-MIND, an expert offline underground mining safety assistant.\n"
-            "Your job is to communicate clearly with the operator, analyse data inputs, "
-            "and suggest safety measures based on regulations.\n\n"
-            f"LOCATION SEGMENT: {segment_id}\n"
-            f"ACTIVE DATA INPUTS (anomalies/readings): {active_anomalies}\n"
-            f"ALL SENSOR READINGS: {sensor_readings or active_anomalies}\n"
-            f"MODEL PREDICTIONS: {model_predictions}\n"
-            f"MODEL VS PROTOCOL ASSESSMENT:\n{protocol_report}\n"
-            f"MULTI-NODE TIME-SERIES TREND:\n{trend_context or 'No historical trend supplied.'}\n"
-            f"SAFETY MEASURES & REGULATIONS (RAG context):\n{rag_context}\n"
-            f"EKG HISTORICAL GRAPH CONTEXT:\n{ekg_context}\n\n"
-            f"USER QUERY: {user_message}\n\n"
-            "Generate a helpful, conversational, safety-focused response to the user. "
-            "Discuss and analyse the data inputs and explain corresponding safety measures."
+        # 3. Format Structured ChatML Prompt
+        system_instructions = (
+            "You are FIELD-MIND, an expert on-device underground mining safety assistant deployed on NVIDIA Jetson.\n"
+            "Your role is to protect miners and autonomous equipment by analyzing real-time sensor telemetry, "
+            "evaluating ML model predictions against regulatory standards (OSHA, NIOSH, IS 6922, AS 4024), "
+            "and providing clear, detailed, and prioritized safety recommendations.\n\n"
+            "Formatting Guidelines:\n"
+            "- Be direct, thorough, and professional.\n"
+            "- Structure your response with clear markdown headings and bullet points.\n"
+            "- Analyze the specific numerical sensor readings and explain any hazard conditions.\n"
+            "- Cite the relevant safety standards retrieved from RAG memory.\n"
+            "- Conclude with numbered, prioritized, and actionable safety measures."
         )
+
+        user_content = (
+            f"LOCATION / SECTOR: {segment_id}\n\n"
+            f"--- [ACTIVE SENSOR TELEMETRY] ---\n"
+            f"Active Anomalies: {active_anomalies}\n"
+            f"All Sensor Readings: {sensor_readings or active_anomalies}\n"
+            f"Model Predictions: {model_predictions}\n\n"
+            f"--- [SAFETY PROTOCOL & REGULATORY CHECKS] ---\n"
+            f"{protocol_report}\n\n"
+            f"--- [MULTI-NODE HISTORICAL TREND] ---\n"
+            f"{trend_context or 'No historical multi-node trend recorded.'}\n\n"
+            f"--- [RETRIEVED LITERATURE & GUIDELINES (FAISS RAG)] ---\n"
+            f"{rag_context}\n\n"
+            f"--- [EXPEDITION KNOWLEDGE GRAPH (EKG MEMORY)] ---\n"
+            f"{ekg_context}\n\n"
+            f"--- [OPERATOR QUESTION] ---\n"
+            f"{user_message}\n\n"
+            "Please provide a comprehensive, structured response answering the question, explaining the sensor data, and detailing mandatory safety protocols."
+        )
+
+        prompt = self.llm_runner.format_chat_prompt(system_instructions, user_content)
 
         # 4. Run through model generator or fallback conversational engine
         response = self.llm_runner.run_reasoning(
@@ -138,10 +155,11 @@ class MineSafetyChatAssistant:
             anomalies=active_anomalies,
             ekg_history=ekg_context,
             rag_context=rag_context,
-            task_type="chat"
+            task_type="chat",
+            max_tokens=min(1024, max(512, self.llm_runner.n_ctx // 2))
         )
 
-        if response in {"FIELD-MIND active. Safety regulations and model predictions evaluated.", "Unknown task type."}:
+        if not response or response in {"FIELD-MIND active. Safety regulations and model predictions evaluated.", "Unknown task type."}:
             # If GGUF is absent or fallback returns standard header, build rich conversational response locally
             response = self._build_conversational_response(
                 user_message,

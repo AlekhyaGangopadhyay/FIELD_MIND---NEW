@@ -213,22 +213,27 @@ class ScientificReasoningCore:
         ekg_history = state.get("ekg_history", "")
         rag_context = state.get("rag_context", "")
 
-        # Format Prompt
-        prompt = (
-            "You are an on-device safety reasoning agent in an underground mine.\n"
+        # Format Structured Prompt
+        system_msg = (
+            "You are an on-device diagnostic reasoning agent deployed in an underground mine.\n"
+            "Analyze anomalous telemetry, historical mine memory, and retrieved safety regulations to "
+            "determine the root cause hypothesis."
+        )
+        user_msg = (
             f"Active Anomalies: {anomalies}\n"
             f"EKG History:\n{ekg_history}\n"
             f"RAG Safety Regulations:\n{rag_context}\n\n"
-            "Based on the inputs above, formulate a clear, concise hypothesis explaining "
-            "the root cause of these anomalies."
+            "Formulate a clear, specific root-cause hypothesis explaining why these anomalies are occurring."
         )
+        prompt = self.llm_runner.format_chat_prompt(system_msg, user_msg)
 
         hypothesis = self.llm_runner.run_reasoning(
             prompt=prompt,
             anomalies=anomalies,
             ekg_history=ekg_history,
             rag_context=rag_context,
-            task_type="hypothesis"
+            task_type="hypothesis",
+            max_tokens=256
         )
         
         trace.append(f"Hypothesis generated: {hypothesis}")
@@ -246,21 +251,26 @@ class ScientificReasoningCore:
         rag_context = state.get("rag_context", "")
         hypothesis = state.get("hypothesis", "")
 
-        # Format Prompt
-        prompt = (
-            "You are an on-device safety reasoning agent in an underground mine.\n"
-            f"Active Anomalies: {anomalies}\n"
-            f"Hypothesis: {hypothesis}\n"
-            f"RAG Safety Regulations:\n{rag_context}\n\n"
-            "Generate a list of prioritized, actionable safety suggestions to resolve this threat."
+        # Format Structured Prompt
+        system_msg = (
+            "You are an on-device safety response coordinator in an underground mine.\n"
+            "Based on the identified root cause and regulatory standards, provide immediate, actionable safety directives."
         )
+        user_msg = (
+            f"Active Anomalies: {anomalies}\n"
+            f"Root Cause Hypothesis: {hypothesis}\n"
+            f"RAG Safety Regulations:\n{rag_context}\n\n"
+            "Provide a prioritized, bulleted list of actionable safety countermeasures and evacuation protocols."
+        )
+        prompt = self.llm_runner.format_chat_prompt(system_msg, user_msg)
 
         raw_suggestions = self.llm_runner.run_reasoning(
             prompt=prompt,
             anomalies=anomalies,
             ekg_history=ekg_history,
             rag_context=rag_context,
-            task_type="suggestions"
+            task_type="suggestions",
+            max_tokens=384
         )
 
         # Parse suggestions into list

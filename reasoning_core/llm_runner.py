@@ -50,7 +50,7 @@ class OfflineLLMRunner:
             model_path = next((str(c) for c in candidates if c.is_file()), None)
         self.model_path = model_path
         self._load_error = None
-        self.n_ctx = max(256, int(os.getenv('FIELDMIND_LLM_CONTEXT', '1024')))
+        self.n_ctx = max(512, int(os.getenv('FIELDMIND_LLM_CONTEXT', '2048')))
         self.n_threads = max(1, int(os.getenv('FIELDMIND_LLM_THREADS', '6')))
         self.n_gpu_layers = int(os.getenv('FIELDMIND_LLM_GPU_LAYERS', '-1'))
         self.lazy_load = lazy_load
@@ -83,7 +83,7 @@ class OfflineLLMRunner:
         try:
             from llama_cpp import Llama
             print(f'  [LLMRunner] Loading local GGUF from {self.model_path} (ctx={self.n_ctx}, gpu_layers={self.n_gpu_layers}) ...')
-            self._llm = Llama(model_path=self.model_path, n_ctx=self.n_ctx, n_threads=self.n_threads, n_gpu_layers=self.n_gpu_layers, n_batch=min(256, self.n_ctx), verbose=False)
+            self._llm = Llama(model_path=self.model_path, n_ctx=self.n_ctx, n_threads=self.n_threads, n_gpu_layers=self.n_gpu_layers, n_batch=min(512, self.n_ctx), verbose=False)
             self._initialized = True
             self._load_error = None
         except Exception as exc:
@@ -101,27 +101,57 @@ class OfflineLLMRunner:
     def health(self) -> Dict[str, Any]:
         return {'model_path': self.model_path, 'available': bool(self.model_path and os.path.isfile(self.model_path)), 'loaded': self._initialized, 'load_error': self._load_error, 'n_ctx': self.n_ctx, 'n_gpu_layers': self.n_gpu_layers}
 
+    def format_chat_prompt(self, system_msg: str, user_msg: str) -> str:
+        """
+        Formats system and user prompts using standard ChatML template (used by Qwen2.5)
+        or fallback instruction tags.
+        """
+        return (
+            f"<|im_start|>system\n{system_msg.strip()}<|im_end|>\n"
+            f"<|im_start|>user\n{user_msg.strip()}<|im_end|>\n"
+            f"<|im_start|>assistant\n"
+        )
+
     def run_reasoning(
         self,
         prompt: str,
         anomalies: Dict[str, Any],
         ekg_history: str,
         rag_context: str,
-        task_type: str = "hypothesis"
+        task_type: str = "hypothesis",
+        max_tokens: Optional[int] = None
     ) -> str:
         """
         Executes reasoning, self-reflection, or feasibility evaluation using the loaded LLM or falls back to the Expert System.
         """
         if self.ensure_loaded():
             try:
+                # Dynamic token budget calculation: allow generous output length
+                if max_tokens is None:
+                    max_gen_tokens = min(1024, max(384, self.n_ctx // 2))
+                else:
+                    max_gen_tokens = max_tokens
+
+                # ChatML & standard instruct stop sequences
+                stop_sequences = [
+                    "<|im_end|>",
+                    "<|endoftext|>",
+                    "<|im_start|>",
+                    "### Human:",
+                    "### User:",
+                    "[User Query]",
+                ]
+
                 response = self._llm(
                     prompt,
-                    max_tokens=min(512, self.n_ctx // 2),
-                    temperature=0.2,
-                    stop=["\n\n\n", "User:", "System:"],
+                    max_tokens=max_gen_tokens,
+                    temperature=0.3,
+                    top_p=0.9,
+                    stop=stop_sequences,
                 )
                 text = response["choices"][0]["text"].strip()
-                return text
+                if text:
+                    return text
             except Exception as e:
                 print(f"  [LLMRunner] LLM inference failed: {e}. Falling back to Expert System.")
 
