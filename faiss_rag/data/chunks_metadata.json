@@ -4582,6 +4582,1131 @@
   },
   {
     "chunk_id": 0,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "# Sensor Diagnostics — Cross-Sensitivity & Environmental Drift\n\n## Overview\n\nElectrochemical and metal-oxide semiconductor (MOS / MQ-series) gas sensors in underground mining are subject to physical environmental interference, cross-sensitivities, and humidity condensation drift. FIELD-MIND uses multimodal cross-correlation (combining environmental DHT22/BMP280 readings, historical EKG blast records, and LangGraph self-reflection) to distinguish genuine hazard events from sensor artifacts.\n\n---\n\n## MQ-Series Sensor Cross-Sensitivities & Physical Drift\n\n### 1. MQ-7 Carbon Monoxide (CO) — Humidity Condensation Drift\n- **Mechanism**: The SnO2 sensing layer on MQ-7 sensors adsorbs water molecules in humid environments (> 80% RH). When relative humidity spikes or during mine water-spraying operations, water condensation lowers surface resistance, causing false elevated CO readings (e.g., 25–45 ppm CO).\n- **Physical Verification Rule**:\n  - If `MQ7_CO_ppm > 25.0` AND `humidity > 80%` AND no blasting record exists in EKG history AND temperature is stable:\n  - **Diagnosis**: *Sensor Moisture Condensation Drift (False Alarm)*.",
+    "start_char": 0,
+    "end_char": 1135,
+    "length": 1135
+  },
+  {
+    "chunk_id": 1,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "n Rule**:\n  - If `MQ7_CO_ppm > 25.0` AND `humidity > 80%` AND no blasting record exists in EKG history AND temperature is stable:\n  - **Diagnosis**: *Sensor Moisture Condensation Drift (False Alarm)*.\n  - **Action**: Do not halt production. Trigger self-learning reflection loop, apply humidity compensation factor, and inspect sensor heater cycle.\n\n### 2. MQ-4 Methane (CH4) — Temperature & Alcohol Cross-Sensitivity\n- **Mechanism**: MQ-4 is highly sensitive to methane (CH4) but exhibits secondary cross-sensitivity to elevated ethanol vapors and extreme ambient temperatures (> 40°C).\n- **Physical Verification Rule**:\n  - Methane buildup in underground mines is accompanied by ventilation pocket stagnation (low air velocity) or localized heading excavation.\n  - Real methane combustion hazards require oxygen presence and trigger multi-gas displacement.\n\n### 3. MQ-135 / MQ-136 Multi-Gas Interference\n- MQ-135 responds to NH3, NOx, alcohol, benzene, smoke, and CO2.\n- MQ-136 responds to H2S and sulfur compounds.\n- In blasting zones, NOx spikes must be cross-referenced with recent detonator blast timestamps in EKG memory within the 30-minute post-blast clearance window.\n\n---",
+    "start_char": 935,
+    "end_char": 2117,
+    "length": 1182
+  },
+  {
+    "chunk_id": 2,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "sponds to H2S and sulfur compounds.\n- In blasting zones, NOx spikes must be cross-referenced with recent detonator blast timestamps in EKG memory within the 30-minute post-blast clearance window.\n\n---\n\n## Sensor Calibration & Feasibility Verification Matrix\n\n| Observed Telemetry Pattern | Preliminary Model Output | Multimodal Ground Truth | Feasibility Classification | Corrective Protocol |\n|----------------------------|--------------------------|-------------------------|----------------------------|---------------------|\n| CO = 32 ppm, RH = 88%, Temp = 22°C, No Blasts | CO Hazard Alert | Water spraying operation active | **PHYSICAL DISCREPANCY / DRIFT** | Update Experience Replay with True Label = 0; apply moisture offset. |\n| CO = 55 ppm, NOx = 4.2 ppm, Blast recorded 12 min ago | Gas Alert | Post-blast fume dispersion | **FEASIBLE COMBUSTION / BLAST** | Enforce 30-min post-blast re-entry wait; maintain exhaust ventilation. |\n| PPV = 14.2 mm/s, No Detonator recorded in EKG | Vibration Hazard Alert | Heavy continuous miner tramming | **PHYSICAL DISCREPANCY / SEISMIC** | Flag localized machinery noise; inspect geophone coupling. |",
+    "start_char": 1917,
+    "end_char": 3066,
+    "length": 1149
+  },
+  {
+    "chunk_id": 3,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "= 14.2 mm/s, No Detonator recorded in EKG | Vibration Hazard Alert | Heavy continuous miner tramming | **PHYSICAL DISCREPANCY / SEISMIC** | Flag localized machinery noise; inspect geophone coupling. |\n| Ultrasonic Min Dist = 0.15 m, Velocity = 0 m/s | Collision Alarm | Stationary drill rod obstruction | **FEASIBLE OBSTACLE** | Command robotic platform backup manoeuvre; update SLAM map. |\n\n---\n\n## Online Retraining & Experience Replay Buffer\n\nWhen a physical discrepancy is verified:\n1. **LangGraph Reflection Engine** generates a domain-specific corrective rule.\n2. The rule is embedded into **FAISS RAG** memory (`[SELF-LEARNED RULE]`).\n3. The event is linked to the `TunnelSegment` node in the **Expedition Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 2866,
+    "end_char": 3766,
+    "length": 900
+  },
+  {
+    "chunk_id": 4,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "**Expedition Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3566,
+    "end_char": 3766,
+    "length": 200
+  },
+  {
+    "chunk_id": 5,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "*Expedition Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3567,
+    "end_char": 3766,
+    "length": 199
+  },
+  {
+    "chunk_id": 6,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "Expedition Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3568,
+    "end_char": 3766,
+    "length": 198
+  },
+  {
+    "chunk_id": 7,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "xpedition Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3569,
+    "end_char": 3766,
+    "length": 197
+  },
+  {
+    "chunk_id": 8,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "pedition Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3570,
+    "end_char": 3766,
+    "length": 196
+  },
+  {
+    "chunk_id": 9,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "edition Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3571,
+    "end_char": 3766,
+    "length": 195
+  },
+  {
+    "chunk_id": 10,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "dition Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3572,
+    "end_char": 3766,
+    "length": 194
+  },
+  {
+    "chunk_id": 11,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ition Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3573,
+    "end_char": 3766,
+    "length": 193
+  },
+  {
+    "chunk_id": 12,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "tion Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3574,
+    "end_char": 3766,
+    "length": 192
+  },
+  {
+    "chunk_id": 13,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ion Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3575,
+    "end_char": 3766,
+    "length": 191
+  },
+  {
+    "chunk_id": 14,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "on Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3576,
+    "end_char": 3766,
+    "length": 190
+  },
+  {
+    "chunk_id": 15,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "n Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3577,
+    "end_char": 3766,
+    "length": 189
+  },
+  {
+    "chunk_id": 16,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3578,
+    "end_char": 3765,
+    "length": 187
+  },
+  {
+    "chunk_id": 17,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "Knowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3579,
+    "end_char": 3766,
+    "length": 187
+  },
+  {
+    "chunk_id": 18,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "nowledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3580,
+    "end_char": 3766,
+    "length": 186
+  },
+  {
+    "chunk_id": 19,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "owledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3581,
+    "end_char": 3766,
+    "length": 185
+  },
+  {
+    "chunk_id": 20,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "wledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3582,
+    "end_char": 3766,
+    "length": 184
+  },
+  {
+    "chunk_id": 21,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ledge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3583,
+    "end_char": 3766,
+    "length": 183
+  },
+  {
+    "chunk_id": 22,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "edge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3584,
+    "end_char": 3766,
+    "length": 182
+  },
+  {
+    "chunk_id": 23,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "dge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3585,
+    "end_char": 3766,
+    "length": 181
+  },
+  {
+    "chunk_id": 24,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ge Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3586,
+    "end_char": 3766,
+    "length": 180
+  },
+  {
+    "chunk_id": 25,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "e Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3587,
+    "end_char": 3766,
+    "length": 179
+  },
+  {
+    "chunk_id": 26,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3588,
+    "end_char": 3765,
+    "length": 177
+  },
+  {
+    "chunk_id": 27,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "Graph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3589,
+    "end_char": 3766,
+    "length": 177
+  },
+  {
+    "chunk_id": 28,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "raph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3590,
+    "end_char": 3766,
+    "length": 176
+  },
+  {
+    "chunk_id": 29,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "aph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3591,
+    "end_char": 3766,
+    "length": 175
+  },
+  {
+    "chunk_id": 30,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ph**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3592,
+    "end_char": 3766,
+    "length": 174
+  },
+  {
+    "chunk_id": 31,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "h**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3593,
+    "end_char": 3766,
+    "length": 173
+  },
+  {
+    "chunk_id": 32,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "**.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3594,
+    "end_char": 3766,
+    "length": 172
+  },
+  {
+    "chunk_id": 33,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "*.\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3595,
+    "end_char": 3766,
+    "length": 171
+  },
+  {
+    "chunk_id": 34,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": ".\n4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3596,
+    "end_char": 3766,
+    "length": 170
+  },
+  {
+    "chunk_id": 35,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3597,
+    "end_char": 3765,
+    "length": 168
+  },
+  {
+    "chunk_id": 36,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "4. The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3598,
+    "end_char": 3766,
+    "length": 168
+  },
+  {
+    "chunk_id": 37,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": ". The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3599,
+    "end_char": 3766,
+    "length": 167
+  },
+  {
+    "chunk_id": 38,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3600,
+    "end_char": 3765,
+    "length": 165
+  },
+  {
+    "chunk_id": 39,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "The verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3601,
+    "end_char": 3766,
+    "length": 165
+  },
+  {
+    "chunk_id": 40,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "he verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3602,
+    "end_char": 3766,
+    "length": 164
+  },
+  {
+    "chunk_id": 41,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "e verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3603,
+    "end_char": 3766,
+    "length": 163
+  },
+  {
+    "chunk_id": 42,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3604,
+    "end_char": 3765,
+    "length": 161
+  },
+  {
+    "chunk_id": 43,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "verified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3605,
+    "end_char": 3766,
+    "length": 161
+  },
+  {
+    "chunk_id": 44,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "erified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3606,
+    "end_char": 3766,
+    "length": 160
+  },
+  {
+    "chunk_id": 45,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "rified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3607,
+    "end_char": 3766,
+    "length": 159
+  },
+  {
+    "chunk_id": 46,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ified sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3608,
+    "end_char": 3766,
+    "length": 158
+  },
+  {
+    "chunk_id": 47,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "fied sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3609,
+    "end_char": 3766,
+    "length": 157
+  },
+  {
+    "chunk_id": 48,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ied sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3610,
+    "end_char": 3766,
+    "length": 156
+  },
+  {
+    "chunk_id": 49,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ed sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3611,
+    "end_char": 3766,
+    "length": 155
+  },
+  {
+    "chunk_id": 50,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "d sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3612,
+    "end_char": 3766,
+    "length": 154
+  },
+  {
+    "chunk_id": 51,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3613,
+    "end_char": 3765,
+    "length": 152
+  },
+  {
+    "chunk_id": 52,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "sample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3614,
+    "end_char": 3766,
+    "length": 152
+  },
+  {
+    "chunk_id": 53,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ample `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3615,
+    "end_char": 3766,
+    "length": 151
+  },
+  {
+    "chunk_id": 54,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "mple `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3616,
+    "end_char": 3766,
+    "length": 150
+  },
+  {
+    "chunk_id": 55,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ple `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3617,
+    "end_char": 3766,
+    "length": 149
+  },
+  {
+    "chunk_id": 56,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "le `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3618,
+    "end_char": 3766,
+    "length": 148
+  },
+  {
+    "chunk_id": 57,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "e `(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3619,
+    "end_char": 3766,
+    "length": 147
+  },
+  {
+    "chunk_id": 58,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "`(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3620,
+    "end_char": 3765,
+    "length": 145
+  },
+  {
+    "chunk_id": 59,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "`(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3621,
+    "end_char": 3766,
+    "length": 145
+  },
+  {
+    "chunk_id": 60,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "(features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3622,
+    "end_char": 3766,
+    "length": 144
+  },
+  {
+    "chunk_id": 61,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "features, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3623,
+    "end_char": 3766,
+    "length": 143
+  },
+  {
+    "chunk_id": 62,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "eatures, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3624,
+    "end_char": 3766,
+    "length": 142
+  },
+  {
+    "chunk_id": 63,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "atures, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3625,
+    "end_char": 3766,
+    "length": 141
+  },
+  {
+    "chunk_id": 64,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "tures, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3626,
+    "end_char": 3766,
+    "length": 140
+  },
+  {
+    "chunk_id": 65,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ures, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3627,
+    "end_char": 3766,
+    "length": 139
+  },
+  {
+    "chunk_id": 66,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "res, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3628,
+    "end_char": 3766,
+    "length": 138
+  },
+  {
+    "chunk_id": 67,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "es, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3629,
+    "end_char": 3766,
+    "length": 137
+  },
+  {
+    "chunk_id": 68,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "s, true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3630,
+    "end_char": 3766,
+    "length": 136
+  },
+  {
+    "chunk_id": 69,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": ", true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3631,
+    "end_char": 3766,
+    "length": 135
+  },
+  {
+    "chunk_id": 70,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3632,
+    "end_char": 3765,
+    "length": 133
+  },
+  {
+    "chunk_id": 71,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "true_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3633,
+    "end_char": 3766,
+    "length": 133
+  },
+  {
+    "chunk_id": 72,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "rue_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3634,
+    "end_char": 3766,
+    "length": 132
+  },
+  {
+    "chunk_id": 73,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ue_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3635,
+    "end_char": 3766,
+    "length": 131
+  },
+  {
+    "chunk_id": 74,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "e_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3636,
+    "end_char": 3766,
+    "length": 130
+  },
+  {
+    "chunk_id": 75,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "_label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3637,
+    "end_char": 3766,
+    "length": 129
+  },
+  {
+    "chunk_id": 76,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "label)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3638,
+    "end_char": 3766,
+    "length": 128
+  },
+  {
+    "chunk_id": 77,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "abel)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3639,
+    "end_char": 3766,
+    "length": 127
+  },
+  {
+    "chunk_id": 78,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "bel)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3640,
+    "end_char": 3766,
+    "length": 126
+  },
+  {
+    "chunk_id": 79,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "el)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3641,
+    "end_char": 3766,
+    "length": 125
+  },
+  {
+    "chunk_id": 80,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "l)` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3642,
+    "end_char": 3766,
+    "length": 124
+  },
+  {
+    "chunk_id": 81,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": ")` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3643,
+    "end_char": 3766,
+    "length": 123
+  },
+  {
+    "chunk_id": 82,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "` is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3644,
+    "end_char": 3766,
+    "length": 122
+  },
+  {
+    "chunk_id": 83,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3645,
+    "end_char": 3765,
+    "length": 120
+  },
+  {
+    "chunk_id": 84,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "is appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3646,
+    "end_char": 3766,
+    "length": 120
+  },
+  {
+    "chunk_id": 85,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "s appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3647,
+    "end_char": 3766,
+    "length": 119
+  },
+  {
+    "chunk_id": 86,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3648,
+    "end_char": 3765,
+    "length": 117
+  },
+  {
+    "chunk_id": 87,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "appended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3649,
+    "end_char": 3766,
+    "length": 117
+  },
+  {
+    "chunk_id": 88,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ppended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3650,
+    "end_char": 3766,
+    "length": 116
+  },
+  {
+    "chunk_id": 89,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "pended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3651,
+    "end_char": 3766,
+    "length": 115
+  },
+  {
+    "chunk_id": 90,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ended to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3652,
+    "end_char": 3766,
+    "length": 114
+  },
+  {
+    "chunk_id": 91,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "nded to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3653,
+    "end_char": 3766,
+    "length": 113
+  },
+  {
+    "chunk_id": 92,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ded to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3654,
+    "end_char": 3766,
+    "length": 112
+  },
+  {
+    "chunk_id": 93,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ed to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3655,
+    "end_char": 3766,
+    "length": 111
+  },
+  {
+    "chunk_id": 94,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "d to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3656,
+    "end_char": 3766,
+    "length": 110
+  },
+  {
+    "chunk_id": 95,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3657,
+    "end_char": 3765,
+    "length": 108
+  },
+  {
+    "chunk_id": 96,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "to the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3658,
+    "end_char": 3766,
+    "length": 108
+  },
+  {
+    "chunk_id": 97,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "o the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3659,
+    "end_char": 3766,
+    "length": 107
+  },
+  {
+    "chunk_id": 98,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3660,
+    "end_char": 3765,
+    "length": 105
+  },
+  {
+    "chunk_id": 99,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "the 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3661,
+    "end_char": 3766,
+    "length": 105
+  },
+  {
+    "chunk_id": 100,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "he 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3662,
+    "end_char": 3766,
+    "length": 104
+  },
+  {
+    "chunk_id": 101,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "e 200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3663,
+    "end_char": 3766,
+    "length": 103
+  },
+  {
+    "chunk_id": 102,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3664,
+    "end_char": 3765,
+    "length": 101
+  },
+  {
+    "chunk_id": 103,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "200-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3665,
+    "end_char": 3766,
+    "length": 101
+  },
+  {
+    "chunk_id": 104,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "00-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3666,
+    "end_char": 3766,
+    "length": 100
+  },
+  {
+    "chunk_id": 105,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "0-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3667,
+    "end_char": 3766,
+    "length": 99
+  },
+  {
+    "chunk_id": 106,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "-sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3668,
+    "end_char": 3766,
+    "length": 98
+  },
+  {
+    "chunk_id": 107,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "sample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3669,
+    "end_char": 3766,
+    "length": 97
+  },
+  {
+    "chunk_id": 108,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ample **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3670,
+    "end_char": 3766,
+    "length": 96
+  },
+  {
+    "chunk_id": 109,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "mple **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3671,
+    "end_char": 3766,
+    "length": 95
+  },
+  {
+    "chunk_id": 110,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ple **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3672,
+    "end_char": 3766,
+    "length": 94
+  },
+  {
+    "chunk_id": 111,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "le **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3673,
+    "end_char": 3766,
+    "length": 93
+  },
+  {
+    "chunk_id": 112,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "e **Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3674,
+    "end_char": 3766,
+    "length": 92
+  },
+  {
+    "chunk_id": 113,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "**Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3675,
+    "end_char": 3765,
+    "length": 90
+  },
+  {
+    "chunk_id": 114,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "**Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3676,
+    "end_char": 3766,
+    "length": 90
+  },
+  {
+    "chunk_id": 115,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "*Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3677,
+    "end_char": 3766,
+    "length": 89
+  },
+  {
+    "chunk_id": 116,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "Experience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3678,
+    "end_char": 3766,
+    "length": 88
+  },
+  {
+    "chunk_id": 117,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "xperience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3679,
+    "end_char": 3766,
+    "length": 87
+  },
+  {
+    "chunk_id": 118,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "perience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3680,
+    "end_char": 3766,
+    "length": 86
+  },
+  {
+    "chunk_id": 119,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "erience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3681,
+    "end_char": 3766,
+    "length": 85
+  },
+  {
+    "chunk_id": 120,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "rience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3682,
+    "end_char": 3766,
+    "length": 84
+  },
+  {
+    "chunk_id": 121,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ience Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3683,
+    "end_char": 3766,
+    "length": 83
+  },
+  {
+    "chunk_id": 122,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ence Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3684,
+    "end_char": 3766,
+    "length": 82
+  },
+  {
+    "chunk_id": 123,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "nce Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3685,
+    "end_char": 3766,
+    "length": 81
+  },
+  {
+    "chunk_id": 124,
+    "source": "sensor_diagnostics.md",
+    "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\sensor_diagnostics.md",
+    "text": "ce Replay Buffer** of the corresponding Sensor Agent for atomic model refitting.",
+    "start_char": 3686,
+    "end_char": 3766,
+    "length": 80
+  },
+  {
+    "chunk_id": 0,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
     "text": "# Blast Vibration Safety — PPV Standards & Protocols\n\n## Overview\n\nBlast-induced ground vibration is a critical safety and structural concern in underground mining. The primary metric is **Peak Particle Velocity (PPV)** measured in mm/s. FIELD-MIND uses a Gradient Boosting Regressor and a Random Forest Classifier to predict and classify PPV hazards from seismic sensor arrays.\n\n---\n\n## PPV Safety Standards\n\n### IS 6922:1973 (Bureau of Indian Standards)\n\nIndian Standard 6922 is the primary regulatory framework for blast vibration in Indian mining operations.\n\n| PPV (mm/s) | Structure Type | Risk Level |\n|------------|----------------|------------|\n| < 5        | Industrial structures | Safe |\n| < 10       | Reinforced concrete structures | Safe |\n| < 12.5     | Residential structures | Safe |\n| 12.5 – 25  | Residential structures | Marginal risk |\n| > 25       | Any structure | High damage risk |\n| > 50       | Any structure | Severe damage / structural failure |\n\n**FIELD-MIND threshold**: `vibration_hazard = 1` if `PPV > 1.0 mm/s` (conservative early-warning threshold for underground tunnels).\n\n---\n\n### ISEE (International Society of Explosives Engineers) Guidelines",
@@ -4620,1120 +5745,1111 @@
     "chunk_id": 4,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "detonator_code, trid_12, trid_13, trid_14, gx, gy, gelev, sx, sy, selev\n\n**17-feature regressor set** (adds):\nscaled_distance_usbm, scaled_distance_langefors, elevation_diff\n\n### VibrationSensorAgent\n\nThe `VibrationSensorAgent` runs both models each tick:\n- Classifier → binary `vibration_hazard` flag\n- Regressor → predicted `PPV` in mm/s\n- ALERT raised when confidence ≥ 0.5 for 2+ consecutive ticks\n- PPV > 10 mm/s triggers CRITICAL severity alert\n- Agent self-learns from `vibration_features.csv` via 200-sample experience replay buffer\n\n### EKG Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
+    "text": "detonator_code, trid_12, trid_13, trid_14, gx, gy, gelev, sx, sy, selev\n\n**17-feature regressor set** (adds):\nscaled_distance_usbm, scaled_distance_langefors, elevation_diff\n\n### VibrationSensorAgent\n\nThe `VibrationSensorAgent` runs both models each tick:\n- Classifier → binary `vibration_hazard` flag\n- Regressor → predicted `PPV` in mm/s\n- ALERT raised when confidence ≥ 0.5 for 2+ consecutive ticks\n- PPV > 10 mm/s triggers CRITICAL severity alert\n- Agent self-learns from `vibration_features.csv` via 200-sample experience replay buffer\n\n### EKG Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.\n\n---\n\n## SW-420 Shock Vibration Monitoring\n\nThe SW-420 omnidirectional vibration sensor provides continuous digital pulse counting for physical impact and shock wave detection in underground galleries:",
     "start_char": 3580,
-    "end_char": 4322,
-    "length": 742
+    "end_char": 4524,
+    "length": 944
   },
   {
     "chunk_id": 5,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "### EKG Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4122,
-    "end_char": 4322,
-    "length": 200
+    "text": "---\n\n## SW-420 Shock Vibration Monitoring\n\nThe SW-420 omnidirectional vibration sensor provides continuous digital pulse counting for physical impact and shock wave detection in underground galleries:\n\n| Shock Metric | Threshold / Status | Operational Impact | Action Required |\n|--------------|-------------------|--------------------|-----------------|\n| Baseline Normal | < 5 pulses/s | Normal background machinery | Continue continuous monitoring |\n| Level 1 Shock Alert | 5 – 20 pulses/s | Micro-fracture / moderate tremor | Inspect area for micro-fractures and loose rock |\n| Level 2 Critical Shock | > 20 pulses/s | Heavy structural shock / collapse wave | **IMMEDIATELY EVACUATE** and de-energize electrical equipment |\n\n---\n\n## Geomechanical Wall Displacement & Convergence Monitoring\n\nContinuous ultrasonic measurement monitors tunnel heading convergence and rock mass deformation:",
+    "start_char": 4324,
+    "end_char": 5215,
+    "length": 891
   },
   {
     "chunk_id": 6,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "### EKG Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4123,
-    "end_char": 4323,
-    "length": 200
+    "text": "nd de-energize electrical equipment |\n\n---\n\n## Geomechanical Wall Displacement & Convergence Monitoring\n\nContinuous ultrasonic measurement monitors tunnel heading convergence and rock mass deformation:\n\n1. **Velocity Thresholds**:\n   - `Velocity > -0.01 m/s`: Normal stability.\n   - `Velocity < -0.01 m/s`: Slow geomechanical wall displacement. Inspect structural support pillars.\n   - `Velocity < -0.05 m/s & accelerating`: Uncontrolled wall displacement. **IMMEDIATE EVACUATION** protocol triggered.\n2. **False Obstacle Discrimination**: Instantaneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5015,
+    "end_char": 5753,
+    "length": 738
   },
   {
     "chunk_id": 7,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "## EKG Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4124,
-    "end_char": 4323,
-    "length": 199
+    "text": ": Instantaneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5553,
+    "end_char": 5753,
+    "length": 200
   },
   {
     "chunk_id": 8,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "# EKG Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4125,
-    "end_char": 4323,
+    "text": "Instantaneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5554,
+    "end_char": 5752,
     "length": 198
   },
   {
     "chunk_id": 9,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "EKG Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4126,
-    "end_char": 4322,
-    "length": 196
+    "text": "Instantaneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5555,
+    "end_char": 5753,
+    "length": 198
   },
   {
     "chunk_id": 10,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "EKG Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4127,
-    "end_char": 4323,
-    "length": 196
+    "text": "nstantaneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5556,
+    "end_char": 5753,
+    "length": 197
   },
   {
     "chunk_id": 11,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "KG Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4128,
-    "end_char": 4323,
-    "length": 195
+    "text": "stantaneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5557,
+    "end_char": 5753,
+    "length": 196
   },
   {
     "chunk_id": 12,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "G Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4129,
-    "end_char": 4323,
-    "length": 194
+    "text": "tantaneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5558,
+    "end_char": 5753,
+    "length": 195
   },
   {
     "chunk_id": 13,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4130,
-    "end_char": 4322,
-    "length": 192
+    "text": "antaneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5559,
+    "end_char": 5753,
+    "length": 194
   },
   {
     "chunk_id": 14,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "Integration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4131,
-    "end_char": 4323,
-    "length": 192
+    "text": "ntaneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5560,
+    "end_char": 5753,
+    "length": 193
   },
   {
     "chunk_id": 15,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ntegration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4132,
-    "end_char": 4323,
-    "length": 191
+    "text": "taneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5561,
+    "end_char": 5753,
+    "length": 192
   },
   {
     "chunk_id": 16,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "tegration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4133,
-    "end_char": 4323,
-    "length": 190
+    "text": "aneous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5562,
+    "end_char": 5753,
+    "length": 191
   },
   {
     "chunk_id": 17,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "egration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4134,
-    "end_char": 4323,
-    "length": 189
+    "text": "neous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5563,
+    "end_char": 5753,
+    "length": 190
   },
   {
     "chunk_id": 18,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "gration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4135,
-    "end_char": 4323,
-    "length": 188
+    "text": "eous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5564,
+    "end_char": 5753,
+    "length": 189
   },
   {
     "chunk_id": 19,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ration\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4136,
-    "end_char": 4323,
-    "length": 187
+    "text": "ous step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5565,
+    "end_char": 5753,
+    "length": 188
   },
   {
     "chunk_id": 20,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ation\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4137,
-    "end_char": 4323,
-    "length": 186
+    "text": "us step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5566,
+    "end_char": 5753,
+    "length": 187
   },
   {
     "chunk_id": 21,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "tion\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4138,
-    "end_char": 4323,
-    "length": 185
+    "text": "s step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5567,
+    "end_char": 5753,
+    "length": 186
   },
   {
     "chunk_id": 22,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ion\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4139,
-    "end_char": 4323,
+    "text": "step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5568,
+    "end_char": 5752,
     "length": 184
   },
   {
     "chunk_id": 23,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "on\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4140,
-    "end_char": 4323,
-    "length": 183
+    "text": "step-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5569,
+    "end_char": 5753,
+    "length": 184
   },
   {
     "chunk_id": 24,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "n\n\nBlast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4141,
-    "end_char": 4323,
-    "length": 182
+    "text": "tep-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5570,
+    "end_char": 5753,
+    "length": 183
   },
   {
     "chunk_id": 25,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "Blast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4142,
-    "end_char": 4321,
-    "length": 179
+    "text": "ep-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5571,
+    "end_char": 5753,
+    "length": 182
   },
   {
     "chunk_id": 26,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "Blast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4143,
-    "end_char": 4322,
-    "length": 179
+    "text": "p-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5572,
+    "end_char": 5753,
+    "length": 181
   },
   {
     "chunk_id": 27,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "Blast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4144,
-    "end_char": 4323,
-    "length": 179
+    "text": "-drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5573,
+    "end_char": 5753,
+    "length": 180
   },
   {
     "chunk_id": 28,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "last events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4145,
-    "end_char": 4323,
-    "length": 178
+    "text": "drops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5574,
+    "end_char": 5753,
+    "length": 179
   },
   {
     "chunk_id": 29,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ast events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4146,
-    "end_char": 4323,
-    "length": 177
+    "text": "rops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5575,
+    "end_char": 5753,
+    "length": 178
   },
   {
     "chunk_id": 30,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "st events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4147,
-    "end_char": 4323,
-    "length": 176
+    "text": "ops in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5576,
+    "end_char": 5753,
+    "length": 177
   },
   {
     "chunk_id": 31,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "t events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4148,
-    "end_char": 4323,
-    "length": 175
+    "text": "ps in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5577,
+    "end_char": 5753,
+    "length": 176
   },
   {
     "chunk_id": 32,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4149,
-    "end_char": 4322,
-    "length": 173
+    "text": "s in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5578,
+    "end_char": 5753,
+    "length": 175
   },
   {
     "chunk_id": 33,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "events stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4150,
-    "end_char": 4323,
+    "text": "in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5579,
+    "end_char": 5752,
     "length": 173
   },
   {
     "chunk_id": 34,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "vents stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4151,
-    "end_char": 4323,
-    "length": 172
+    "text": "in distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5580,
+    "end_char": 5753,
+    "length": 173
   },
   {
     "chunk_id": 35,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ents stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4152,
-    "end_char": 4323,
-    "length": 171
+    "text": "n distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5581,
+    "end_char": 5753,
+    "length": 172
   },
   {
     "chunk_id": 36,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "nts stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4153,
-    "end_char": 4323,
+    "text": "distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5582,
+    "end_char": 5752,
     "length": 170
   },
   {
     "chunk_id": 37,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ts stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4154,
-    "end_char": 4323,
-    "length": 169
+    "text": "distance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5583,
+    "end_char": 5753,
+    "length": 170
   },
   {
     "chunk_id": 38,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "s stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4155,
-    "end_char": 4323,
-    "length": 168
+    "text": "istance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5584,
+    "end_char": 5753,
+    "length": 169
   },
   {
     "chunk_id": 39,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4156,
-    "end_char": 4322,
-    "length": 166
+    "text": "stance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5585,
+    "end_char": 5753,
+    "length": 168
   },
   {
     "chunk_id": 40,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "stored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4157,
-    "end_char": 4323,
-    "length": 166
+    "text": "tance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5586,
+    "end_char": 5753,
+    "length": 167
   },
   {
     "chunk_id": 41,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "tored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4158,
-    "end_char": 4323,
-    "length": 165
+    "text": "ance without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5587,
+    "end_char": 5753,
+    "length": 166
   },
   {
     "chunk_id": 42,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ored as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4159,
-    "end_char": 4323,
-    "length": 164
+    "text": "nce without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5588,
+    "end_char": 5753,
+    "length": 165
   },
   {
     "chunk_id": 43,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "red as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4160,
-    "end_char": 4323,
-    "length": 163
+    "text": "ce without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5589,
+    "end_char": 5753,
+    "length": 164
   },
   {
     "chunk_id": 44,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ed as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4161,
-    "end_char": 4323,
-    "length": 162
+    "text": "e without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5590,
+    "end_char": 5753,
+    "length": 163
   },
   {
     "chunk_id": 45,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "d as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4162,
-    "end_char": 4323,
+    "text": "without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5591,
+    "end_char": 5752,
     "length": 161
   },
   {
     "chunk_id": 46,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4163,
-    "end_char": 4322,
-    "length": 159
+    "text": "without continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5592,
+    "end_char": 5753,
+    "length": 161
   },
   {
     "chunk_id": 47,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "as `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4164,
-    "end_char": 4323,
-    "length": 159
+    "text": "ithout continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5593,
+    "end_char": 5753,
+    "length": 160
   },
   {
     "chunk_id": 48,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "s `BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4165,
-    "end_char": 4323,
-    "length": 158
+    "text": "thout continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5594,
+    "end_char": 5753,
+    "length": 159
   },
   {
     "chunk_id": 49,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "`BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4166,
-    "end_char": 4322,
-    "length": 156
+    "text": "hout continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5595,
+    "end_char": 5753,
+    "length": 158
   },
   {
     "chunk_id": 50,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "`BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4167,
-    "end_char": 4323,
-    "length": 156
+    "text": "out continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5596,
+    "end_char": 5753,
+    "length": 157
   },
   {
     "chunk_id": 51,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "BlastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4168,
-    "end_char": 4323,
-    "length": 155
+    "text": "ut continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5597,
+    "end_char": 5753,
+    "length": 156
   },
   {
     "chunk_id": 52,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "lastEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4169,
-    "end_char": 4323,
-    "length": 154
+    "text": "t continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5598,
+    "end_char": 5753,
+    "length": 155
   },
   {
     "chunk_id": 53,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "astEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4170,
-    "end_char": 4323,
+    "text": "continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5599,
+    "end_char": 5752,
     "length": 153
   },
   {
     "chunk_id": 54,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "stEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4171,
-    "end_char": 4323,
-    "length": 152
+    "text": "continuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5600,
+    "end_char": 5753,
+    "length": 153
   },
   {
     "chunk_id": 55,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "tEvent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4172,
-    "end_char": 4323,
-    "length": 151
+    "text": "ontinuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5601,
+    "end_char": 5753,
+    "length": 152
   },
   {
     "chunk_id": 56,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "Event` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4173,
-    "end_char": 4323,
-    "length": 150
+    "text": "ntinuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5602,
+    "end_char": 5753,
+    "length": 151
   },
   {
     "chunk_id": 57,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "vent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4174,
-    "end_char": 4323,
-    "length": 149
+    "text": "tinuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5603,
+    "end_char": 5753,
+    "length": 150
   },
   {
     "chunk_id": 58,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ent` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4175,
-    "end_char": 4323,
-    "length": 148
+    "text": "inuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5604,
+    "end_char": 5753,
+    "length": 149
   },
   {
     "chunk_id": 59,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "nt` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4176,
-    "end_char": 4323,
-    "length": 147
+    "text": "nuous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5605,
+    "end_char": 5753,
+    "length": 148
   },
   {
     "chunk_id": 60,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "t` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4177,
-    "end_char": 4323,
-    "length": 146
+    "text": "uous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5606,
+    "end_char": 5753,
+    "length": 147
   },
   {
     "chunk_id": 61,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "` nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4178,
-    "end_char": 4323,
-    "length": 145
+    "text": "ous velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5607,
+    "end_char": 5753,
+    "length": 146
   },
   {
     "chunk_id": 62,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4179,
-    "end_char": 4322,
-    "length": 143
+    "text": "us velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5608,
+    "end_char": 5753,
+    "length": 145
   },
   {
     "chunk_id": 63,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "nodes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4180,
-    "end_char": 4323,
-    "length": 143
+    "text": "s velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5609,
+    "end_char": 5753,
+    "length": 144
   },
   {
     "chunk_id": 64,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "odes; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4181,
-    "end_char": 4323,
+    "text": "velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5610,
+    "end_char": 5752,
     "length": 142
   },
   {
     "chunk_id": 65,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "des; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4182,
-    "end_char": 4323,
-    "length": 141
+    "text": "velocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5611,
+    "end_char": 5753,
+    "length": 142
   },
   {
     "chunk_id": 66,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "es; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4183,
-    "end_char": 4323,
-    "length": 140
+    "text": "elocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5612,
+    "end_char": 5753,
+    "length": 141
   },
   {
     "chunk_id": 67,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "s; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4184,
-    "end_char": 4323,
-    "length": 139
+    "text": "locity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5613,
+    "end_char": 5753,
+    "length": 140
   },
   {
     "chunk_id": 68,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "; seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4185,
-    "end_char": 4323,
-    "length": 138
+    "text": "ocity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5614,
+    "end_char": 5753,
+    "length": 139
   },
   {
     "chunk_id": 69,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4186,
-    "end_char": 4322,
-    "length": 136
+    "text": "city acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5615,
+    "end_char": 5753,
+    "length": 138
   },
   {
     "chunk_id": 70,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "seismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4187,
-    "end_char": 4323,
-    "length": 136
+    "text": "ity acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5616,
+    "end_char": 5753,
+    "length": 137
   },
   {
     "chunk_id": 71,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "eismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4188,
-    "end_char": 4323,
-    "length": 135
+    "text": "ty acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5617,
+    "end_char": 5753,
+    "length": 136
   },
   {
     "chunk_id": 72,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ismic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4189,
-    "end_char": 4323,
-    "length": 134
+    "text": "y acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5618,
+    "end_char": 5753,
+    "length": 135
   },
   {
     "chunk_id": 73,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "smic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4190,
-    "end_char": 4323,
+    "text": "acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5619,
+    "end_char": 5752,
     "length": 133
   },
   {
     "chunk_id": 74,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "mic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4191,
-    "end_char": 4323,
-    "length": 132
+    "text": "acceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5620,
+    "end_char": 5753,
+    "length": 133
   },
   {
     "chunk_id": 75,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ic readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4192,
-    "end_char": 4323,
-    "length": 131
+    "text": "cceleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5621,
+    "end_char": 5753,
+    "length": 132
   },
   {
     "chunk_id": 76,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "c readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4193,
-    "end_char": 4323,
-    "length": 130
+    "text": "celeration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5622,
+    "end_char": 5753,
+    "length": 131
   },
   {
     "chunk_id": 77,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4194,
-    "end_char": 4322,
-    "length": 128
+    "text": "eleration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5623,
+    "end_char": 5753,
+    "length": 130
   },
   {
     "chunk_id": 78,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "readings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4195,
-    "end_char": 4323,
-    "length": 128
+    "text": "leration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5624,
+    "end_char": 5753,
+    "length": 129
   },
   {
     "chunk_id": 79,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "eadings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4196,
-    "end_char": 4323,
-    "length": 127
+    "text": "eration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5625,
+    "end_char": 5753,
+    "length": 128
   },
   {
     "chunk_id": 80,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "adings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4197,
-    "end_char": 4323,
-    "length": 126
+    "text": "ration are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5626,
+    "end_char": 5753,
+    "length": 127
   },
   {
     "chunk_id": 81,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "dings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4198,
-    "end_char": 4323,
-    "length": 125
+    "text": "ation are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5627,
+    "end_char": 5753,
+    "length": 126
   },
   {
     "chunk_id": 82,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ings as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4199,
-    "end_char": 4323,
-    "length": 124
+    "text": "tion are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5628,
+    "end_char": 5753,
+    "length": 125
   },
   {
     "chunk_id": 83,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ngs as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4200,
-    "end_char": 4323,
-    "length": 123
+    "text": "ion are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5629,
+    "end_char": 5753,
+    "length": 124
   },
   {
     "chunk_id": 84,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "gs as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4201,
-    "end_char": 4323,
-    "length": 122
+    "text": "on are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5630,
+    "end_char": 5753,
+    "length": 123
   },
   {
     "chunk_id": 85,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "s as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4202,
-    "end_char": 4323,
-    "length": 121
+    "text": "n are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5631,
+    "end_char": 5753,
+    "length": 122
   },
   {
     "chunk_id": 86,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4203,
-    "end_char": 4322,
-    "length": 119
+    "text": "are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5632,
+    "end_char": 5752,
+    "length": 120
   },
   {
     "chunk_id": 87,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "as `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4204,
-    "end_char": 4323,
-    "length": 119
+    "text": "are classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5633,
+    "end_char": 5753,
+    "length": 120
   },
   {
     "chunk_id": 88,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "s `VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4205,
-    "end_char": 4323,
-    "length": 118
+    "text": "re classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5634,
+    "end_char": 5753,
+    "length": 119
   },
   {
     "chunk_id": 89,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "`VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4206,
-    "end_char": 4322,
-    "length": 116
+    "text": "e classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5635,
+    "end_char": 5753,
+    "length": 118
   },
   {
     "chunk_id": 90,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "`VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4207,
-    "end_char": 4323,
+    "text": "classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5636,
+    "end_char": 5752,
     "length": 116
   },
   {
     "chunk_id": 91,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "VibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4208,
-    "end_char": 4323,
-    "length": 115
+    "text": "classified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5637,
+    "end_char": 5753,
+    "length": 116
   },
   {
     "chunk_id": 92,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ibrationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4209,
-    "end_char": 4323,
-    "length": 114
+    "text": "lassified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5638,
+    "end_char": 5753,
+    "length": 115
   },
   {
     "chunk_id": 93,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "brationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4210,
-    "end_char": 4323,
-    "length": 113
+    "text": "assified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5639,
+    "end_char": 5753,
+    "length": 114
   },
   {
     "chunk_id": 94,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "rationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4211,
-    "end_char": 4323,
-    "length": 112
+    "text": "ssified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5640,
+    "end_char": 5753,
+    "length": 113
   },
   {
     "chunk_id": 95,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ationEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4212,
-    "end_char": 4323,
-    "length": 111
+    "text": "sified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5641,
+    "end_char": 5753,
+    "length": 112
   },
   {
     "chunk_id": 96,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "tionEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4213,
-    "end_char": 4323,
-    "length": 110
+    "text": "ified as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5642,
+    "end_char": 5753,
+    "length": 111
   },
   {
     "chunk_id": 97,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ionEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4214,
-    "end_char": 4323,
-    "length": 109
+    "text": "fied as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5643,
+    "end_char": 5753,
+    "length": 110
   },
   {
     "chunk_id": 98,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "onEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4215,
-    "end_char": 4323,
-    "length": 108
+    "text": "ied as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5644,
+    "end_char": 5753,
+    "length": 109
   },
   {
     "chunk_id": 99,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "nEvent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4216,
-    "end_char": 4323,
-    "length": 107
+    "text": "ed as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5645,
+    "end_char": 5753,
+    "length": 108
   },
   {
     "chunk_id": 100,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "Event` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4217,
-    "end_char": 4323,
-    "length": 106
+    "text": "d as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5646,
+    "end_char": 5753,
+    "length": 107
   },
   {
     "chunk_id": 101,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "vent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4218,
-    "end_char": 4323,
+    "text": "as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5647,
+    "end_char": 5752,
     "length": 105
   },
   {
     "chunk_id": 102,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ent` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4219,
-    "end_char": 4323,
-    "length": 104
+    "text": "as temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5648,
+    "end_char": 5753,
+    "length": 105
   },
   {
     "chunk_id": 103,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "nt` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4220,
-    "end_char": 4323,
-    "length": 103
+    "text": "s temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5649,
+    "end_char": 5753,
+    "length": 104
   },
   {
     "chunk_id": 104,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "t` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4221,
-    "end_char": 4323,
+    "text": "temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5650,
+    "end_char": 5752,
     "length": 102
   },
   {
     "chunk_id": 105,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "` nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4222,
-    "end_char": 4323,
-    "length": 101
+    "text": "temporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5651,
+    "end_char": 5753,
+    "length": 102
   },
   {
     "chunk_id": 106,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4223,
-    "end_char": 4322,
-    "length": 99
+    "text": "emporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5652,
+    "end_char": 5753,
+    "length": 101
   },
   {
     "chunk_id": 107,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "nodes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4224,
-    "end_char": 4323,
-    "length": 99
+    "text": "mporary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5653,
+    "end_char": 5753,
+    "length": 100
   },
   {
     "chunk_id": 108,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "odes linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4225,
-    "end_char": 4323,
-    "length": 98
+    "text": "porary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5654,
+    "end_char": 5753,
+    "length": 99
   },
   {
     "chunk_id": 109,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "des linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4226,
-    "end_char": 4323,
-    "length": 97
+    "text": "orary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5655,
+    "end_char": 5753,
+    "length": 98
   },
   {
     "chunk_id": 110,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "es linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4227,
-    "end_char": 4323,
-    "length": 96
+    "text": "rary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5656,
+    "end_char": 5753,
+    "length": 97
   },
   {
     "chunk_id": 111,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "s linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4228,
-    "end_char": 4323,
-    "length": 95
+    "text": "ary obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5657,
+    "end_char": 5753,
+    "length": 96
   },
   {
     "chunk_id": 112,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4229,
-    "end_char": 4322,
-    "length": 93
+    "text": "ry obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5658,
+    "end_char": 5753,
+    "length": 95
   },
   {
     "chunk_id": 113,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "linked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4230,
-    "end_char": 4323,
-    "length": 93
+    "text": "y obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5659,
+    "end_char": 5753,
+    "length": 94
   },
   {
     "chunk_id": 114,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "inked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4231,
-    "end_char": 4323,
+    "text": "obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5660,
+    "end_char": 5752,
     "length": 92
   },
   {
     "chunk_id": 115,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "nked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4232,
-    "end_char": 4323,
-    "length": 91
+    "text": "obstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5661,
+    "end_char": 5753,
+    "length": 92
   },
   {
     "chunk_id": 116,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ked by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4233,
-    "end_char": 4323,
-    "length": 90
+    "text": "bstructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5662,
+    "end_char": 5753,
+    "length": 91
   },
   {
     "chunk_id": 117,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "ed by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4234,
-    "end_char": 4323,
-    "length": 89
+    "text": "structions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5663,
+    "end_char": 5753,
+    "length": 90
   },
   {
     "chunk_id": 118,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "d by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4235,
-    "end_char": 4323,
-    "length": 88
+    "text": "tructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5664,
+    "end_char": 5753,
+    "length": 89
   },
   {
     "chunk_id": 119,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4236,
-    "end_char": 4322,
-    "length": 86
+    "text": "ructions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5665,
+    "end_char": 5753,
+    "length": 88
   },
   {
     "chunk_id": 120,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "by `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4237,
-    "end_char": 4323,
-    "length": 86
+    "text": "uctions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5666,
+    "end_char": 5753,
+    "length": 87
   },
   {
     "chunk_id": 121,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "y `CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4238,
-    "end_char": 4323,
-    "length": 85
+    "text": "ctions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5667,
+    "end_char": 5753,
+    "length": 86
   },
   {
     "chunk_id": 122,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "`CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4239,
-    "end_char": 4322,
-    "length": 83
+    "text": "tions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5668,
+    "end_char": 5753,
+    "length": 85
   },
   {
     "chunk_id": 123,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "`CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4240,
-    "end_char": 4323,
-    "length": 83
+    "text": "ions (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5669,
+    "end_char": 5753,
+    "length": 84
   },
   {
     "chunk_id": 124,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "CAUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4241,
-    "end_char": 4323,
-    "length": 82
+    "text": "ons (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5670,
+    "end_char": 5753,
+    "length": 83
   },
   {
     "chunk_id": 125,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "AUSED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4242,
-    "end_char": 4323,
-    "length": 81
+    "text": "ns (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5671,
+    "end_char": 5753,
+    "length": 82
   },
   {
     "chunk_id": 126,
     "source": "vibration_limits.md",
     "path": "C:\\Users\\Student\\Desktop\\FIELD_MIND - NEW\\faiss_rag\\knowledge_base\\vibration_limits.md",
-    "text": "USED_BY` edges. Risk profiling queries aggregate PPV history per tunnel segment.",
-    "start_char": 4243,
-    "end_char": 4323,
-    "length": 80
+    "text": "s (e.g., personnel or equipment passing) rather than structural wall convergence.",
+    "start_char": 5672,
+    "end_char": 5753,
+    "length": 81
   },
   {
-    "chunk_id": 636,
-    "source": "llm_self_reflection",
-    "path": "self_learned_memory",
-    "text": "[SELF-LEARNED RULE] The rule should address the potential issue of moisture condensation affecting the MQ-7 sensor's accuracy in high-pressure water spraying operations within tunnels.\n**Self-Learned Safety Rule for Tunnel High-Pressure Water Spraying Operation:**\n\n**Rule: Monitor and Control Humidity Levels to Prevent Moisture Condensation on MQ-7 Sensor.**\n\n**Explanation:**\nDuring high-pressure water spraying operations in tunnels, moisture condensation can occur, leading to drift in the readings of the MQ-7 electrochemical sensor. This can result in inaccurate measurements of carbon monoxide (CO) levels, which may compromise safety. To mitigate this issue, it is essential to maintain a controlled environment with appropriate humidity levels to prevent moisture condensation on the sensor. Regular monitoring of humidity and temperature should be conducted, and any necessary adjustments to the environment should be made to ensure the MQ-7 sensor operates within its optimal conditions. This will help ensure accurate CO measurements and maintain the safety of the operation. \n\n**Action Steps:**\n1. **Monitor Humidity:** Continuously monitor the ambient humidity levels in the tunnel.\n2. **Control Humidity:** Implement measures to control humidity, such as dehumidifiers or proper ventilation.\n3. **Regular Checks:** Perform regular checks on the MQ-7 sensor to ensure it is functioning correctly.\n4. **Calibration:** Calibrate the MQ-7 sensor periodically to maintain accuracy.\n5. **Training:** Ensure all personnel are trained on the importance of maintaining optimal humidity levels and the potential impacts of moisture condensation.\n\nBy adhering to this rule, the accuracy and reliability of the CO measurements can be maintained, ensuring the safety of the operation. \n\n**Conclusion:**\nMaintaining controlled humidity levels is crucial for the accurate operation of the MQ-7 sensor during high-pressure water spraying operations in tunnels. This rule helps prevent moisture condensation, which can lead to inaccurate CO readings and potential safety hazards. Regular monitoring and control of humidity will ensure the safety and effectiveness of the operation. \n\n**Rule: Monitor and Control Humidity Levels to Prevent Moisture Condensation on MQ-7 Sensor.** \n\n**Priority: High** \n\n**Category: Environmental Control** \n\n**Safety Impact: High** \n\n**Action Required: Immediate** \n\n**Responsible Party: Tunnel Operation Team** \n\n**Review Frequency: Daily** \n\n**Documentation: Maintain a log of humidity levels and sensor readings.** \n\n**Training: Conduct regular training sessions on the importance of humidity control.** \n\n**Follow-Up: Implement corrective actions if humidity levels exceed",
-    "start_char": 0,
-    "end_char": 2707,
-    "length": 2707
-  },
-  {
-    "chunk_id": 637,
+    "chunk_id": 761,
     "source": "llm_self_reflection",
     "path": "self_learned_memory",
     "text": "[SELF-LEARNED RULE] When real-time telemetry indicates 'Tunnel High-Pressure Water Spraying Operation' despite conflicting model output, apply corrective contextual rule: MQ-7 electrochemical sensor experienced moisture condensation drift at 88.5% humidity; actual ambient CO is safe (12.0 ppm).. Override initial prediction and update experience replay memory.",
