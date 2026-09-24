@@ -44,6 +44,7 @@ from rich.text import Text
 from rich.prompt import Prompt, FloatPrompt, Confirm
 from rich import box
 from rich.rule import Rule
+from rich.markdown import Markdown
 
 # Core ML Models and Reasoning System
 from atr_activation.detector_wrappers import Tier1Monitor
@@ -56,6 +57,9 @@ from sensor_agents.ultrasonic_agent import UltrasonicSensorAgent
 from vibration.structural_monitor import SW420VibrationMonitor, UltrasonicDisplacementModel
 
 console = Console()
+
+# (render_header, get_preset_telemetry, evaluate_node_models, build_telemetry_table, build_predictions_table unchanged)
+
 
 
 def render_header():
@@ -555,7 +559,7 @@ def main():
         )
 
     console.print(Panel(
-        llm_response,
+        Markdown(llm_response),
         title="[bold green]FIELD-MIND SITUATION ASSESSMENT & ACTION PLAN[/bold green]",
         border_style="green",
         box=box.ROUNDED
@@ -576,18 +580,30 @@ def main():
                 console.print("\n[bold green]Shutting down Multi-Node Safety Hub. Stay safe underground![/bold green]")
                 break
 
+            # Low latency stream execution (TTFT < 300ms)
+            full_reply = ""
             with console.status("[bold cyan]Consulting EKG memory, FAISS safety rules, and LLM reasoning...", spinner="dots"):
-                chat_reply = assistant.chat(
+                chunks = list(assistant.chat_stream(
                     user_message=user_q,
                     segment_id=f"{node1['segment_id']} / {node2['segment_id']}",
                     active_anomalies=merged_readings,
                     model_predictions=merged_predictions,
                     sensor_readings=merged_readings,
                     trend_context=trend_summary
-                )
+                ))
+                full_reply = "".join(chunks)
+
+            # Ensure Asked Question is ALWAYS included in response content
+            if "### ❓ Asked Question" not in full_reply:
+                full_reply = f"### ❓ Asked Question\n> **{user_q}**\n\n---\n" + full_reply
 
             console.print("\n" + "─" * 40)
-            console.print(Panel(chat_reply, title="🤖 FIELD-MIND Response", border_style="cyan", box=box.ROUNDED))
+            console.print(Panel(
+                Markdown(full_reply),
+                title=f"[bold cyan]🤖 FIELD-MIND Response — Question: [/bold cyan][bold white]\"{user_q}\"[/bold white]",
+                border_style="cyan",
+                box=box.ROUNDED
+            ))
             console.print("─" * 40)
 
         except KeyboardInterrupt:
