@@ -89,6 +89,9 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
             "MQ7_CO_ppm": 35.0,
             "MQ2_LPG_ppm": 85.0,
             "MQ135_NOx_ppm": 2.2,
+            "MQ135_NH3_ppm": 4.5, "NH3_ppm": 4.5,
+            "MQ136_H2S_ppm": 1.2, "H2S_ppm": 1.2,
+            "MG811_CO2_ppm": 480.0, "CO2_ppm": 480.0,
             "dust_ug_m3": 45.0,
             "temp": 28.5,
             "humidity": 65.0,
@@ -104,6 +107,9 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
             "MQ7_CO_ppm": 8.0,
             "MQ2_LPG_ppm": 20.0,
             "MQ135_NOx_ppm": 1.1,
+            "MQ135_NH3_ppm": 2.0, "NH3_ppm": 2.0,
+            "MQ136_H2S_ppm": 0.5, "H2S_ppm": 0.5,
+            "MG811_CO2_ppm": 420.0, "CO2_ppm": 420.0,
             "dust_ug_m3": 20.0,
             "temp": 22.0,
             "humidity": 52.0,
@@ -122,6 +128,9 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
             "MQ7_CO_ppm": 10.0,
             "MQ2_LPG_ppm": 15.0,
             "MQ135_NOx_ppm": 1.0,
+            "MQ135_NH3_ppm": 3.0, "NH3_ppm": 3.0,
+            "MQ136_H2S_ppm": 0.8, "H2S_ppm": 0.8,
+            "MG811_CO2_ppm": 410.0, "CO2_ppm": 410.0,
             "dust_ug_m3": 18.0,
             "temp": 21.5,
             "humidity": 48.0,
@@ -137,6 +146,9 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
             "MQ7_CO_ppm": 45.0,
             "MQ2_LPG_ppm": 30.0,
             "MQ135_NOx_ppm": 3.8,
+            "MQ135_NH3_ppm": 12.0, "NH3_ppm": 12.0,
+            "MQ136_H2S_ppm": 4.5, "H2S_ppm": 4.5,
+            "MG811_CO2_ppm": 850.0, "CO2_ppm": 850.0,
             "dust_ug_m3": 120.0,
             "temp": 26.0,
             "humidity": 60.0,
@@ -155,6 +167,9 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
             "MQ7_CO_ppm": 32.0,        # Drift elevated CO
             "MQ2_LPG_ppm": 25.0,
             "MQ135_NOx_ppm": 1.2,
+            "MQ135_NH3_ppm": 4.0, "NH3_ppm": 4.0,
+            "MQ136_H2S_ppm": 1.0, "H2S_ppm": 1.0,
+            "MG811_CO2_ppm": 430.0, "CO2_ppm": 430.0,
             "dust_ug_m3": 15.0,
             "temp": 21.0,
             "humidity": 89.0,          # Extreme humidity -> Condensation
@@ -170,6 +185,9 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
             "MQ7_CO_ppm": 9.0,
             "MQ2_LPG_ppm": 18.0,
             "MQ135_NOx_ppm": 0.9,
+            "MQ135_NH3_ppm": 2.5, "NH3_ppm": 2.5,
+            "MQ136_H2S_ppm": 0.6, "H2S_ppm": 0.6,
+            "MG811_CO2_ppm": 415.0, "CO2_ppm": 415.0,
             "dust_ug_m3": 22.0,
             "temp": 22.5,
             "humidity": 55.0,
@@ -186,6 +204,9 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
         n1_co = FloatPrompt.ask("  Carbon Monoxide CO (ppm)", default=15.0)
         n1_lpg = FloatPrompt.ask("  LPG/CNG (ppm)", default=40.0)
         n1_nox = FloatPrompt.ask("  Nitrogen Oxides NOx (ppm)", default=1.5)
+        n1_nh3 = FloatPrompt.ask("  Ammonia NH3 (ppm)", default=5.0)
+        n1_h2s = FloatPrompt.ask("  Hydrogen Sulfide H2S (ppm)", default=1.0)
+        n1_co2 = FloatPrompt.ask("  Carbon Dioxide CO2 (ppm)", default=450.0)
         n1_dust = FloatPrompt.ask("  Dust Particulates PM2.5 (µg/m³)", default=25.0)
         n1_temp = FloatPrompt.ask("  Temperature (°C)", default=23.0)
         n1_hum = FloatPrompt.ask("  Humidity (%)", default=55.0)
@@ -195,13 +216,16 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
         node1 = {
             "name": "Node 1 (Tunnel A1)",
             "segment_id": "TUNNEL_A1",
-            "MQ4_CH4_ppm": n1_ch4,
-            "MQ7_CO_ppm": n1_co,
-            "MQ2_LPG_ppm": n1_lpg,
+            "MQ4_CH4_ppm": n1_ch4, "CH4_ppm": n1_ch4,
+            "MQ7_CO_ppm": n1_co, "CO_ppm": n1_co,
+            "MQ2_LPG_ppm": n1_lpg, "LPG_ppm": n1_lpg,
             "MQ135_NOx_ppm": n1_nox,
-            "dust_ug_m3": n1_dust,
-            "temp": n1_temp,
-            "humidity": n1_hum,
+            "MQ135_NH3_ppm": n1_nh3, "NH3_ppm": n1_nh3,
+            "MQ136_H2S_ppm": n1_h2s, "H2S_ppm": n1_h2s,
+            "MG811_CO2_ppm": n1_co2, "CO2_ppm": n1_co2,
+            "dust_ug_m3": n1_dust, "PM25_Dust_ugm3": n1_dust,
+            "temp": n1_temp, "Temp_C": n1_temp,
+            "humidity": n1_hum, "Humidity_pct": n1_hum,
             "vibration_pulses": n1_pulses,
             "ultrasonic_distance": n1_dist,
             "min_distance": n1_dist,
@@ -213,6 +237,9 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
         n2_co = FloatPrompt.ask("  Carbon Monoxide CO (ppm)", default=10.0)
         n2_lpg = FloatPrompt.ask("  LPG/CNG (ppm)", default=25.0)
         n2_nox = FloatPrompt.ask("  Nitrogen Oxides NOx (ppm)", default=1.0)
+        n2_nh3 = FloatPrompt.ask("  Ammonia NH3 (ppm)", default=3.0)
+        n2_h2s = FloatPrompt.ask("  Hydrogen Sulfide H2S (ppm)", default=0.5)
+        n2_co2 = FloatPrompt.ask("  Carbon Dioxide CO2 (ppm)", default=420.0)
         n2_dust = FloatPrompt.ask("  Dust Particulates PM2.5 (µg/m³)", default=20.0)
         n2_temp = FloatPrompt.ask("  Temperature (°C)", default=22.0)
         n2_hum = FloatPrompt.ask("  Humidity (%)", default=50.0)
@@ -222,13 +249,16 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
         node2 = {
             "name": "Node 2 (Tunnel B2)",
             "segment_id": "TUNNEL_B2",
-            "MQ4_CH4_ppm": n2_ch4,
-            "MQ7_CO_ppm": n2_co,
-            "MQ2_LPG_ppm": n2_lpg,
+            "MQ4_CH4_ppm": n2_ch4, "CH4_ppm": n2_ch4,
+            "MQ7_CO_ppm": n2_co, "CO_ppm": n2_co,
+            "MQ2_LPG_ppm": n2_lpg, "LPG_ppm": n2_lpg,
             "MQ135_NOx_ppm": n2_nox,
-            "dust_ug_m3": n2_dust,
-            "temp": n2_temp,
-            "humidity": n2_hum,
+            "MQ135_NH3_ppm": n2_nh3, "NH3_ppm": n2_nh3,
+            "MQ136_H2S_ppm": n2_h2s, "H2S_ppm": n2_h2s,
+            "MG811_CO2_ppm": n2_co2, "CO2_ppm": n2_co2,
+            "dust_ug_m3": n2_dust, "PM25_Dust_ugm3": n2_dust,
+            "temp": n2_temp, "Temp_C": n2_temp,
+            "humidity": n2_hum, "Humidity_pct": n2_hum,
             "vibration_pulses": n2_pulses,
             "ultrasonic_distance": n2_dist,
             "min_distance": n2_dist,
@@ -286,6 +316,19 @@ def build_telemetry_table(node1: Dict[str, Any], node2: Dict[str, Any]) -> Table
 
     table.add_row("LPG / CNG (MQ-2)", f"{node1['MQ2_LPG_ppm']:.1f} ppm", f"{node2['MQ2_LPG_ppm']:.1f} ppm", "< 1,000 ppm (OSHA)")
     table.add_row("Nitrogen Oxides (MQ-135)", f"{node1['MQ135_NOx_ppm']:.1f} ppm", f"{node2['MQ135_NOx_ppm']:.1f} ppm", "< 3.0 ppm (NIOSH REL)")
+    
+    nh3_1_str = f"[bold red]{node1.get('MQ135_NH3_ppm', 0.0):.1f} ppm[/bold red]" if node1.get('MQ135_NH3_ppm', 0.0) >= 25 else f"{node1.get('MQ135_NH3_ppm', 0.0):.1f} ppm"
+    nh3_2_str = f"[bold red]{node2.get('MQ135_NH3_ppm', 0.0):.1f} ppm[/bold red]" if node2.get('MQ135_NH3_ppm', 0.0) >= 25 else f"{node2.get('MQ135_NH3_ppm', 0.0):.1f} ppm"
+    table.add_row("Ammonia (MQ-135 NH3)", nh3_1_str, nh3_2_str, "< 25 ppm (NIOSH REL)")
+
+    h2s_1_str = f"[bold red]{node1.get('MQ136_H2S_ppm', 0.0):.1f} ppm[/bold red]" if node1.get('MQ136_H2S_ppm', 0.0) >= 10 else f"{node1.get('MQ136_H2S_ppm', 0.0):.1f} ppm"
+    h2s_2_str = f"[bold red]{node2.get('MQ136_H2S_ppm', 0.0):.1f} ppm[/bold red]" if node2.get('MQ136_H2S_ppm', 0.0) >= 10 else f"{node2.get('MQ136_H2S_ppm', 0.0):.1f} ppm"
+    table.add_row("Hydrogen Sulfide (MQ-136 H2S)", h2s_1_str, h2s_2_str, "< 10 ppm (OSHA PEL)")
+
+    co2_1_str = f"[bold red]{node1.get('MG811_CO2_ppm', 400.0):.1f} ppm[/bold red]" if node1.get('MG811_CO2_ppm', 400.0) >= 5000 else f"{node1.get('MG811_CO2_ppm', 400.0):.1f} ppm"
+    co2_2_str = f"[bold red]{node2.get('MG811_CO2_ppm', 400.0):.1f} ppm[/bold red]" if node2.get('MG811_CO2_ppm', 400.0) >= 5000 else f"{node2.get('MG811_CO2_ppm', 400.0):.1f} ppm"
+    table.add_row("Carbon Dioxide (MG-811 CO2)", co2_1_str, co2_2_str, "< 5,000 ppm (OSHA PEL)")
+
     table.add_row("Dust Particulates (PM2.5)", f"{node1['dust_ug_m3']:.1f} µg/m³", f"{node2['dust_ug_m3']:.1f} µg/m³", "< 50 µg/m³ (OSHA)")
 
     # Environment
@@ -343,6 +386,12 @@ def build_predictions_table(p1: Dict[str, Any], p2: Dict[str, Any], id1: str, id
     sev1_str = f"[bold red]L3 DANGER[/bold red]" if sev1_ch4 == 2 else (f"[bold yellow]L2 WARNING[/bold yellow]" if sev1_ch4 == 1 else "[bold green]L1 Safe[/bold green]")
     sev2_str = f"[bold red]L3 DANGER[/bold red]" if sev2_ch4 == 2 else (f"[bold yellow]L2 WARNING[/bold yellow]" if sev2_ch4 == 1 else "[bold green]L1 Safe[/bold green]")
     table.add_row("Methane (CH4) Severity Head", sev1_str, sev2_str, "3-Class Graded Alarm (L1-L3)")
+
+    sev1_h2s = p1.get("h2s_severity", 0)
+    sev2_h2s = p2.get("h2s_severity", 0)
+    h2s1_str = f"[bold red]L3 DANGER[/bold red]" if sev1_h2s == 2 else (f"[bold yellow]L2 WARNING[/bold yellow]" if sev1_h2s == 1 else "[bold green]L1 Safe[/bold green]")
+    h2s2_str = f"[bold red]L3 DANGER[/bold red]" if sev2_h2s == 2 else (f"[bold yellow]L2 WARNING[/bold yellow]" if sev2_h2s == 1 else "[bold green]L1 Safe[/bold green]")
+    table.add_row("H2S Severity Head", h2s1_str, h2s2_str, "3-Class Toxic Alarm (L1-L3)")
 
     # 6. Env Thermal Drift (Isolation Forest / Threshold Fallback)
     env1 = "[bold yellow]⚠ ANOMALY[/bold yellow]" if p1.get("anomaly_detected") else "[bold green]✔ NOMINAL[/bold green]"
