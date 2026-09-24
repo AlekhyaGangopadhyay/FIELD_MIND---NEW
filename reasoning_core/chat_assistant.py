@@ -28,7 +28,6 @@ try:
 except ImportError:
     EKG_AVAILABLE = False
 
-
 class MineSafetyChatAssistant:
     """
     Conversational AI Safety Assistant that communicates safety conditions to mine operators,
@@ -53,6 +52,8 @@ class MineSafetyChatAssistant:
         self.ekg_json_path = self.core.ekg_json_path
         self.rag_retriever = self.core.rag_retriever
         self.protocol_evaluator = SafetyProtocolEvaluator(self.rag_retriever)
+        # Latency Optimization: Memory cache for instant exact query hits (~0ms)
+        self._response_cache: Dict[str, str] = {}
 
     def chat(
         self,
@@ -67,6 +68,23 @@ class MineSafetyChatAssistant:
         Processes a user question, analyzes active readings, retrieves EKG and RAG,
         and generates a conversational response.
         """
+        # Latency Optimization: Exact Match Cache Check (~0ms)
+        cache_key = f"{user_message.strip().lower()}_{segment_id}_{hash(str(sensor_readings or active_anomalies))}"
+        if cache_key in self._response_cache:
+            return self._response_cache[cache_key]
+
+        # Fast path for common greetings / simple queries (~0ms latency)
+        clean_q = user_message.strip().lower()
+        if clean_q in {"hi", "hello", "hey", "status", "help"}:
+            fast_reply = (
+                f"### ❓ Asked Question\n> **{user_message}**\n\n"
+                f"---\n"
+                f"Hello! I am **FIELD-MIND**, your on-device safety assistant for **{segment_id}**.\n\n"
+                f"All monitoring systems are active. Please ask any question regarding gas safety, vibration limits, structural stability, or operator procedures."
+            )
+            self._response_cache[cache_key] = fast_reply
+            return fast_reply
+
         # 1. Fetch EKG context
         ekg_context = ""
         if EKG_AVAILABLE and os.path.exists(self.ekg_json_path):
@@ -93,8 +111,7 @@ class MineSafetyChatAssistant:
         else:
             ekg_context = f"EKG context for segment {segment_id} is unavailable."
 
-        # 2. Compare raw readings with explicit OSHA/NIOSH/industry limits and
-        # retrieve the supporting FAISS passages in one batched operation.
+        # 2. Compare raw readings with explicit OSHA/NIOSH/industry limits
         model_predictions = model_predictions or {}
         try:
             assessment = self.protocol_evaluator.assess(
@@ -103,8 +120,6 @@ class MineSafetyChatAssistant:
                 top_k=2,
             )
         except Exception as exc:
-            # A missing/offline embedding model must not suppress deterministic
-            # safety checks or the operator response.
             assessment = SafetyProtocolEvaluator().assess(
                 readings=sensor_readings or active_anomalies,
                 predictions=model_predictions,
@@ -120,12 +135,11 @@ class MineSafetyChatAssistant:
             "Your role is to protect miners and autonomous equipment by analyzing real-time sensor telemetry, "
             "evaluating ML model predictions against regulatory standards (OSHA, NIOSH, IS 6922, AS 4024), "
             "and providing clear, detailed, and prioritized safety recommendations.\n\n"
-            "Formatting Guidelines:\n"
-            "- Be direct, thorough, and professional.\n"
-            "- Structure your response with clear markdown headings and bullet points.\n"
-            "- Analyze the specific numerical sensor readings and explain any hazard conditions.\n"
-            "- Cite the relevant safety standards retrieved from RAG memory.\n"
-            "- Conclude with numbered, prioritized, and actionable safety measures."
+            "Formatting Rules:\n"
+            "1. ALWAYS start with the header '### ❓ Asked Question' followed by the user question in a blockquote.\n"
+            "2. Present all safety protocols, real-time sensor values, and regulatory checks in a Markdown Table.\n"
+            "3. Conclude with at most 3 concise, numbered prioritized actions (1, 2, 3) with NO nested sub-bullets.\n"
+            "4. Use clear colors and emojis (🚨 CRITICAL, ⚠ WARNING, ✔ SAFE) to segregate portions."
         )
 
         user_content = (
@@ -144,23 +158,22 @@ class MineSafetyChatAssistant:
             f"{ekg_context}\n\n"
             f"--- [OPERATOR QUESTION] ---\n"
             f"{user_message}\n\n"
-            "Please provide a comprehensive, structured response answering the question, explaining the sensor data, and detailing mandatory safety protocols."
+            "Please provide a structured response answering the question, including the asked question at the top, a regulatory checks table, and max 3 prioritized actions."
         )
 
         prompt = self.llm_runner.format_chat_prompt(system_instructions, user_content)
 
-        # 4. Run through model generator or fallback conversational engine
+        # 4. Run through model generator or fallback engine
         response = self.llm_runner.run_reasoning(
             prompt=prompt,
             anomalies=active_anomalies,
             ekg_history=ekg_context,
             rag_context=rag_context,
             task_type="chat",
-            max_tokens=min(1024, max(512, self.llm_runner.n_ctx // 2))
+            max_tokens=min(512, max(256, self.llm_runner.n_ctx // 2))
         )
 
         if not response or response in {"FIELD-MIND active. Safety regulations and model predictions evaluated.", "Unknown task type."}:
-            # If GGUF is absent or fallback returns standard header, build rich conversational response locally
             response = self._build_conversational_response(
                 user_message,
                 segment_id,
@@ -173,7 +186,97 @@ class MineSafetyChatAssistant:
                 trend_context=trend_context,
             )
 
+        # Guarantee Asked Question is present at top
+        if "### ❓ Asked Question" not in response:
+            response = f"### ❓ Asked Question\n> **{user_message}**\n\n---\n" + response
+
+        self._response_cache[cache_key] = response
         return response
+
+    def chat_stream(
+        self,
+        user_message: str,
+        segment_id: str,
+        active_anomalies: Dict[str, Any],
+        model_predictions: Optional[Dict[str, Any]] = None,
+        sensor_readings: Optional[Dict[str, Any]] = None,
+        trend_context: Optional[str] = None,
+    ):
+        """
+        Streams chat response tokens/blocks to achieve low latency (TTFT < 300ms).
+        """
+        cache_key = f"{user_message.strip().lower()}_{segment_id}_{hash(str(sensor_readings or active_anomalies))}"
+        if cache_key in self._response_cache:
+            yield self._response_cache[cache_key]
+            return
+
+        clean_q = user_message.strip().lower()
+        if clean_q in {"hi", "hello", "hey", "status", "help"}:
+            fast_reply = (
+                f"### ❓ Asked Question\n> **{user_message}**\n\n"
+                f"---\n"
+                f"Hello! I am **FIELD-MIND**, your on-device safety assistant for **{segment_id}**.\n\n"
+                f"All monitoring systems are active. Please ask any question regarding gas safety, vibration limits, structural stability, or operator procedures."
+            )
+            self._response_cache[cache_key] = fast_reply
+            yield fast_reply
+            return
+
+        # Fetch EKG and Protocol Assessment
+        ekg_context = ""
+        if EKG_AVAILABLE and os.path.exists(self.ekg_json_path):
+            try:
+                graph = MineKnowledgeGraph()
+                graph.load(self.ekg_json_path)
+                self.core._ensure_tunnel_segment(graph, segment_id)
+                profile = get_segment_risk_profile(graph, segment_id)
+                ekg_context = f"EKG context for segment {segment_id}: active hazards={profile.get('hazard_count', 0)}."
+            except Exception:
+                ekg_context = "EKG memory loaded."
+
+        model_predictions = model_predictions or {}
+        try:
+            assessment = self.protocol_evaluator.assess(
+                readings=sensor_readings or active_anomalies,
+                predictions=model_predictions,
+                top_k=2,
+            )
+        except Exception:
+            assessment = SafetyProtocolEvaluator().assess(readings=sensor_readings or active_anomalies)
+
+        # If LLM model is available, stream tokens
+        if self.llm_runner.ensure_loaded():
+            system_instructions = (
+                "You are FIELD-MIND, an expert underground mining safety assistant.\n"
+                "ALWAYS start with '### ❓ Asked Question\\n> **<question>**'.\n"
+                "Include a Markdown Table for real-time sensor values & regulatory limits.\n"
+                "End with max 3 numbered prioritized safety actions."
+            )
+            user_content = f"LOCATION: {segment_id}\nREADINGS: {sensor_readings or active_anomalies}\nQUESTION: {user_message}"
+            prompt = self.llm_runner.format_chat_prompt(system_instructions, user_content)
+            
+            first_chunk = True
+            for chunk in self.llm_runner.stream_reasoning(prompt, active_anomalies, ekg_context, assessment.rag_context):
+                if first_chunk and "### ❓ Asked Question" not in chunk:
+                    yield f"### ❓ Asked Question\n> **{user_message}**\n\n---\n"
+                    first_chunk = False
+                yield chunk
+            return
+
+        # Fallback structured response
+        full_res = self._build_conversational_response(
+            user_message=user_message,
+            segment_id=segment_id,
+            active_anomalies=active_anomalies,
+            ekg_context=ekg_context,
+            rag_context=assessment.rag_context,
+            assessment=assessment,
+            sensor_readings=sensor_readings or active_anomalies,
+            model_predictions=model_predictions,
+            trend_context=trend_context,
+        )
+        self._response_cache[cache_key] = full_res
+        yield full_res
 
     def _build_conversational_response(
         self,
@@ -188,11 +291,8 @@ class MineSafetyChatAssistant:
         trend_context: Optional[str] = None,
     ) -> str:
         """
-        Fallback conversational response builder analyzing data inputs and safety measures.
+        Fallback conversational response builder with structured TUI table, colors, and concise actions.
         """
-        # The old rule-by-query response is retained for compatibility with
-        # callers that invoke this private method directly. Normal chat turns
-        # now use the structured assessment below.
         if assessment is not None:
             return self._build_assessment_response(
                 user_message=user_message,
@@ -204,91 +304,58 @@ class MineSafetyChatAssistant:
                 trend_context=trend_context,
             )
 
-        # Parse query keywords
-        q = user_message.lower()
-        is_methane = "methane" in q or "ch4" in q or "gas" in q
-        is_vib = "vibration" in q or "ppv" in q or "blast" in q
-        is_env = "temp" in q or "humidity" in q or "heat" in q
-        is_nav = "robot" in q or "navigation" in q or "collision" in q
-
-        # Parse values
-        max_methane = float(active_anomalies.get("MQ4_CH4_ppm", 0))
-        max_co = float(active_anomalies.get("MQ7_CO_ppm", 0))
-        max_ppv = float(active_anomalies.get("predicted_ppv", 0.0) or active_anomalies.get("ppv", 0.0))
-        min_dist = float(active_anomalies.get("min_distance", 5.0))
-        temp = float(active_anomalies.get("temp", 20.0))
-
+        readings = sensor_readings or active_anomalies
         lines = [
-            f"Hello. This is **FIELD-MIND**, your on-site safety assistant. Let me analyze the current safety parameters for **{segment_id}** and answer your request.",
-            ""
+            f"### ❓ Asked Question",
+            f"> **{user_message}**",
+            "",
+            "---",
+            f"### 🛡️ FIELD-MIND Safety Assessment — Sector {segment_id}",
+            "",
+            "### 📊 Real-Time Telemetry & Regulatory Protocol Checks",
+            "| Metric / Sensor Stream | Real-Time Value | Regulatory Standard / Limit | Safety Status |",
+            "| :--- | :---: | :---: | :---: |"
         ]
 
-        # ───────────────────────────────────────────────────────────────────
-        # Analysis of Data Inputs
-        # ───────────────────────────────────────────────────────────────────
-        lines.append("### 📊 Active Data Inputs Analysis")
-        if not active_anomalies:
-            lines.append("• All monitored sensor parameters are currently within normal baseline ranges.")
-        else:
-            if max_methane > 0:
-                status = "🚨 CRITICAL" if max_methane > 10000 else "⚠ ELEVATED"
-                lines.append(f"• **Methane (CH4)**: {max_methane:.1f} ppm [{status}].")
-            if max_co > 0:
-                status = "⚠ ELEVATED" if max_co > 50 else "NOMINAL"
-                lines.append(f"• **Carbon Monoxide (CO)**: {max_co:.1f} ppm [{status}].")
-            if max_ppv > 0:
-                status = "🚨 HIGH RISK" if max_ppv > 10.0 else "NOMINAL"
-                lines.append(f"• **Ground Vibration (PPV)**: {max_ppv:.2f} mm/s [{status}].")
-            if min_dist < 5.0:
-                status = "🚨 IMMEDIATE COLLISION RISK" if min_dist < 0.3 else "NOMINAL"
-                lines.append(f"• **Robot Proximity Distance**: {min_dist:.2f} m [{status}].")
-            if temp != 20.0:
-                lines.append(f"• **Ambient Temperature**: {temp:.1f}°C.")
+        ch4 = float(readings.get("MQ4_CH4_ppm", 0))
+        ch4_stat = "🚨 CRITICAL (Evacuate)" if ch4 > 5000 else ("⚠ WARNING (Elevated)" if ch4 > 1000 else "✔ NOMINAL (Safe)")
+        lines.append(f"| Methane (MQ-4 CH4) | {ch4:.1f} ppm | < 1,000 ppm (OSHA PEL) | {ch4_stat} |")
 
-        # EKG history integration
-        if "recent blasting" in ekg_context.lower() or "hazards" in ekg_context.lower():
-            lines.append(f"• **Memory Logs**: {ekg_context}")
-        lines.append("")
+        co = float(readings.get("MQ7_CO_ppm", 0))
+        co_stat = "🚨 DANGER (Toxic)" if co > 50 else ("⚠ WARNING (Elevated)" if co > 25 else "✔ NOMINAL (Safe)")
+        lines.append(f"| Carbon Monoxide (MQ-7 CO) | {co:.1f} ppm | < 25 ppm (Post-blast entry) | {co_stat} |")
 
-        # ───────────────────────────────────────────────────────────────────
-        # Analysis of Safety Measures
-        # ───────────────────────────────────────────────────────────────────
-        lines.append("### 🛡️ Regulation Safety Measures")
-        if is_methane or (max_methane > 5000 or max_co > 25):
-            lines.append("• **Gas Safety (OSHA/NIOSH)**: Methane concentrations exceeding 1.0% (10,000 ppm) require immediate evacuation. CO must remain below 25 ppm for safe post-blast entry.")
-        if is_vib or max_ppv > 1.0:
-            lines.append("• **Vibration Limits (IS 6922)**: Industrial structure limits are 5 mm/s, and residential structures are capped at 12.5 mm/s. PPV values exceeding 12.5 mm/s require a halt in blasting operations and a visual geological inspection.")
-        if is_env or temp > 28.0:
-            lines.append("• **Environmental Comfort (OSHA)**: Ambient work temperatures above 28°C require worker hydration cycles (15 minutes rest per hour) and secondary air conditioning controls.")
-        if is_nav or min_dist < 0.5:
-            lines.append("• **Navigation Safety (AS 4024)**: Robotic platforms must stop if an obstacle is within 30 cm (0.3 m) to prevent structural damage.")
-        
-        if not (is_methane or is_vib or is_env or is_nav):
-            lines.append("• **General Safety Rules**: Standard operating rules mandate continuous secondary ventilation, visual inspection of tunnel headings, and log persistence on EKG.")
-        lines.append("")
+        temp = float(readings.get("temp", 22.0))
+        t_stat = "⚠ CAUTION (Heat Stress)" if temp > 28 else "✔ NOMINAL (Safe)"
+        lines.append(f"| Ambient Temperature | {temp:.1f} °C | 18 – 28 °C (Safe Thermal Zone) | {t_stat} |")
 
-        # ───────────────────────────────────────────────────────────────────
-        # Action Plan
-        # ───────────────────────────────────────────────────────────────────
-        lines.append("### 📢 Recommended Safety Actions")
+        hum = float(readings.get("humidity", 55.0))
+        h_stat = "⚠ HIGH RH (Condensation Risk)" if hum > 85 else "✔ NOMINAL (Safe)"
+        lines.append(f"| Relative Humidity | {hum:.1f} % | 15 – 85 % RH | {h_stat} |")
+
+        vib = float(readings.get("vibration_pulses", 0.0))
+        v_stat = "🚨 CRITICAL (Level 2 Shock)" if vib > 10 else "✔ NOMINAL (Baseline)"
+        lines.append(f"| Shock Pulses (SW-420) | {vib:.0f} p/s | < 5 pulses/s | {v_stat} |")
+
+        dist = float(readings.get("min_distance", 2.5))
+        d_stat = "🚨 STOP ALARM (< 0.3m)" if dist < 0.3 else "✔ NOMINAL (Clear)"
+        lines.append(f"| Obstacle Proximity | {dist:.2f} m | > 0.50 m (AS 4024 Clearance) | {d_stat} |")
+
+        lines.extend(["", "---", "### 📢 Prioritized Safety Actions"])
         actions = []
-        if max_methane > 10000:
-            actions.append("**EVACUATE** segment immediately. Power down all non-intrinsically safe electrical grids.")
-            actions.append("Override and speed up auxiliary exhaust ventilation fans.")
-        elif max_co > 50:
-            actions.append("Enforce a post-blast safety dilution period. Do not enter the area for 30 minutes.")
-            
-        if max_ppv > 12.5:
-            actions.append("Initiate roof integrity scans to check for rock fall hazards.")
-            
-        if min_dist < 0.3:
-            actions.append("Halt autonomous vehicle movement and command robot to backup.")
-
+        if ch4 > 5000:
+            actions.append("EVACUATE tunnel heading immediately and power down non-explosion-proof electrical grids.")
+            actions.append("Override and max out auxiliary exhaust ventilation fans to dilute combustible CH4.")
+        elif co > 25:
+            actions.append("Enforce 30-minute post-blast safety air dilution timer before allowing worker re-entry.")
+        if dist < 0.3:
+            actions.append("Halt autonomous vehicle movement immediately and execute emergency reverse clearance.")
         if not actions:
-            actions.append("All systems within safe parameters. Maintain continuous baseline surveillance.")
+            actions.append("Maintain continuous automated baseline monitoring and standard ventilation protocols.")
 
-        for act in actions:
-            lines.append(f"1. {act}")
+        # Limit to max 3 concise main actions without subpoints
+        for idx, act in enumerate(actions[:3], 1):
+            lines.append(f"{idx}. {act}")
 
         return "\n".join(lines)
 
@@ -302,89 +369,57 @@ class MineSafetyChatAssistant:
         model_predictions: Dict[str, Any],
         trend_context: Optional[str] = None,
     ) -> str:
-        """Render one consistent, dynamic response from protocol checks."""
+        """Render consistent, structured response with Q&A header, custom TUI table, colors, and max 3 concise actions."""
+        status_color = "🚨 CRITICAL" if assessment.overall_status == "CRITICAL" else ("⚠ WARNING" if assessment.overall_status in {"WARNING", "REVIEW_MODEL_DISAGREEMENT"} else "✔ SAFE")
+        
         lines = [
-            f"FIELD-MIND safety assessment for {segment_id}",
-            f"Overall status: **{assessment.overall_status}**",
+            f"### ❓ Asked Question",
+            f"> **{user_message}**",
             "",
+            "---",
+            f"### 🛡️ FIELD-MIND Safety Assessment — Sector {segment_id}",
+            f"Overall Status: **{status_color}** (`{assessment.overall_status}`)",
+            "",
+            "### 📊 Real-Time Telemetry & Regulatory Protocol Checks",
+            "| Metric / Sensor Stream | Real-Time Value | Regulatory Standard / Limit | Safety Check Status |",
+            "| :--- | :---: | :---: | :---: |"
         ]
 
-        active_checks = [
-            check for check in assessment.checks
-            if check.severity != "OK" or check.status not in {"WITHIN_LIMIT", "ALERT"}
-        ]
-        normal_checks = [
-            check for check in assessment.checks
-            if check.severity == "OK" and check.status == "WITHIN_LIMIT"
-        ]
-        if active_checks:
-            lines.append("### Findings")
-            for check in active_checks:
-                signal = ""
-                if check.model_signal is not None:
-                    signal = f" Model output: `{check.model_signal}`."
-                lines.append(
-                    f"- **{check.metric}**: {check.reading:g} {check.unit} - "
-                    f"{check.severity} / {check.status}.{signal} {check.message}"
-                )
-            lines.append("")
+        # Add protocol checks to the TUI table
+        if assessment.checks:
+            for check in assessment.checks:
+                status_badge = "🚨 CRITICAL" if check.severity == "CRITICAL" else ("⚠ WARNING" if check.severity == "WARNING" else "✔ SAFE")
+                lines.append(f"| {check.metric.title()} ({check.domain.upper()}) | {check.reading:g} {check.unit} | {check.protocol_limit} | {status_badge} ({check.status}) |")
         else:
-            lines.extend([
-                "### Findings",
-                "All supplied numeric readings are within the configured protocol limits, and no model disagreement was detected.",
-                "",
-            ])
+            lines.append("| Baseline Sensors | Nominal | OSHA / NIOSH Baseline | ✔ SAFE |")
 
-        if normal_checks:
-            normal_summary = "; ".join(
-                f"{check.metric} {check.reading:g} {check.unit}"
-                for check in normal_checks
-            )
-            lines.extend([
-                "### Normal checks",
-                f"Within configured limits: {normal_summary}.",
-                "",
-            ])
+        # Supplement with key telemetry if missing from checks
+        readings = sensor_readings or {}
+        if "MQ4_CH4_ppm" in readings and not any("ch4" in c.metric.lower() for c in assessment.checks):
+            ch4_val = float(readings["MQ4_CH4_ppm"])
+            lines.append(f"| Methane (MQ-4 CH4) | {ch4_val:.1f} ppm | < 1,000 ppm (OSHA PEL) | {'🚨 CRITICAL' if ch4_val > 5000 else '✔ SAFE'} |")
+        if "temp" in readings and not any("temp" in c.metric.lower() for c in assessment.checks):
+            t_val = float(readings["temp"])
+            lines.append(f"| Ambient Temperature | {t_val:.1f} °C | 18 – 28 °C | {'⚠ CAUTION' if t_val > 28 else '✔ SAFE'} |")
 
-        # Model outputs that are useful context but are not numeric protocol
-        # checks should still be visible to the operator.
-        model_context = []
-        if "occupancy_state" in model_predictions:
-            occupied = bool(model_predictions["occupancy_state"])
-            model_context.append(f"Occupancy classifier: {'occupied' if occupied else 'unoccupied'}.")
-        if "air_quality_score" in model_predictions:
-            model_context.append(
-                f"Air-quality model score: {float(model_predictions['air_quality_score']):.2f} "
-                "(interpret against the model's documented scale; it is not a direct regulatory limit)."
-            )
-        if "steering_decision" in model_predictions:
-            model_context.append(f"Navigation model decision: {model_predictions['steering_decision']}.")
-        if model_context:
-            lines.append("### Model context")
-            lines.extend(f"- {item}" for item in model_context)
-            lines.append("")
+        lines.extend(["", "---"])
 
         if trend_context:
-            lines.append("### Multi-node trend")
-            lines.append(trend_context)
-            lines.append("")
+            lines.extend(["### 📈 Multi-Node Trend", trend_context, "", "---"])
 
-        lines.append("### Recommended actions")
-        if assessment.actions:
-            lines.extend(f"{index}. {action}" for index, action in enumerate(assessment.actions, 1))
-        else:
-            lines.append("1. Maintain baseline monitoring and normal mine operating procedures.")
-        lines.append("")
+        # Prioritized actions: Cap at top 3 main actions, deduplicated, no subpoints
+        lines.append("### 📢 Prioritized Safety Actions")
+        raw_actions = list(dict.fromkeys(assessment.actions)) if assessment.actions else []
+        if not raw_actions:
+            raw_actions.append("Maintain baseline monitoring and normal mine operating procedures.")
 
-        if ekg_context:
-            lines.append(f"### Mine memory\n{ekg_context}\n")
-        if assessment.rag_results:
-            evidence = ", ".join(
-                f"{item['source']} ({item['score']:.2f})"
-                for item in assessment.rag_results[:4]
-            )
-            lines.append(f"### Grounding\nFAISS evidence consulted: {evidence}.")
-        else:
-            lines.append("### Grounding\nNo FAISS evidence was returned; treat this as baseline rule-engine output.")
+        top_actions = raw_actions[:3]
+        for index, action in enumerate(top_actions, 1):
+            lines.append(f"{index}. {action}")
+
+        lines.extend(["", "---"])
+
+        if ekg_context and "unavailable" not in ekg_context.lower():
+            lines.extend([f"### 🧠 Expedition Knowledge Graph (EKG Memory)", ekg_context, ""])
 
         return "\n".join(lines)
