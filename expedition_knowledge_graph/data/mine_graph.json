@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "saved_at": "2026-08-27T10:41:29.805501",
-    "total_nodes": 1440,
-    "total_edges": 1701
+    "saved_at": "2026-09-17T05:29:18.630733",
+    "total_nodes": 1448,
+    "total_edges": 1706
   },
   "nodes": [
     {
@@ -30887,6 +30887,87 @@
         "segment_id": "Heading_A1",
         "label": "ReasoningResolution"
       }
+    },
+    {
+      "id": "TUNNEL_A1",
+      "properties": {
+        "segment_id": "TUNNEL_A1",
+        "name": "Tunnel Section A1",
+        "depth_m": 150.0,
+        "status": "active",
+        "label": "TunnelSegment"
+      }
+    },
+    {
+      "id": "reasoning_event_1789603134408",
+      "properties": {
+        "timestamp": 1789603134.408086,
+        "hypothesis": "CRITICAL Methane build-up detected (12500.0 ppm). Likely caused by ventilation pocket failure or sudden gas pocket release in the heading. | Environmental comfort indices deviated from normal baseline monitoring parameters.",
+        "suggestions": "IMMEDIATELY EVACUATE all personnel from the affected segment.; Activate secondary auxiliary ventilation fans to dilute combustible concentrations.; Power down all non-explosion-proof electrical equipment in the sector.",
+        "segment_id": "TUNNEL_A1",
+        "label": "ReasoningResolution"
+      }
+    },
+    {
+      "id": "TUNNEL_A3",
+      "properties": {
+        "segment_id": "TUNNEL_A3",
+        "name": "Tunnel Section A3",
+        "depth_m": 150.0,
+        "status": "active",
+        "label": "TunnelSegment"
+      }
+    },
+    {
+      "id": "reasoning_event_1789603134629",
+      "properties": {
+        "timestamp": 1789603134.629492,
+        "hypothesis": "High peak particle velocity (15.80 mm/s) registered. Unexplained seismic vibration, indicating potential rockburst or structural shifts.",
+        "suggestions": "Inspect tunnel roof structures for damage, new cracks, or rock spalling.; Halt all subsequent blasting operations in adjacent segments until geological inspection completes.",
+        "segment_id": "TUNNEL_A3",
+        "label": "ReasoningResolution"
+      }
+    },
+    {
+      "id": "TUNNEL_B1",
+      "properties": {
+        "segment_id": "TUNNEL_B1",
+        "name": "Tunnel Section B1",
+        "depth_m": 150.0,
+        "status": "active",
+        "label": "TunnelSegment"
+      }
+    },
+    {
+      "id": "reasoning_event_1789603134744",
+      "properties": {
+        "timestamp": 1789603134.7446942,
+        "hypothesis": "Robot proximity alert (US minimum distance=0.18m). A wall or physical obstacle is blocking the path.",
+        "suggestions": "Command robotic platform to execute immediate reverse/backup maneuvers.; Recalibrate autonomous navigation steering coefficients.",
+        "segment_id": "TUNNEL_B1",
+        "label": "ReasoningResolution"
+      }
+    },
+    {
+      "id": "learned_rule_1789603158520",
+      "properties": {
+        "timestamp": 1789603158.5201833,
+        "actual_situation": "Tunnel High-Pressure Water Spraying Operation",
+        "explanation": "MQ-7 electrochemical sensor experienced moisture condensation drift at 88.5% humidity; actual ambient CO is safe (12.0 ppm).",
+        "rule_text": "When real-time telemetry indicates 'Tunnel High-Pressure Water Spraying Operation' despite conflicting model output, apply corrective contextual rule: MQ-7 electrochemical sensor experienced moisture condensation drift at 88.5% humidity; actual ambient CO is safe (12.0 ppm).. Override initial prediction and update experience replay memory.",
+        "segment_id": "Heading_A1",
+        "label": "SelfLearnedRule"
+      }
+    },
+    {
+      "id": "reasoning_event_1789603158630",
+      "properties": {
+        "timestamp": 1789603158.6307333,
+        "hypothesis": "General gas concentration levels rising, indicating reduced ventilation flow. | Environmental comfort indices deviated from normal baseline monitoring parameters.",
+        "suggestions": "Maintain continuous low-power monitoring and standard reporting.",
+        "segment_id": "Heading_A1",
+        "label": "ReasoningResolution"
+      }
     }
   ],
   "edges": [
@@ -42795,6 +42876,41 @@
     },
     {
       "from": "reasoning_event_1787807489805",
+      "to": "Heading_A1",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
+      }
+    },
+    {
+      "from": "reasoning_event_1789603134408",
+      "to": "TUNNEL_A1",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
+      }
+    },
+    {
+      "from": "reasoning_event_1789603134629",
+      "to": "TUNNEL_A3",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
+      }
+    },
+    {
+      "from": "reasoning_event_1789603134744",
+      "to": "TUNNEL_B1",
+      "properties": {
+        "rel_type": "RESOLVED_FOR"
+      }
+    },
+    {
+      "from": "learned_rule_1789603158520",
+      "to": "Heading_A1",
+      "properties": {
+        "rel_type": "LEARNED_FOR"
+      }
+    },
+    {
+      "from": "reasoning_event_1789603158630",
       "to": "Heading_A1",
       "properties": {
         "rel_type": "RESOLVED_FOR"
