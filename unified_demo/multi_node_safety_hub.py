@@ -185,6 +185,8 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
         n1_ch4 = FloatPrompt.ask("  Methane CH4 (ppm)", default=500.0)
         n1_co = FloatPrompt.ask("  Carbon Monoxide CO (ppm)", default=15.0)
         n1_lpg = FloatPrompt.ask("  LPG/CNG (ppm)", default=40.0)
+        n1_nox = FloatPrompt.ask("  Nitrogen Oxides NOx (ppm)", default=1.5)
+        n1_dust = FloatPrompt.ask("  Dust Particulates PM2.5 (µg/m³)", default=25.0)
         n1_temp = FloatPrompt.ask("  Temperature (°C)", default=23.0)
         n1_hum = FloatPrompt.ask("  Humidity (%)", default=55.0)
         n1_pulses = FloatPrompt.ask("  SW-420 Shock Pulses (pulses/s)", default=2.0)
@@ -196,8 +198,8 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
             "MQ4_CH4_ppm": n1_ch4,
             "MQ7_CO_ppm": n1_co,
             "MQ2_LPG_ppm": n1_lpg,
-            "MQ135_NOx_ppm": 1.5,
-            "dust_ug_m3": 25.0,
+            "MQ135_NOx_ppm": n1_nox,
+            "dust_ug_m3": n1_dust,
             "temp": n1_temp,
             "humidity": n1_hum,
             "vibration_pulses": n1_pulses,
@@ -210,6 +212,8 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
         n2_ch4 = FloatPrompt.ask("  Methane CH4 (ppm)", default=420.0)
         n2_co = FloatPrompt.ask("  Carbon Monoxide CO (ppm)", default=10.0)
         n2_lpg = FloatPrompt.ask("  LPG/CNG (ppm)", default=25.0)
+        n2_nox = FloatPrompt.ask("  Nitrogen Oxides NOx (ppm)", default=1.0)
+        n2_dust = FloatPrompt.ask("  Dust Particulates PM2.5 (µg/m³)", default=20.0)
         n2_temp = FloatPrompt.ask("  Temperature (°C)", default=22.0)
         n2_hum = FloatPrompt.ask("  Humidity (%)", default=50.0)
         n2_pulses = FloatPrompt.ask("  SW-420 Shock Pulses (pulses/s)", default=1.0)
@@ -221,8 +225,8 @@ def get_preset_telemetry() -> Tuple[Dict[str, Any], Dict[str, Any], str]:
             "MQ4_CH4_ppm": n2_ch4,
             "MQ7_CO_ppm": n2_co,
             "MQ2_LPG_ppm": n2_lpg,
-            "MQ135_NOx_ppm": 1.0,
-            "dust_ug_m3": 20.0,
+            "MQ135_NOx_ppm": n2_nox,
+            "dust_ug_m3": n2_dust,
             "temp": n2_temp,
             "humidity": n2_hum,
             "vibration_pulses": n2_pulses,
@@ -313,39 +317,56 @@ def build_predictions_table(p1: Dict[str, Any], p2: Dict[str, Any], id1: str, id
     table.add_column(f"Node 2 ({id2}) Output", justify="center", width=22)
     table.add_column("Safety Assessment", justify="center", width=24)
 
-    # Gas Multi-Model Output
-    g1_status = "[bold red]🚨 DANGER (CH4/CO)[/bold red]" if (p1.get("methane_hazard") or p1.get("co_nox_hazard")) else "[bold green]✔ NOMINAL[/bold green]"
-    g2_status = "[bold red]🚨 DANGER (CH4/CO)[/bold red]" if (p2.get("methane_hazard") or p2.get("co_nox_hazard")) else "[bold green]✔ NOMINAL[/bold green]"
-    table.add_row("Multi-Gas DL Ensemble", g1_status, g2_status, "Deep Learning (7 Gases)")
+    # 1. Multi-Gas DL Ensemble (8 Gases)
+    g1_status = "[bold red]🚨 DANGER (CH4/CO)[/bold red]" if (p1.get("methane_hazard") or p1.get("co_nox_hazard") or p1.get("lpg_hazard")) else "[bold green]✔ NOMINAL[/bold green]"
+    g2_status = "[bold red]🚨 DANGER (CH4/CO)[/bold red]" if (p2.get("methane_hazard") or p2.get("co_nox_hazard") or p2.get("lpg_hazard")) else "[bold green]✔ NOMINAL[/bold green]"
+    table.add_row("Multi-Gas DL Ensemble", g1_status, g2_status, "Deep Learning (8-Channel)")
 
-    # Smoke / Dust
-    smk1 = "[bold yellow]⚠ SMOKE ALERT[/bold yellow]" if p1.get("smoke_env_hazard") else "[bold green]✔ CLEAR[/bold green]"
-    smk2 = "[bold yellow]⚠ SMOKE ALERT[/bold yellow]" if p2.get("smoke_env_hazard") else "[bold green]✔ CLEAR[/bold green]"
+    # 2. Ammonia (NH3) Toxic Hazard Model
+    nh3_1 = "[bold red]🚨 HIGH NH3 TOXICITY[/bold red]" if p1.get("nh3_hazard") else "[bold green]✔ SAFE (<25 ppm)[/bold green]"
+    nh3_2 = "[bold red]🚨 HIGH NH3 TOXICITY[/bold red]" if p2.get("nh3_hazard") else "[bold green]✔ SAFE (<25 ppm)[/bold green]"
+    table.add_row("Ammonia (NH3) Hazard Net", nh3_1, nh3_2, "PyTorch Deep MLP (NIOSH)")
+
+    # 3. Carbon Dioxide (CO2) Asphyxiation Hazard Model
+    co2_h1 = "[bold red]🚨 CO2 ASPHYXIATION[/bold red]" if p1.get("co2_hazard") else "[bold green]✔ SAFE (<1000 ppm)[/bold green]"
+    co2_h2 = "[bold red]🚨 CO2 ASPHYXIATION[/bold red]" if p2.get("co2_hazard") else "[bold green]✔ SAFE (<1000 ppm)[/bold green]"
+    table.add_row("CO2 Asphyxiation Net", co2_h1, co2_h2, "PyTorch Deep MLP (>1000 ppm)")
+
+    # 4. Smoke / Dust Particulate Hazard Model
+    smk1 = "[bold yellow]⚠ SMOKE / DUST ALERT[/bold yellow]" if p1.get("smoke_env_hazard") else "[bold green]✔ CLEAR[/bold green]"
+    smk2 = "[bold yellow]⚠ SMOKE / DUST ALERT[/bold yellow]" if p2.get("smoke_env_hazard") else "[bold green]✔ CLEAR[/bold green]"
     table.add_row("Smoke/Dust Hazard Model", smk1, smk2, "PyTorch Optical Classifier")
 
-    # Env Isolation Forest
+    # 5. Gas Severity Head (CH4 / CO / H2S)
+    sev1_ch4 = p1.get("ch4_severity", 0)
+    sev2_ch4 = p2.get("ch4_severity", 0)
+    sev1_str = f"[bold red]L3 DANGER[/bold red]" if sev1_ch4 == 2 else (f"[bold yellow]L2 WARNING[/bold yellow]" if sev1_ch4 == 1 else "[bold green]L1 Safe[/bold green]")
+    sev2_str = f"[bold red]L3 DANGER[/bold red]" if sev2_ch4 == 2 else (f"[bold yellow]L2 WARNING[/bold yellow]" if sev2_ch4 == 1 else "[bold green]L1 Safe[/bold green]")
+    table.add_row("Methane (CH4) Severity Head", sev1_str, sev2_str, "3-Class Graded Alarm (L1-L3)")
+
+    # 6. Env Thermal Drift (Isolation Forest / Threshold Fallback)
     env1 = "[bold yellow]⚠ ANOMALY[/bold yellow]" if p1.get("anomaly_detected") else "[bold green]✔ NOMINAL[/bold green]"
     env2 = "[bold yellow]⚠ ANOMALY[/bold yellow]" if p2.get("anomaly_detected") else "[bold green]✔ NOMINAL[/bold green]"
-    table.add_row("Env Isolation Forest (9-dim)", env1, env2, "Unsupervised Thermal Drift")
+    table.add_row("Env Thermal Anomaly Check", env1, env2, "Thermal Drift & Range Check")
 
-    # SW-420 Shock Monitor
+    # 7. SW-420 Shock Monitor
     sk1_level = p1.get("shock_level", 0)
     sk2_level = p2.get("shock_level", 0)
     sk1_str = f"[bold red]Level {sk1_level} CRITICAL[/bold red]" if sk1_level == 2 else (f"[bold yellow]Level {sk1_level} ALERT[/bold yellow]" if sk1_level == 1 else "[bold green]Level 0 Normal[/bold green]")
     sk2_str = f"[bold red]Level {sk2_level} CRITICAL[/bold red]" if sk2_level == 2 else (f"[bold yellow]Level {sk2_level} ALERT[/bold yellow]" if sk2_level == 1 else "[bold green]Level 0 Normal[/bold green]")
     table.add_row("SW-420 Shock Monitor", sk1_str, sk2_str, "Omnidirectional Impact")
 
-    # Wall Kinematics Displacement
+    # 8. Wall Kinematics Displacement
     col1 = "[bold red]🚨 COLLAPSE IMMINENT[/bold red]" if p1.get("collapse_imminent") else "[bold green]✔ STABLE[/bold green]"
     col2 = "[bold red]🚨 COLLAPSE IMMINENT[/bold red]" if p2.get("collapse_imminent") else "[bold green]✔ STABLE[/bold green]"
     table.add_row("Geomechanical Wall Kinematics", col1, col2, "Ultrasonic Convergence Rate")
 
-    # Robot Steering Decision
+    # 9. Robot Steering Decision (with Proximity Fallback)
     steer1 = p1.get("steering_decision", "Move-Forward")
     steer2 = p2.get("steering_decision", "Move-Forward")
     st1_str = f"[bold red]🚨 {steer1}[/bold red]" if "Sharp" in steer1 else f"[bold green]{steer1}[/bold green]"
     st2_str = f"[bold red]🚨 {steer2}[/bold red]" if "Sharp" in steer2 else f"[bold green]{steer2}[/bold green]"
-    table.add_row("Autonomous Navigation RF", st1_str, st2_str, "24-Sensor Wall Following")
+    table.add_row("Autonomous Navigation", st1_str, st2_str, "Obstacle Distance Clearance")
 
     return table
 
