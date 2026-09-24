@@ -76,11 +76,20 @@ class MineSafetyChatAssistant:
         # Fast path for common greetings / simple queries (~0ms latency)
         clean_q = user_message.strip().lower()
         if clean_q in {"hi", "hello", "hey", "status", "help"}:
+            readings = sensor_readings or active_anomalies
+            tbl = self._build_telemetry_markdown_table(readings)
+            has_crit = any(float(readings.get(k, 0)) > limit for k, limit in [("MQ4_CH4_ppm", 5000), ("MQ7_CO_ppm", 50), ("vibration_pulses", 10)])
+            status_summary = "🚨 CRITICAL HAZARD" if has_crit else "✔ SYSTEM NOMINAL"
             fast_reply = (
                 f"### ❓ Asked Question\n> **{user_message}**\n\n"
                 f"---\n"
-                f"Hello! I am **FIELD-MIND**, your on-device safety assistant for **{segment_id}**.\n\n"
-                f"All monitoring systems are active. Please ask any question regarding gas safety, vibration limits, structural stability, or operator procedures."
+                f"### 🛡️ FIELD-MIND Quick Status — Sector {segment_id}\n"
+                f"Overall Status: **{status_summary}**\n\n"
+                f"{tbl}\n\n"
+                f"---\n"
+                f"### 📢 Prioritized Safety Actions\n"
+                f"1. {'Immediately inspect active alarms and prepare evacuation if gas levels rise.' if has_crit else 'Maintain baseline monitoring and normal mine operating procedures.'}\n"
+                f"2. Inquire about any specific sensor, regulation limit (OSHA/NIOSH/IS), or emergency precaution."
             )
             self._response_cache[cache_key] = fast_reply
             return fast_reply
@@ -212,11 +221,20 @@ class MineSafetyChatAssistant:
 
         clean_q = user_message.strip().lower()
         if clean_q in {"hi", "hello", "hey", "status", "help"}:
+            readings = sensor_readings or active_anomalies
+            tbl = self._build_telemetry_markdown_table(readings)
+            has_crit = any(float(readings.get(k, 0)) > limit for k, limit in [("MQ4_CH4_ppm", 5000), ("MQ7_CO_ppm", 50), ("vibration_pulses", 10)])
+            status_summary = "🚨 CRITICAL HAZARD" if has_crit else "✔ SYSTEM NOMINAL"
             fast_reply = (
                 f"### ❓ Asked Question\n> **{user_message}**\n\n"
                 f"---\n"
-                f"Hello! I am **FIELD-MIND**, your on-device safety assistant for **{segment_id}**.\n\n"
-                f"All monitoring systems are active. Please ask any question regarding gas safety, vibration limits, structural stability, or operator procedures."
+                f"### 🛡️ FIELD-MIND Quick Status — Sector {segment_id}\n"
+                f"Overall Status: **{status_summary}**\n\n"
+                f"{tbl}\n\n"
+                f"---\n"
+                f"### 📢 Prioritized Safety Actions\n"
+                f"1. {'Immediately inspect active alarms and prepare evacuation if gas levels rise.' if has_crit else 'Maintain baseline monitoring and normal mine operating procedures.'}\n"
+                f"2. Inquire about any specific sensor, regulation limit (OSHA/NIOSH/IS), or emergency precaution."
             )
             self._response_cache[cache_key] = fast_reply
             yield fast_reply
@@ -277,6 +295,45 @@ class MineSafetyChatAssistant:
         )
         self._response_cache[cache_key] = full_res
         yield full_res
+
+    @staticmethod
+    def _build_telemetry_markdown_table(readings: Dict[str, Any], checks: Optional[List[Any]] = None) -> str:
+        """Constructs a presentable custom TUI table for sensor telemetry and regulatory checks."""
+        lines = [
+            "### 📊 Real-Time Telemetry & Regulatory Protocol Checks",
+            "| Metric / Sensor Stream | Real-Time Value | Regulatory Standard / Limit | Safety Check Status |",
+            "| :--- | :---: | :---: | :---: |"
+        ]
+        if checks:
+            for check in checks:
+                status_badge = "🚨 CRITICAL" if check.severity == "CRITICAL" else ("⚠ WARNING" if check.severity == "WARNING" else "✔ SAFE")
+                lines.append(f"| {check.metric.title()} ({check.domain.upper()}) | {check.reading:g} {check.unit} | {check.protocol_limit} | {status_badge} ({check.status}) |")
+        else:
+            ch4 = float(readings.get("MQ4_CH4_ppm", 0))
+            ch4_stat = "🚨 CRITICAL (Evacuate)" if ch4 > 5000 else ("⚠ WARNING (Elevated)" if ch4 > 1000 else "✔ SAFE (Nominal)")
+            lines.append(f"| Methane (MQ-4 CH4) | {ch4:.1f} ppm | < 1,000 ppm (OSHA PEL) | {ch4_stat} |")
+
+            co = float(readings.get("MQ7_CO_ppm", 0))
+            co_stat = "🚨 DANGER (Toxic)" if co > 50 else ("⚠ WARNING (Elevated)" if co > 25 else "✔ SAFE (Nominal)")
+            lines.append(f"| Carbon Monoxide (MQ-7 CO) | {co:.1f} ppm | < 25 ppm (Post-blast entry) | {co_stat} |")
+
+            temp = float(readings.get("temp", 22.0))
+            t_stat = "⚠ CAUTION (Heat Stress)" if temp > 28 else "✔ SAFE (Nominal)"
+            lines.append(f"| Ambient Temperature | {temp:.1f} °C | 18 – 28 °C (Safe Thermal Zone) | {t_stat} |")
+
+            hum = float(readings.get("humidity", 55.0))
+            h_stat = "⚠ HIGH RH (Condensation Risk)" if hum > 85 else "✔ SAFE (Nominal)"
+            lines.append(f"| Relative Humidity | {hum:.1f} % | 15 – 85 % RH | {h_stat} |")
+
+            vib = float(readings.get("vibration_pulses", 0.0))
+            v_stat = "🚨 CRITICAL (Level 2 Shock)" if vib > 10 else "✔ SAFE (Baseline)"
+            lines.append(f"| Shock Pulses (SW-420) | {vib:.0f} p/s | < 5 pulses/s | {v_stat} |")
+
+            dist = float(readings.get("min_distance", 2.5))
+            d_stat = "🚨 STOP ALARM (< 0.3m)" if dist < 0.3 else "✔ SAFE (Clear)"
+            lines.append(f"| Obstacle Proximity | {dist:.2f} m | > 0.50 m (AS 4024 Clearance) | {d_stat} |")
+
+        return "\n".join(lines)
 
     def _build_conversational_response(
         self,
