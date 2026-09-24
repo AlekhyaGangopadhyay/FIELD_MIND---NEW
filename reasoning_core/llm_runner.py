@@ -66,6 +66,9 @@ class OfflineLLMRunner:
                     n_ctx=self.n_ctx,
                     n_threads=self.n_threads,
                     n_gpu_layers=self.n_gpu_layers,
+                    n_batch=min(512, self.n_ctx),
+                    n_ubatch=min(256, self.n_ctx),
+                    flash_attn=True,
                     verbose=False
                 )
                 self._initialized = True
@@ -83,7 +86,16 @@ class OfflineLLMRunner:
         try:
             from llama_cpp import Llama
             print(f'  [LLMRunner] Loading local GGUF from {self.model_path} (ctx={self.n_ctx}, gpu_layers={self.n_gpu_layers}) ...')
-            self._llm = Llama(model_path=self.model_path, n_ctx=self.n_ctx, n_threads=self.n_threads, n_gpu_layers=self.n_gpu_layers, n_batch=min(512, self.n_ctx), verbose=False)
+            self._llm = Llama(
+                model_path=self.model_path,
+                n_ctx=self.n_ctx,
+                n_threads=self.n_threads,
+                n_gpu_layers=self.n_gpu_layers,
+                n_batch=min(512, self.n_ctx),
+                n_ubatch=min(256, self.n_ctx),
+                flash_attn=True,
+                verbose=False
+            )
             self._initialized = True
             self._load_error = None
         except Exception as exc:
@@ -157,6 +169,43 @@ class OfflineLLMRunner:
 
         # Expert System Fallback & Reflection Engine
         return self._expert_fallback(anomalies, ekg_history, rag_context, task_type)
+
+    def stream_reasoning(
+        self,
+        prompt: str,
+        anomalies: Dict[str, Any],
+        ekg_history: str,
+        rag_context: str,
+        task_type: str = "chat",
+        max_tokens: Optional[int] = None
+    ):
+        """
+        Streams reasoning output chunk by chunk to minimize TTFT latency.
+        """
+        if self.ensure_loaded():
+            try:
+                max_gen_tokens = max_tokens if max_tokens is not None else min(512, max(256, self.n_ctx // 2))
+                stop_sequences = ["<|im_end|>", "<|endoftext|>", "<|im_start|>", "### Human:", "### User:"]
+                
+                raw_stream = self._llm(
+                    prompt,
+                    max_tokens=max_gen_tokens,
+                    temperature=0.3,
+                    top_p=0.9,
+                    stop=stop_sequences,
+                    stream=True
+                )
+                for chunk in raw_stream:
+                    token = chunk["choices"][0].get("text", "")
+                    if token:
+                        yield token
+                return
+            except Exception as e:
+                print(f"  [LLMRunner] Streaming inference failed: {e}. Falling back to Expert System.")
+
+        # Expert System fallback returned as yield
+        fallback_text = self._expert_fallback(anomalies, ekg_history, rag_context, task_type)
+        yield fallback_text
 
     def _expert_fallback(
         self,
